@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="tkmanager"
+	Name="vgrank"
 	ProjectGUID="{E62E5876-E1E2-41A0-85CA-1B41B9DA55F9}"
-	RootNamespace="tkmanager"
+	RootNamespace="vgrank"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -42,7 +42,7 @@
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core-legacy&quot;;&quot;$(MMSOURCE18)\core-legacy\sourcehook&quot;;&quot;$(HL2SDK)\public&quot;;&quot;$(HL2SDK)\public\dlls&quot;;&quot;$(HL2SDK)\public\engine&quot;;&quot;$(HL2SDK)\public\tier0&quot;;&quot;$(HL2SDK)\public\tier1&quot;;&quot;$(HL2SDK)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDK)\lib\public\tier0.lib&quot; &quot;$(HL2SDK)\lib\public\tier1.lib&quot; &quot;$(HL2SDK)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMT"
 				GenerateDebugInformation="true"
@@ -122,7 +122,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core-legacy&quot;;&quot;$(MMSOURCE18)\core-legacy\sourcehook&quot;;&quot;$(HL2SDK)\public&quot;;&quot;$(HL2SDK)\public\dlls&quot;;&quot;$(HL2SDK)\public\engine&quot;;&quot;$(HL2SDK)\public\tier0&quot;;&quot;$(HL2SDK)\public\tier1&quot;;&quot;$(HL2SDK)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=1"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDK)\lib\public\tier0.lib&quot; &quot;$(HL2SDK)\lib\public\tier1.lib&quot; &quot;$(HL2SDK)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMTD"
 				GenerateDebugInformation="true"
@@ -202,7 +202,7 @@
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDK-DARKM)\public&quot;;&quot;$(HL2SDK-DARKM)\public\engine&quot;;&quot;$(HL2SDK-DARKM)\public\dlls&quot;;&quot;$(HL2SDK-DARKM)\public\tier0&quot;;&quot;$(HL2SDK-DARKM)\public\tier1&quot;;&quot;$(HL2SDK-DARKM)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=2"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=2"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -223,7 +223,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDK-DARKM)\lib\public\tier0.lib&quot; &quot;$(HL2SDK-DARKM)\lib\public\tier1.lib&quot; &quot;$(HL2SDK-DARKM)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMT"
 				GenerateDebugInformation="true"
@@ -282,7 +282,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDK-DARKM)\public&quot;;&quot;$(HL2SDK-DARKM)\public\engine&quot;;&quot;$(HL2SDK-DARKM)\public\dlls&quot;;&quot;$(HL2SDK-DARKM)\public\tier0&quot;;&quot;$(HL2SDK-DARKM)\public\tier1&quot;;&quot;$(HL2SDK-DARKM)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=2"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=2"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -301,7 +301,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDK-DARKM)\lib\public\tier0.lib&quot; &quot;$(HL2SDK-DARKM)\lib\public\tier1.lib&quot; &quot;$(HL2SDK-DARKM)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMTD"
 				GenerateDebugInformation="true"
@@ -362,7 +362,7 @@
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKOB)\public&quot;;&quot;$(HL2SDKOB)\public\engine&quot;;&quot;$(HL2SDKOB)\public\game\server&quot;;&quot;$(HL2SDKOB)\public\tier0&quot;;&quot;$(HL2SDKOB)\public\tier1&quot;;&quot;$(HL2SDKOB)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=3"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=3"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -383,7 +383,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKOB)\lib\public\tier0.lib&quot; &quot;$(HL2SDKOB)\lib\public\tier1.lib&quot; &quot;$(HL2SDKOB)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMT"
 				GenerateDebugInformation="true"
@@ -442,7 +442,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKOB)\public&quot;;&quot;$(HL2SDKOB)\public\engine&quot;;&quot;$(HL2SDKOB)\public\game\server&quot;;&quot;$(HL2SDKOB)\public\tier0&quot;;&quot;$(HL2SDKOB)\public\tier1&quot;;&quot;$(HL2SDKOB)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=3"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=3"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -461,7 +461,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKOB)\lib\public\tier0.lib&quot; &quot;$(HL2SDKOB)\lib\public\tier1.lib&quot; &quot;$(HL2SDKOB)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMTD"
 				GenerateDebugInformation="true"
@@ -522,7 +522,7 @@
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKOBVALVE)\public&quot;;&quot;$(HL2SDKOBVALVE)\public\engine&quot;;&quot;$(HL2SDKOBVALVE)\public\game\server&quot;;&quot;$(HL2SDKOBVALVE)\public\tier0&quot;;&quot;$(HL2SDKOBVALVE)\public\tier1&quot;;&quot;$(HL2SDKOBVALVE)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=4"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=4"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -543,7 +543,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKOBVALVE)\lib\public\tier0.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\tier1.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMT"
 				GenerateDebugInformation="true"
@@ -602,7 +602,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKOBVALVE)\public&quot;;&quot;$(HL2SDKOBVALVE)\public\engine&quot;;&quot;$(HL2SDKOBVALVE)\public\game\server&quot;;&quot;$(HL2SDKOBVALVE)\public\tier0&quot;;&quot;$(HL2SDKOBVALVE)\public\tier1&quot;;&quot;$(HL2SDKOBVALVE)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=4"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=4"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -621,7 +621,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKOBVALVE)\lib\public\tier0.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\tier1.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMTD"
 				GenerateDebugInformation="true"
@@ -682,7 +682,7 @@
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKL4D)\public&quot;;&quot;$(HL2SDKL4D)\public\engine&quot;;&quot;$(HL2SDKL4D)\public\game\server&quot;;&quot;$(HL2SDKL4D)\public\tier0&quot;;&quot;$(HL2SDKL4D)\public\tier1&quot;;&quot;$(HL2SDKL4D)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=5"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=5"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -703,7 +703,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKL4D)\lib\public\tier0.lib&quot; &quot;$(HL2SDKL4D)\lib\public\tier1.lib&quot; &quot;$(HL2SDKL4D)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMT"
 				GenerateDebugInformation="true"
@@ -762,7 +762,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKL4D)\public&quot;;&quot;$(HL2SDKL4D)\public\engine&quot;;&quot;$(HL2SDKL4D)\public\game\server&quot;;&quot;$(HL2SDKL4D)\public\tier0&quot;;&quot;$(HL2SDKL4D)\public\tier1&quot;;&quot;$(HL2SDKL4D)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=5"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=5"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -781,7 +781,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKL4D)\lib\public\tier0.lib&quot; &quot;$(HL2SDKL4D)\lib\public\tier1.lib&quot; &quot;$(HL2SDKL4D)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMTD"
 				GenerateDebugInformation="true"
@@ -842,7 +842,7 @@
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKL4D2)\public&quot;;&quot;$(HL2SDKL4D2)\public\engine&quot;;&quot;$(HL2SDKL4D2)\public\game\server&quot;;&quot;$(HL2SDKL4D2)\public\tier0&quot;;&quot;$(HL2SDKL4D2)\public\tier1&quot;;&quot;$(HL2SDKL4D2)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=6"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=6"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -863,7 +863,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKL4D2)\lib\public\tier0.lib&quot; &quot;$(HL2SDKL4D2)\lib\public\tier1.lib&quot; &quot;$(HL2SDKL4D2)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMT"
 				GenerateDebugInformation="true"
@@ -922,7 +922,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKL4D2)\public&quot;;&quot;$(HL2SDKL4D2)\public\engine&quot;;&quot;$(HL2SDKL4D2)\public\game\server&quot;;&quot;$(HL2SDKL4D2)\public\tier0&quot;;&quot;$(HL2SDKL4D2)\public\tier1&quot;;&quot;$(HL2SDKL4D2)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;SOURCE_ENGINE=6"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;SOURCE_ENGINE=6"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -941,7 +941,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKL4D2)\lib\public\tier0.lib&quot; &quot;$(HL2SDKL4D2)\lib\public\tier1.lib&quot; &quot;$(HL2SDKL4D2)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMTD"
 				GenerateDebugInformation="true"
@@ -1002,7 +1002,7 @@
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDK-SWARM)\public&quot;;&quot;$(HL2SDK-SWARM)\public\engine&quot;;&quot;$(HL2SDK-SWARM)\public\game\server&quot;;&quot;$(HL2SDK-SWARM)\public\tier0&quot;;&quot;$(HL2SDK-SWARM)\public\tier1&quot;;&quot;$(HL2SDK-SWARM)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;COMPILER_MSVC;COMPILER_MSVC32;SOURCE_ENGINE=7"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;COMPILER_MSVC;COMPILER_MSVC32;SOURCE_ENGINE=7"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -1023,7 +1023,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDK-SWARM)\lib\public\interfaces.lib&quot; &quot;$(HL2SDK-SWARM)\lib\public\tier0.lib&quot; &quot;$(HL2SDK-SWARM)\lib\public\tier1.lib&quot; &quot;$(HL2SDK-SWARM)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMT"
 				GenerateDebugInformation="true"
@@ -1082,7 +1082,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6 /D SE_ALIENSWARM=7"
 				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDK-SWARM)\public&quot;;&quot;$(HL2SDK-SWARM)\public\engine&quot;;&quot;$(HL2SDK-SWARM)\public\game\server&quot;;&quot;$(HL2SDK-SWARM)\public\tier0&quot;;&quot;$(HL2SDK-SWARM)\public\tier1&quot;;&quot;$(HL2SDK-SWARM)\public\vstdlib&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;tkmanager_EXPORTS;COMPILER_MSVC;COMPILER_MSVC32;SOURCE_ENGINE=7"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;vgrank_EXPORTS;COMPILER_MSVC;COMPILER_MSVC32;SOURCE_ENGINE=7"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -1101,7 +1101,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDK-SWARM)\lib\public\interfaces.lib&quot; &quot;$(HL2SDK-SWARM)\lib\public\tier0.lib&quot; &quot;$(HL2SDK-SWARM)\lib\public\tier1.lib&quot; &quot;$(HL2SDK-SWARM)\lib\public\vstdlib.lib&quot;"
-				OutputFile="$(OutDir)\tkmanager.dll"
+				OutputFile="$(OutDir)\vgrank.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMTD"
 				GenerateDebugInformation="true"
@@ -1145,7 +1145,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\tkmanager.cpp"
+				RelativePath="..\vgrank.cpp"
 				>
 			</File>
 		</Filter>
@@ -1159,7 +1159,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\tkmanager.h"
+				RelativePath="..\vgrank.h"
 				>
 			</File>
 		</Filter>
