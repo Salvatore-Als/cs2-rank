@@ -32,6 +32,10 @@
 , `bomb_defused`, `kill_knife`, `kill_headshot`, `kill_t`, `kill_ct`, `teamkill_t` \
 , `teamkill_ct` FROM `verygames_rank` WHERE `authid` = '%lli'"
 
+#define TOP ""
+
+#define RANK ""
+
 extern IVEngineServer2 *g_pEngine;
 extern IMySQLClient *g_pMysqlClient;
 extern IMySQLConnection *g_pConnection;
