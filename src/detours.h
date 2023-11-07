@@ -1,18 +1,14 @@
 #pragma once
+#include "abstract.h"
 #include "cdetour.h"
 #include "entity/ccsplayercontroller.h"
-#include "entity/ctakedamageinfo.h"
 
-class CCheckTransmitInfo;
-class IRecipientFilter;
-class ISoundEmitterSystemBase;
-class CBaseEntity;
-class Z_CBaseEntity;
 class CCSPlayerController;
-class CEntityIndex;
 class CCommand;
-class CTriggerPush;
 class CGameConfig;
 
 bool InitDetours(CGameConfig *gameConfig);
 void FlushAllDetours();
+
+void FASTCALL Detour_Host_Say(CCSPlayerController *, CCommand &, bool, int, const char *);
+extern CDetour<decltype(Detour_Host_Say)> Host_Say;

@@ -42,6 +42,7 @@ void CRankPlayer::SaveOnDatabase()
     }
 
     g_CMysql->UpdateUser(this->Get());
+    Debug("Save player %lli on database", this->GetSteamId64());
 }
 
 bool CPlayerManager::OnClientConnected(CPlayerSlot slot)

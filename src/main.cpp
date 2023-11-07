@@ -19,6 +19,7 @@
 #include "player.h"
 #include <vendor/mysql/include/mysql_mm.h>
 #include "ctimer.h"
+#include "basecommands.h"
 
 #define VPROF_ENABLED
 #include "tier0/vprof.h"
@@ -95,6 +96,8 @@ CSchemaSystem *g_pSchemaSystem2 = nullptr;
 float g_flUniversalTime;
 float g_flLastTickedTime;
 bool g_bHasTicked;
+
+CUtlMap<uint32, CChatCommand *> g_Commands(0, 0, DefLessFunc(uint32));
 
 CGlobalVars *GetServerGlobals()
 {
@@ -221,6 +224,8 @@ bool CPlugin::Unload(char *error, size_t maxlen)
 	UnregisterEventListeners();
 	FlushAllDetours();
 	RemoveTimers();
+
+	g_Commands.Purge();
 
 	return true;
 }

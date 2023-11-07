@@ -1,6 +1,8 @@
 # vim: set sts=2 ts=8 sw=2 tw=99 et ft=python: 
 import os
 
+MMSPlugin.plugin_name = 'vgrank'
+
 # Here only one sdk should be available to generate only one executable in the end,
 # as multi-sdk loading isn't supported out of the box by metamod, and would require specifying the full path in the vdf
 # which in the end would ruin the multi-platform (unix, win etc) loading by metamod as it won't be able to append platform specific extension
@@ -44,6 +46,8 @@ for sdk_name in MMSPlugin.sdks:
       ] 
       binary.sources += ['src/utils/plat_unix.cpp']
     elif binary.compiler.target.platform == 'windows':
+      binary.compiler.postlink += ['/NODEFAULTLIB:msvcrt']
+
       binary.compiler.postlink += [
         os.path.join('psapi.lib'),
         
@@ -64,7 +68,9 @@ for sdk_name in MMSPlugin.sdks:
       'src/chat.cpp',
       'src/mysql.cpp',
       'src/player.cpp',
-      'src/ctimer.cpp'
+      'src/ctimer.cpp',
+      'src/basecommands.cpp',
+      'src/commands.cpp'
     ]
 
     if sdk_name in ['dota', 'cs2']:

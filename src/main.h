@@ -3,6 +3,7 @@
 
 #include <ISmmPlugin.h>
 #include "abstract.h"
+#include "basecommands.h"
 
 // class CEntitySystem;
 class CEntitySystem;

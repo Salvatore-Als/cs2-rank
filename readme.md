@@ -5,6 +5,8 @@
 
 This is a rank plugin designed to work with Metamod, incorporating a MySQL database for data storage. The plugin provides a point system that tracks player performance in a Counter-Strike 2. It includes various features to manage and update player ranks based on their in-game actions.
 
+***Thank to CS2Fixe project (Poggy & Xen) for providing a solid code base.***
+
 ## Features
 - Killing a player results in points being added to the attacker and deducted from the victim's This system takes headshots and knife kills into account.
 - When a player commits suicide, it results in a points deduction.
