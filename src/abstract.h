@@ -14,9 +14,9 @@
 #define PLUGIN_DESCRIPTION "Rank system"
 
 #define GAMEDATA_PATH "addons/vgrank/gamedata/vgrank.games.txt"
-#define MYSQL_CONFIG_PATH "addons/vgrank/configs/mysql.cfg"
 #define POINTS_CONFIG_PATH "addons/vgrank/configs/points.cfg"
 #define PHRASES_CONFIG_PATH "addons/vgrank/configs/phrases.cfg"
+#define CORE_CONFIG_PATH "addons/vgrank/configs/core.cfg"
 
 #define MAX_QUERY_SIZES 8064
 

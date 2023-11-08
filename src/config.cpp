@@ -3,20 +3,21 @@
 
 bool CConfig::Init(char *conf_error, int conf_error_size)
 {
-    // Mysql configuration
+    // Core
 
-    g_kvMysql = new KeyValues("Mysql");
-    if (!g_kvMysql->LoadFromFile(g_pFullFileSystem, MYSQL_CONFIG_PATH))
+    g_kvCore = new KeyValues("Core");
+    if (!g_kvCore->LoadFromFile(g_pFullFileSystem, CORE_CONFIG_PATH))
     {
-        snprintf(conf_error, conf_error_size, "Failed to load mysql configuration file");
+        snprintf(conf_error, conf_error_size, "Failed to load core configuration file");
         return false;
     }
 
-    g_pszMysqlHost = g_kvMysql->GetString("host", nullptr);
-    g_pszMysqlPassword = g_kvMysql->GetString("password", nullptr);
-    g_pszMysqlUser = g_kvMysql->GetString("user", nullptr);
-    g_pszMsqlDatabase = g_kvMysql->GetString("database", nullptr);
-    g_iMysqlPort = g_kvMysql->GetInt("port", 3306);
+    g_pszMysqlHost = g_kvCore->GetString("host", nullptr);
+    g_pszMysqlPassword = g_kvCore->GetString("password", nullptr);
+    g_pszMysqlUser = g_kvCore->GetString("user", nullptr);
+    g_pszMysqlDatabase = g_kvCore->GetString("database", nullptr);
+    g_iMysqlPort = g_kvCore->GetInt("port", 3306);
+    g_iMinimumKill = g_kvCore->GetInt("minimum_kill", 3306);
 
     // Points configurations
 
@@ -69,7 +70,7 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
     return true;
 }
 
- const char *CConfig::Translate(const std::string &key)
+const char *CConfig::Translate(const std::string &key)
 {
     for (const Phrase &phrase : g_vecPhrases)
     {
@@ -82,7 +83,7 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
 
 void CConfig::Destroy()
 {
-    delete g_kvMysql;
     delete g_kvPoints;
     delete g_kvPhrases;
+    delete g_kvCore;
 }

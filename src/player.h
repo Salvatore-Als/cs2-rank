@@ -23,7 +23,6 @@ public:
 
     bool IsValidPlayer();
 
-    void OnAuthenticated();
     void SaveOnDatabase();
 
     bool IsDatabaseAuthenticated() { return m_bDatabaseAuthenticated; }

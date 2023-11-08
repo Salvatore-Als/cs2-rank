@@ -33,9 +33,9 @@
 , `bomb_defused`, `kill_knife`, `kill_headshot`, `kill_t`, `kill_ct`, `teamkill_t` \
 , `teamkill_ct` FROM `verygames_rank` WHERE `authid` = '%lli'"
 
-#define TOP "SELECT `name`, `points` FROM verygames_rank WHERE (kill_t + kill_ct) >= 40 ORDER BY points DESC LIMIT 15;"
+#define TOP "SELECT `name`, `points` FROM verygames_rank WHERE (kill_t + kill_ct) >= %i ORDER BY points DESC LIMIT 15;"
 
-#define RANK "SELECT COUNT(*) FROM `verygames_rank` WHERE `points` > (SELECT `points` FROM `verygames_rank` WHERE `authid` = %lli) HAVING SUM(`kill_t` + `kill_ct`) > 40;"
+#define RANK "SELECT COUNT(*) FROM `verygames_rank` WHERE `points` > %i HAVING SUM(`kill_t` + `kill_ct`) > %i;"
 
 extern IVEngineServer2 *g_pEngine;
 extern IMySQLClient *g_pMysqlClient;
@@ -57,7 +57,8 @@ public:
   void UpdateUser(CRankPlayer *pPlayer);
   void GetUser(CRankPlayer *pPlayer);
 
-  void CMysql::GetTopPlayers(std::function<void(std::map<std::string, int>)> callback);
+  void GetTopPlayers(std::function<void(std::map<std::string, int>)> callback);
+  void GetRank(CRankPlayer *pPlayer, std::function<void(int)> callback);
 
 private:
   void Connect();
@@ -65,6 +66,7 @@ private:
 
   void Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer);
   void Query_TopPlayers(IMySQLQuery *cb, std::function<void(std::map<std::string, int>)> callback);
+  void Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback);
 };
 
 extern CMysql *g_CMysql;

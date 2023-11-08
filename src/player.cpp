@@ -20,19 +20,11 @@ bool CRankPlayer::IsValidPlayer()
     return true;
 }
 
-void CRankPlayer::OnAuthenticated()
-{
-    g_CMysql->GetUser(this->Get());
-}
-
 void CRankPlayer::SaveOnDatabase()
 {
     // User is not authenticated from database
     if (!this->IsDatabaseAuthenticated())
         return;
-
-    this->SetPoints(this->GetPoints() + this->GetPoints());
-    this->SetPoints(0);
 
     g_CMysql->UpdateUser(this->Get());
     Debug("Save player %lli on database", this->GetSteamId64());
@@ -108,14 +100,19 @@ void CPlayerManager::TryAuthenticate()
         if (m_vecPlayers[i] == nullptr)
             continue;
 
-        if (m_vecPlayers[i]->IsAuthenticated() || m_vecPlayers[i]->IsFakeClient())
+        if (m_vecPlayers[i]->IsFakeClient())
             continue;
+
+        if (m_vecPlayers[i]->IsAuthenticated())
+        {
+            continue;
+        }
 
         if (g_pEngine->IsClientFullyAuthenticated(i))
         {
             m_vecPlayers[i]->SetAuthenticated();
             m_vecPlayers[i]->SetSteamId(g_pEngine->GetClientSteamID(i));
-            m_vecPlayers[i]->OnAuthenticated();
+            g_CMysql->GetUser(m_vecPlayers[i]->Get());
         }
     }
 }

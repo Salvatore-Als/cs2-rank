@@ -27,19 +27,19 @@
 
 size_t UTIL_Format(char *buffer, size_t maxlength, const char *fmt, ...)
 {
-    va_list ap;
+	va_list ap;
 
-    va_start(ap, fmt);
-    size_t len = vsnprintf(buffer, maxlength, fmt, ap);
-    va_end(ap);
+	va_start(ap, fmt);
+	size_t len = vsnprintf(buffer, maxlength, fmt, ap);
+	va_end(ap);
 
-    if (len >= maxlength)
-    {
-        len = maxlength - 1;
-        buffer[len] = '\0';
-    }
+	if (len >= maxlength)
+	{
+		len = maxlength - 1;
+		buffer[len] = '\0';
+	}
 
-    return len;
+	return len;
 }
 
 void Debug(const char *msg, ...)
@@ -142,20 +142,20 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, g_pSource2GameClients, this, &CPlugin::Hook_ClientDisconnect, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, g_pSource2Server, this, &CPlugin::Hook_GameFrame, true);
 
+	g_CConfig = new CConfig();
+	char szConfigError[255] = "";
+	if (!g_CConfig->Init(szConfigError, sizeof(szConfigError)))
+	{
+		snprintf(error, maxlen, "Unable to init the configuration: %s", szConfigError);
+		return false;
+	}
+
 	int ret;
 	g_pMysqlClient = (IMySQLClient *)g_SMAPI->MetaFactory(MYSQLMM_INTERFACE, &ret, NULL);
 
 	if (ret == META_IFACE_FAILED)
 	{
 		snprintf(error, maxlen, "Missing MYSQL plugin");
-		return false;
-	}
-
-	g_CConfig = new CConfig();
-	char szConfigError[255] = "";
-	if (!g_CConfig->Init(szConfigError, sizeof(szConfigError)))
-	{
-		snprintf(error, maxlen, "Unable to init the configuration: %s", szConfigError);
 		return false;
 	}
 
@@ -203,10 +203,9 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 
 	g_pEntitySystem = g_gGameResourceServiceServe->GetGameEntitySystem();
 
-	g_CMysql = new CMysql();
 	g_CChat = new CChat();
-
 	g_CPlayerManager = new CPlayerManager();
+	g_CMysql = new CMysql();
 
 	new CTimer(1.0f, true, []()
 			   { g_CPlayerManager->TryAuthenticate(); return 1.0f; });

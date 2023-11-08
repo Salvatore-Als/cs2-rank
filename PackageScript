@@ -49,11 +49,10 @@ with open(os.path.join(builder.buildPath, 'pdblog.txt'), 'wt') as fp:
     fp.write(line.path + '\n')
 
 
-# Add cs2 deatmatch specifics files
 gamedata_folder = builder.AddFolder(os.path.join('addons', MMSPlugin.plugin_name, 'gamedata'))
-config_folder = builder.AddFolder(os.path.join('addons', MMSPlugin.plugin_name, 'configs'))
-
 builder.AddCopy(os.path.join('gamedata', 'vgrank.games.txt'), gamedata_folder)
-builder.AddCopy(os.path.join('configs', 'mysql.cfg'), config_folder)
+
+config_folder = builder.AddFolder(os.path.join('addons', MMSPlugin.plugin_name, 'configs'))
 builder.AddCopy(os.path.join('configs', 'points.cfg'), config_folder)
 builder.AddCopy(os.path.join('configs', 'phrases.cfg'), config_folder)
+builder.AddCopy(os.path.join('configs', 'core.cfg'), config_folder)

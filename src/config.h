@@ -22,13 +22,15 @@ public:
     bool Init(char *conf_error, int conf_error_size);
     void Destroy();
 
-     const char *CConfig::Translate(const std::string &key);
+    const char *CConfig::Translate(const std::string &key);
 
     int GetMysqlPort() { return g_iMysqlPort; }
     const char *GetMysqlHost() { return g_pszMysqlHost; }
-    const char *GetMysqlDatabase() { return g_pszMsqlDatabase; }
+    const char *GetMysqlDatabase() { return g_pszMysqlDatabase; }
     const char *GetMysqlPassword() { return g_pszMysqlPassword; }
     const char *GetMysqlUser() { return g_pszMysqlUser; }
+
+    int GetMinimumKill() { return g_iMinimumKill; }
 
     int GetPointsLooseSuicide() { return g_iPointsLooseSuicide; }
     int GetPointsLooseTeamkill() { return g_iPointsLooseTeamkill; }
@@ -48,12 +50,14 @@ public:
 private:
     const char *g_pszMysqlHost;
     const char *g_pszMysqlUser;
-    const char *g_pszMsqlDatabase;
+    const char *g_pszMysqlDatabase;
     const char *g_pszMysqlPassword;
+    int g_iMysqlPort;
+
+    int g_iMinimumKill;
 
     const char *g_pszLanguage;
-
-    int g_iMysqlPort;
+    std::vector<Phrase> g_vecPhrases;
 
     int g_iPointsLooseSuicide;
     int g_iPointsLooseTeamkill;
@@ -70,11 +74,9 @@ private:
     int g_iPointsWinBombDefusedPlayer;
     int g_iPointsWinBombDefusedTeam;
 
-    KeyValues *g_kvMysql;
+    KeyValues *g_kvCore;
     KeyValues *g_kvPoints;
     KeyValues *g_kvPhrases;
-
-    std::vector<Phrase> g_vecPhrases;
 };
 
 extern CConfig *g_CConfig;

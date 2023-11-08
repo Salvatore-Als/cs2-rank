@@ -27,6 +27,8 @@ void CMysql::Connect()
 		{
 			Fatal("Failed to connect the mysql database");
 			this->Destroy();
+
+			// UNLOAD PLUGIN
 		} else {
 			Debug("Connected to database !");
 			this->CreateDatabaseIfNotExist();
@@ -66,7 +68,7 @@ void CMysql::GetUser(CRankPlayer *pPlayer)
 
 void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 {
-	auto results = cb->GetResultSet();
+	IMySQLResult *results = cb->GetResultSet();
 
 	if (!results)
 	{
@@ -133,7 +135,7 @@ void CMysql::GetTopPlayers(std::function<void(std::map<std::string, int>)> callb
 		return;
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), TOP);
+	V_snprintf(szQuery, sizeof(szQuery), TOP, g_CConfig->GetMinimumKill());
 
 	g_pConnection->Query(szQuery, [callback, this](IMySQLQuery *cb)
 						 { this->Query_TopPlayers(cb, callback); });
@@ -152,4 +154,40 @@ void CMysql::Query_TopPlayers(IMySQLQuery *cb, std::function<void(std::map<std::
 	}
 
 	callback(players);
+}
+
+void CMysql::GetRank(CRankPlayer *pPlayer, std::function<void(int)> callback)
+{
+	if (!g_pConnection)
+		return;
+	
+	char szQuery[MAX_QUERY_SIZES];
+	V_snprintf(szQuery, sizeof(szQuery), RANK, pPlayer->GetPoints(), g_CConfig->GetMinimumKill());
+
+	Debug(szQuery);
+
+	g_pConnection->Query(szQuery, [callback, this](IMySQLQuery *cb)
+						 { this->Query_Rank(cb, callback); });
+}
+
+void CMysql::Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback)
+{
+	IMySQLResult *results = cb->GetResultSet();
+
+	if (!results)
+	{
+		Debug("No result ?");
+		callback(-1);
+		return;
+	}
+
+	if (!results->FetchRow())
+	{
+		Debug("No fetchrow");
+		callback(-1);
+		return;
+	}
+
+	Debug("REsult %i", results->GetInt(0));
+	callback(results->GetInt(0) + 1);
 }
