@@ -39,9 +39,7 @@ void FASTCALL Detour_Host_Say(CCSPlayerController *pController, CCommand &args, 
 	}
 
 	if (*args[1] == '!' || *args[1] == '/')
-	{
 		ParseChatCommand(args.ArgS() + 1, pController);
-	}
 }
 
 bool InitDetours(CGameConfig *gameConfig)
@@ -51,9 +49,7 @@ bool InitDetours(CGameConfig *gameConfig)
 	g_vecDetours.PurgeAndDeleteElements();
 
 	if (!Host_Say.CreateDetour(gameConfig))
-	{
 		success = false;
-	}
 
 	Host_Say.EnableDetour();
 

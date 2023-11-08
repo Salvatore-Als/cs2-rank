@@ -251,16 +251,12 @@ void CPlugin::Hook_StartupServer(const GameSessionConfiguration_t &config, ISour
 	g_pGlobals = GetServerGlobals();
 
 	if (g_pGlobals == nullptr)
-	{
 		Fatal("Failed to lookup g_pGlobals\n");
-	}
 
 	g_pEntitySystem = g_gGameResourceServiceServe->GetGameEntitySystem();
 
 	if (g_bHasTicked)
-	{
 		RemoveMapTimers();
-	}
 
 	g_bHasTicked = false;
 
@@ -272,13 +268,9 @@ void CPlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
 	VPROF_ENTER_SCOPE(__FUNCTION__);
 
 	if (simulating && g_bHasTicked)
-	{
 		g_flUniversalTime += g_pGlobals->curtime - g_flLastTickedTime;
-	}
 	else
-	{
 		g_flUniversalTime += g_pGlobals->interval_per_tick;
-	}
 
 	g_flLastTickedTime = g_pGlobals->curtime;
 	g_bHasTicked = true;
@@ -314,17 +306,13 @@ void CPlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
 void CPlugin::Hook_OnClientConnected(CPlayerSlot slot, const char *pszName, uint64 xuid, const char *pszNetworkID, const char *pszAddress, bool bFakePlayer)
 {
 	if (bFakePlayer)
-	{
 		g_CPlayerManager->OnBotConnected(slot);
-	}
 }
 
 bool CPlugin::Hook_ClientConnect(CPlayerSlot slot, const char *pszName, uint64 xuid, const char *pszNetworkID, bool unk1, CBufferString *pRejectReason)
 {
 	if (!g_CPlayerManager->OnClientConnected(slot))
-	{
 		RETURN_META_VALUE(MRES_SUPERCEDE, false);
-	}
 
 	RETURN_META_VALUE(MRES_IGNORED, true);
 }

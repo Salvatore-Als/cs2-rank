@@ -6,24 +6,16 @@
 bool CRankPlayer::IsValidPlayer()
 {
     if (!this->IsConnected())
-    {
         return false;
-    }
 
     if (this->IsFakeClient())
-    {
         return false;
-    }
 
     if (!this->IsAuthenticated())
-    {
         return false;
-    }
 
     if (!this->IsDatabaseAuthenticated())
-    {
         return false;
-    }
 
     return true;
 }
@@ -37,9 +29,7 @@ void CRankPlayer::SaveOnDatabase()
 {
     // User is not authenticated from database
     if (!this->IsDatabaseAuthenticated())
-    {
         return;
-    }
 
     this->SetPoints(this->GetPoints() + this->GetPoints());
     this->SetPoints(0);
@@ -51,12 +41,15 @@ void CRankPlayer::SaveOnDatabase()
 void CRankPlayer::InitStats()
 {
     this->SetPoints(0);
+
     this->SetDeathSuicide(0);
     this->SetDeathT(0);
     this->SetDeathCT(0);
+
     this->SetBombPlanted(0);
     this->SetBombExploded(0);
     this->SetBombDefused(0);
+
     this->SetKillKnife(0);
     this->SetKillHeadshot(0);
     this->SetKillCT(0);
@@ -102,9 +95,7 @@ void CPlayerManager::OnLateLoad()
         CCSPlayerController *pController = CCSPlayerController::FromSlot(i);
 
         if (!pController || !pController->IsController() || !pController->IsConnected())
-        {
             continue;
-        }
 
         OnClientConnected(i);
     }
@@ -115,14 +106,10 @@ void CPlayerManager::TryAuthenticate()
     for (int i = 0; i < g_pGlobals->maxClients; i++)
     {
         if (m_vecPlayers[i] == nullptr)
-        {
             continue;
-        }
 
         if (m_vecPlayers[i]->IsAuthenticated() || m_vecPlayers[i]->IsFakeClient())
-        {
             continue;
-        }
 
         if (g_pEngine->IsClientFullyAuthenticated(i))
         {
@@ -136,9 +123,7 @@ void CPlayerManager::TryAuthenticate()
 CRankPlayer *CPlayerManager::GetPlayer(CPlayerSlot slot)
 {
     if (slot.Get() < 0 || slot.Get() >= g_pGlobals->maxClients)
-    {
         return nullptr;
-    };
 
     return m_vecPlayers[slot.Get()];
 };
@@ -146,24 +131,18 @@ CRankPlayer *CPlayerManager::GetPlayer(CPlayerSlot slot)
 void CPlayerManager::AddTeamPoint(int team, int point)
 {
     if (team != CS_TEAM_T && team != CS_TEAM_CT)
-    {
         return;
-    }
 
     for (int i = 0; i < g_pGlobals->maxClients; i++)
     {
         CCSPlayerController *pController = CCSPlayerController::FromSlot(i);
 
         if (!pController || pController->m_iTeamNum != team)
-        {
             continue;
-        }
 
         CRankPlayer *pPlayerT = pController->GetRankPlayer();
         if (!pPlayerT || !pPlayerT->IsValidPlayer())
-        {
             continue;
-        }
 
         pPlayerT->SetPoints(pPlayerT->GetPoints() + point);
     }
@@ -176,15 +155,11 @@ void CPlayerManager::SaveAll()
         CCSPlayerController *pController = CCSPlayerController::FromSlot(i);
 
         if (!pController)
-        {
             continue;
-        }
 
         CRankPlayer *pPlayer = pController->GetRankPlayer();
         if (!pPlayer || !pPlayer->IsValidPlayer())
-        {
             continue;
-        }
 
         pPlayer->SaveOnDatabase();
     }

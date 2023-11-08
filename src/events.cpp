@@ -32,9 +32,7 @@ void RegisterEventListeners()
 void UnregisterEventListeners()
 {
     if (!g_pGameEventManager)
-    {
         return;
-    }
 
     FOR_EACH_VEC(g_vecEventListeners, i)
     {
@@ -72,7 +70,6 @@ GAME_EVENT_F(bomb_planted)
 
     Debug("EVENT: bomb_planted");
     CCSPlayerController *pPlanterController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
-    ;
 
     if (!pPlanterController)
     {
@@ -90,6 +87,7 @@ GAME_EVENT_F(bomb_planted)
 
     g_CChat->PrintToChat(pPlanterController, "+%i points for planted the bomb", g_CConfig->GetPointsWinBombPlantedPlayer());
     pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombPlantedPlayer());
+    pPlayer->SetBombPlanted(pPlayer->GetBombPlanted() + 1);
 
     g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombPlantedTeam());
     g_CChat->PrintToChatT("+%i point all T for planted the bomb", g_CConfig->GetPointsWinBombPlantedTeam());
@@ -119,6 +117,7 @@ GAME_EVENT_F(bomb_defused)
 
     g_CChat->PrintToChat(pDefuserController, "+%i points for defused the bomb", g_CConfig->GetPointsWinBombDefusedPlayer());
     pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombDefusedPlayer());
+    pPlayer->SetBombDefused(pPlayer->GetBombDefused() + 1);
 
     g_CChat->PrintToChatT("+%i point all CT for defused the bomb", g_CConfig->GetPointsWinBombDefusedTeam());
     g_CPlayerManager->AddTeamPoint(CS_TEAM_CT, g_CConfig->GetPointsWinBombDefusedTeam());
@@ -129,6 +128,8 @@ GAME_EVENT_F(bomb_exploded)
     Debug("EVENT: bomb_exploded");
 
     // TODO: exploded player
+    // gPlayer->SetBombPlanted(pPlayer->GetBombPlanted() + 1); and add points
+
     g_CChat->PrintToChatT("+%i point all T for exploded the bomb", g_CConfig->GetPointsWinBombExplodedTeam());
     g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombExplodedTeam());
 }
@@ -138,9 +139,7 @@ GAME_EVENT_F(player_spawn)
     CCSPlayerController *pController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
     if (!pController)
-    {
         return;
-    }
 
     CHandle<CCSPlayerController> hController = pController->GetHandle();
 
@@ -188,18 +187,24 @@ GAME_EVENT_F(player_death)
     if (pVictim->IsFakeClient())
     {
         Debug("- Victim is a fake client");
-        // TODO: RETURN
+        // TODO: RETURN, b'cause I have nobody to test with me :(
     }
 
     // Suicide
     if (pVictimController == pAttackerController)
     {
         // OK
-        g_CChat->PrintToChat(pVictimController, "-%i points for suicide", g_CConfig->GetPointsLooseSuicide());
-        pVictim->SetPoints(pVictim->GetPoints() - g_CConfig->GetPointsLooseSuicide());
+        g_CChat->PrintToChat(pAttackerController, "-%i points for suicide", g_CConfig->GetPointsLooseSuicide());
+        pAttacker->SetPoints(pAttacker->GetPoints() - g_CConfig->GetPointsLooseSuicide());
+        pAttacker->SetDeathSuicide(pAttacker->GetDeathSuicide() + 1);
 
         return;
     }
+
+    if (pVictimController->m_iTeamNum == CS_TEAM_CT)
+        pVictim->SetDeathCT(pVictim->GetDeathCT() + 1);
+    else if (pVictimController->m_iTeamNum == CS_TEAM_T)
+        pVictim->SetDeathT(pVictim->GetDeathT() + 1);
 
     // Teamkill, TODO: try with a deathmatch type FFA, not taking account if it's enable
     // OK
@@ -208,6 +213,11 @@ GAME_EVENT_F(player_death)
         g_CChat->PrintToChat(pAttackerController, "-%i points for team kill", g_CConfig->GetPointsLooseTeamkill());
         pAttacker->SetPoints(pAttacker->GetPoints() - g_CConfig->GetPointsLooseTeamkill());
 
+        if (pAttackerController->m_iTeamNum == CS_TEAM_CT)
+            pAttacker->SetTeamKillCT(pAttacker->GetTeamKillCT() + 1);
+        else if (pAttackerController->m_iTeamNum == CS_TEAM_T)
+            pAttacker->SetTeamKillT(pAttacker->GetTeamKillT() + 1);
+
         return;
     }
 
@@ -215,10 +225,17 @@ GAME_EVENT_F(player_death)
 
     Debug("- With weapon %s", weapon);
 
+    if (pAttackerController->m_iTeamNum == CS_TEAM_CT)
+        pAttacker->SetKillCT(pAttacker->GetKillCT() + 1);
+    else if (pAttackerController->m_iTeamNum == CS_TEAM_T)
+        pAttacker->SetKillT(pAttacker->GetKillT() + 1);
+
     // OK
     if (strstr(weapon, "knife") != nullptr)
     {
         pAttacker->SetPoints(pAttacker->GetPoints() + g_CConfig->GetPointsWinKillKnife());
+        pAttacker->SetKillKnife(pAttacker->GetKillKnife() + 1);
+
         g_CChat->PrintToChat(pAttackerController, "+%i points for killing with knife", g_CConfig->GetPointsWinKillKnife());
 
         if (!pVictim->IsFakeClient())
@@ -232,13 +249,12 @@ GAME_EVENT_F(player_death)
 
     bool bHeadshot = pEvent->GetBool("headshot");
 
-    // TODO: add assist
-
     if (bHeadshot)
     {
         // OK
         g_CChat->PrintToChat(pAttackerController, "+%i point(s) for killing with headshot", g_CConfig->GetPointsWinKillWeaponHs());
         pAttacker->SetPoints(pAttacker->GetPoints() + g_CConfig->GetPointsWinKillWeaponHs());
+        pAttacker->SetKillHeadshot(pAttacker->GetKillHeadshot() + 1);
 
         if (!pVictim->IsFakeClient())
         {

@@ -2,6 +2,24 @@
 #include "utils/module.h"
 #include "abstract.h"
 #include "entity/cbaseentity.h"
+#include <string>
+#include "addresses.h"
+
+std::string CChat::Colorizer(std::string str)
+{
+	for (int i = 0; i < std::size(colorsHex); i++)
+	{
+		size_t pos = 0;
+
+		while ((pos = str.find(colorsString[i], pos)) != std::string::npos)
+		{
+			str.replace(pos, colorsString[i].length(), colorsHex[i]);
+			pos += colorsHex[i].length();
+		}
+	}
+
+	return str;
+}
 
 void CChat::PrintToChatAll(const char *msg, ...)
 {
@@ -13,25 +31,9 @@ void CChat::PrintToChatAll(const char *msg, ...)
 
 	va_end(args);
 
-	g_CAddresses->UTIL_ClientPrintAll(HUD_PRINTTALK, buf, nullptr, nullptr, nullptr, nullptr);
-}
+	std::string colorizedBuf = this->Colorizer(buf);
 
-void CChat::PrintToChat(CBasePlayerController *player, const char *msg, ...)
-{
-	if (!player)
-	{
-		return;
-	}
-
-	va_list args;
-	va_start(args, msg);
-
-	char buf[256];
-	V_vsnprintf(buf, sizeof(buf), msg, args);
-
-	va_end(args);
-
-	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, buf, nullptr, nullptr, nullptr, nullptr);
+	g_CAddresses->UTIL_ClientPrintAll(HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
 }
 
 void CChat::PrintToChat(CPlayerSlot slot, const char *msg, ...)
@@ -47,7 +49,24 @@ void CChat::PrintToChat(CPlayerSlot slot, const char *msg, ...)
 	CEntityIndex index = (CEntityIndex)(slot.Get() + 1);
 	CBasePlayerController *player = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity(index);
 
-	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, buf, nullptr, nullptr, nullptr, nullptr);
+	std::string colorizedBuf = this->Colorizer(buf);
+
+	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
+}
+
+void CChat::PrintToChat(CBasePlayerController *player, const char *msg, ...)
+{
+	va_list args;
+	va_start(args, msg);
+
+	char buf[256];
+	V_vsnprintf(buf, sizeof(buf), msg, args);
+
+	va_end(args);
+
+	std::string colorizedBuf = this->Colorizer(buf);
+
+	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
 }
 
 void CChat::PrintToChatCT(const char *msg, ...)
@@ -60,7 +79,7 @@ void CChat::PrintToChatCT(const char *msg, ...)
 
 	va_end(args);
 
-	PrintToChatTeam(CS_TEAM_CT, buf);
+	this->PrintToChatTeam(CS_TEAM_CT, buf);
 }
 
 void CChat::PrintToChatT(const char *msg, ...)
@@ -73,7 +92,7 @@ void CChat::PrintToChatT(const char *msg, ...)
 
 	va_end(args);
 
-	PrintToChatTeam(CS_TEAM_T, buf);
+	this->PrintToChatTeam(CS_TEAM_T, buf);
 }
 
 void CChat::PrintToChatTeam(int teamIndex, const char *msg)
@@ -91,6 +110,6 @@ void CChat::PrintToChatTeam(int teamIndex, const char *msg)
 			continue;
 		}
 
-		PrintToChat(i, msg);
+		this->PrintToChat(i, msg);
 	}
 }

@@ -10,9 +10,7 @@ using namespace std;
 void CMysql::Connect()
 {
 	if (!g_pMysqlClient)
-	{
 		return;
-	}
 
 	MySQLConnectionInfo info;
 	info.host = g_CConfig->GetMysqlHost();
@@ -44,9 +42,7 @@ void CMysql::Destroy()
 void CMysql::CreateDatabaseIfNotExist()
 {
 	if (!g_pConnection)
-	{
 		return;
-	}
 
 	g_pConnection->Query(CREATE_TABLE, [](IMySQLQuery *cb) {});
 	Debug("Create Database request : %s", CREATE_TABLE);
@@ -55,9 +51,7 @@ void CMysql::CreateDatabaseIfNotExist()
 void CMysql::GetUser(CRankPlayer *pPlayer)
 {
 	if (!g_pConnection)
-	{
 		return;
-	}
 
 	uint64 steamId64 = pPlayer->GetSteamId64();
 
@@ -120,9 +114,7 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 void CMysql::UpdateUser(CRankPlayer *pPlayer)
 {
 	if (!g_pConnection)
-	{
 		return;
-	}
 
 	const char *name = g_pEngine->GetClientConVarValue(pPlayer->GetPlayerSlot(), "name");
 	uint64 steamId64 = pPlayer->GetSteamId64();
@@ -138,9 +130,7 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 void CMysql::GetTopPlayers(std::function<void(std::map<std::string, int>)> callback)
 {
 	if (!g_pConnection)
-	{
 		return;
-	}
 
 	char szQuery[MAX_QUERY_SIZES];
 	V_snprintf(szQuery, sizeof(szQuery), TOP);

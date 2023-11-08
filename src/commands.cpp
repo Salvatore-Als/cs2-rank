@@ -9,29 +9,7 @@
 CON_COMMAND_CHAT(rank, "Display your rank")
 {
     if (!player)
-    {
         return;
-    }
-
-    g_CChat->PrintToChat(player, "Command works ");
-}
-
-CON_COMMAND_CHAT(sessions, "Display your rank")
-{
-    if (!player)
-    {
-        return;
-    }
-
-    g_CChat->PrintToChat(player, "Command works ");
-}
-
-CON_COMMAND_CHAT(stats, "Display your rank")
-{
-    if (!player)
-    {
-        return;
-    }
 
     g_CChat->PrintToChat(player, "Command works ");
 }
@@ -39,9 +17,7 @@ CON_COMMAND_CHAT(stats, "Display your rank")
 CON_COMMAND_CHAT(top, "Display your rank")
 {
     if (!player)
-    {
         return;
-    }
 
     int slot = player->GetPlayerSlot();
 
@@ -61,17 +37,13 @@ CON_COMMAND_CHAT(top, "Display your rank")
 CON_COMMAND_CHAT(resetrank, "Reset your rank")
 {
     if (!player)
-    {
         return;
-    }
 
     int slot = player->GetPlayerSlot();
     CRankPlayer *pPlayer = g_CPlayerManager->GetPlayer(slot);
 
     if (!pPlayer)
-    {
         return;
-    }
 
     pPlayer->Reset();
     g_CChat->PrintToChat(player, "Your rank has been reseted !");
