@@ -43,13 +43,19 @@ CON_COMMAND_CHAT(top, "Display your rank")
         return;
     }
 
-    g_CMysql->GetTopPlayers([](std::map<std::string, int> players)
-                            {
-    for (const auto& pair : players) {
-            Debug("%s %i", pair.first, pair.second);
-    } });
+    int slot = player->GetPlayerSlot();
 
-    g_CChat->PrintToChat(player, "Command works ");
+    g_CMysql->GetTopPlayers([slot](std::map<std::string, int> players)
+                            {
+    g_CChat->PrintToChat(slot, "--- TOP PLAYERS ---");
+
+    int iteration = 1;
+    for (const auto& pair : players) {
+            g_CChat->PrintToChat(slot, "%i - %s with %i point(s)", iteration, pair.first, pair.second);
+            iteration++;
+    } 
+    
+    g_CChat->PrintToChat(slot, "--- ----------- ---"); });
 }
 
 CON_COMMAND_CHAT(resetrank, "Reset your rank")
@@ -66,7 +72,7 @@ CON_COMMAND_CHAT(resetrank, "Reset your rank")
     {
         return;
     }
-    
+
     pPlayer->Reset();
     g_CChat->PrintToChat(player, "Your rank has been reseted !");
 }
@@ -94,18 +100,6 @@ void Command_DebugConfig(const CCommandContext &context, const CCommand &args)
     Debug("GetPointsWinBombExplodedTeam() : %i", g_CConfig->GetPointsWinBombExplodedTeam());
     Debug("GetPointsWinBombDefusedPlayer() : %i", g_CConfig->GetPointsWinBombDefusedPlayer());
     Debug("GetPointsWinBombDefusedTeam() : %i", g_CConfig->GetPointsWinBombDefusedTeam());
-}
-
-CON_COMMAND_EXTERN(rank_debugtop, Command_DebugTop, "");
-void Command_DebugTop(const CCommandContext &context, const CCommand &args)
-{
-    g_CMysql->GetTopPlayers([](std::map<std::string, int> players)
-                            {
-    int iteration = 1;
-    for (const auto& pair : players) {
-            Debug("%i - %s %i", iteration, pair.first, pair.second);
-            iteration++;
-    } });
 }
 
 CON_COMMAND_EXTERN(rank_debugsave, Command_RankSave, "");
