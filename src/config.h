@@ -2,13 +2,14 @@
 #include "KeyValues.h"
 #include <ctime>
 #include "abstract.h"
+#include <vector>
 
 extern IFileSystem *g_pFullFileSystem;
 
-struct WeaponMapEntry_t
+struct Phrase
 {
-    const char *szWeaponName;
-    bool allowed;
+    std::string key;
+    std::string translation;
 };
 
 class CConfig
@@ -20,6 +21,8 @@ public:
 
     bool Init(char *conf_error, int conf_error_size);
     void Destroy();
+
+     const char *CConfig::Translate(const std::string &key);
 
     int GetMysqlPort() { return g_iMysqlPort; }
     const char *GetMysqlHost() { return g_pszMysqlHost; }
@@ -47,6 +50,9 @@ private:
     const char *g_pszMysqlUser;
     const char *g_pszMsqlDatabase;
     const char *g_pszMysqlPassword;
+
+    const char *g_pszLanguage;
+
     int g_iMysqlPort;
 
     int g_iPointsLooseSuicide;
@@ -66,6 +72,9 @@ private:
 
     KeyValues *g_kvMysql;
     KeyValues *g_kvPoints;
+    KeyValues *g_kvPhrases;
+
+    std::vector<Phrase> g_vecPhrases;
 };
 
 extern CConfig *g_CConfig;

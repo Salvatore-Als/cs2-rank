@@ -25,6 +25,23 @@
 #define VPROF_ENABLED
 #include "tier0/vprof.h"
 
+size_t UTIL_Format(char *buffer, size_t maxlength, const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    size_t len = vsnprintf(buffer, maxlength, fmt, ap);
+    va_end(ap);
+
+    if (len >= maxlength)
+    {
+        len = maxlength - 1;
+        buffer[len] = '\0';
+    }
+
+    return len;
+}
+
 void Debug(const char *msg, ...)
 {
 	va_list args;
@@ -131,7 +148,6 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	if (ret == META_IFACE_FAILED)
 	{
 		snprintf(error, maxlen, "Missing MYSQL plugin");
-		Fatal(error);
 		return false;
 	}
 
@@ -140,7 +156,6 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	if (!g_CConfig->Init(szConfigError, sizeof(szConfigError)))
 	{
 		snprintf(error, maxlen, "Unable to init the configuration: %s", szConfigError);
-		Fatal(error);
 		return false;
 	}
 
@@ -149,7 +164,6 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	if (!g_CGameConfig->Init(g_pFullFileSystem, szGameConfigError, sizeof(szGameConfigError)))
 	{
 		snprintf(error, maxlen, "Could not read %s: %s", g_CGameConfig->GetPath().c_str(), szGameConfigError);
-		Fatal(error);
 		return false;
 	}
 
@@ -163,7 +177,6 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	if (!g_pSchemaSystem2)
 	{
 		snprintf(error, maxlen, "Unable to find CSchemaSystem interface");
-		Fatal(error);
 		return false;
 	}
 
@@ -172,7 +185,6 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	if (!g_gGameResourceServiceServe)
 	{
 		snprintf(error, maxlen, "Unable to find the CGameResourceService interface");
-		Fatal(error);
 		return false;
 	}
 
@@ -180,14 +192,12 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	if (!g_pGameEventManager)
 	{
 		snprintf(error, maxlen, "Unable to find the IGameEventManager2");
-		Fatal(error);
 		return false;
 	}
 
 	if (!InitDetours(g_CGameConfig))
 	{
 		snprintf(error, maxlen, "Unable to init detours");
-		Fatal(error);
 		return false;
 	}
 

@@ -56,3 +56,4 @@ config_folder = builder.AddFolder(os.path.join('addons', MMSPlugin.plugin_name, 
 builder.AddCopy(os.path.join('gamedata', 'vgrank.games.txt'), gamedata_folder)
 builder.AddCopy(os.path.join('configs', 'mysql.cfg'), config_folder)
 builder.AddCopy(os.path.join('configs', 'points.cfg'), config_folder)
+builder.AddCopy(os.path.join('configs', 'phrases.cfg'), config_folder)

@@ -5,6 +5,7 @@
 #include <map>
 #include "mysql.h"
 #include "config.h"
+#include "metamod_util.h"
 
 CON_COMMAND_CHAT(rank, "Display your rank")
 {
@@ -47,6 +48,21 @@ CON_COMMAND_CHAT(resetrank, "Reset your rank")
 
     pPlayer->Reset();
     g_CChat->PrintToChat(player, "Your rank has been reseted !");
+}
+
+CON_COMMAND_EXTERN(rank_debugtranslate, Command_DebugTranslate, "");
+void Command_DebugTranslate(const CCommandContext &context, const CCommand &args)
+{
+    char translate1[256];
+    UTIL_Format(translate1, sizeof(translate1), g_CConfig->Translate("TEST_TRANSLATE_1"), "String value", 15);
+
+    char translate2[256];
+    UTIL_Format(translate2, sizeof(translate2), g_CConfig->Translate("TEST_TRANSLATE_2"), "String value", 15);
+
+    char translate2[256];
+    UTIL_Format(translate2, sizeof(translate2), g_CConfig->Translate("NON_EXISTING"), "String value", 15);
+
+    g_CChat->PrintToServerConsole("PREFIX - %s %s %s", translate1, translate2, "string");
 }
 
 CON_COMMAND_EXTERN(rank_debugconfig, Command_DebugConfig, "");

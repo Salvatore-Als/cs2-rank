@@ -50,6 +50,7 @@ public:
 	{
 	}
 
+    void PrintToServerConsole(const char *msg, ...);
 	void PrintToChatAll(const char *msg, ...);
 	void PrintToChatCT(const char *msg, ...);
 	void PrintToChatT(const char *msg, ...);
@@ -59,7 +60,7 @@ public:
 
 private:
 	void PrintToChatTeam(int teamIndex, const char *msg);
-	std::string Colorizer(std::string str);
+	std::string Replacing(std::string str);
 };
 
 extern CChat *g_CChat;
