@@ -2,6 +2,8 @@
 #include "abstract.h"
 #include <vendor/mysql/include/mysql_mm.h>
 #include "player.h"
+#include <map>
+#include "config.h"
 
 using namespace std;
 
@@ -13,10 +15,11 @@ void CMysql::Connect()
 	}
 
 	MySQLConnectionInfo info;
-	info.host = "localhost";
-	info.user = "root";
-	info.pass = "root";
-	info.database = "cs2";
+	info.host = g_CConfig->GetMysqlHost();
+	info.user = g_CConfig->GetMysqlUser();
+	info.pass = g_CConfig->GetMysqlPassword();
+	info.database = g_CConfig->GetMysqlDatabase();
+	info.port = g_CConfig->GetMysqlPort();
 
 	g_pConnection = g_pMysqlClient->CreateMySQLConnection(info);
 
@@ -79,19 +82,7 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 
 	if (!results->FetchRow())
 	{
-		pPlayer->SetPoints(0);
-		pPlayer->SetDeathSuicide(0);
-		pPlayer->SetDeathT(0);
-		pPlayer->SetDeathCT(0);
-		pPlayer->SetBombPlanted(0);
-		pPlayer->SetBombExploded(0);
-		pPlayer->SetBombDefused(0);
-		pPlayer->SetKillKnife(0);
-		pPlayer->SetKillHeadshot(0);
-		pPlayer->SetKillCT(0);
-		pPlayer->SetKillT(0);
-		pPlayer->SetTeamKillT(0);
-		pPlayer->SetTeamKillCT(0);
+		pPlayer->InitStats();
 
 		const char *name = g_pEngine->GetClientConVarValue(pPlayer->GetPlayerSlot(), "name");
 		uint64 steamId64 = pPlayer->GetSteamId64();
@@ -142,4 +133,33 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 	Debug("UpdateUser Request : %s", szQuery);
 
 	g_pConnection->Query(szQuery, [](IMySQLQuery *cb) {});
+}
+
+void CMysql::GetTopPlayers(std::function<void(std::map<std::string, int>)> callback)
+{
+	if (!g_pConnection)
+	{
+		return;
+	}
+
+	char szQuery[MAX_QUERY_SIZES];
+	V_snprintf(szQuery, sizeof(szQuery), TOP);
+
+	g_pConnection->Query(szQuery, [callback, this](IMySQLQuery *cb)
+						 { this->Query_TopPlayers(cb, callback); });
+}
+
+void CMysql::Query_TopPlayers(IMySQLQuery *cb, std::function<void(std::map<std::string, int>)> callback)
+{
+	std::map<std::string, int> players;
+
+	IMySQLResult *results = cb->GetResultSet();
+	while (results->FetchRow())
+	{
+		const char *name = results->GetString(0);
+		int points = results->GetInt(1);
+		players[name] = points;
+	}
+
+	callback(players);
 }

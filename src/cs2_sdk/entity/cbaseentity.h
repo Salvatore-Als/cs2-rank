@@ -18,6 +18,9 @@ public:
   SCHEMA_FIELD(float, m_lastNetworkChange)
   SCHEMA_FIELD_POINTER(void, m_NetworkTransmitComponent)
   SCHEMA_FIELD(int, m_iTeamNum)
+
+  // TODO: remove, only used for bot
+  SCHEMA_FIELD(MoveType_t, m_MoveType)
   
   CHandle<CBaseEntity> GetHandle() { return m_pEntity->m_EHandle; }
   int entindex() { return m_pEntity->m_EHandle.GetEntryIndex(); }

@@ -10,10 +10,10 @@ bool CRankPlayer::IsValidPlayer()
         return false;
     }
 
-    //if (!this->IsFakeClient())
-    //{
-    //    return false;
-    //}
+    if (this->IsFakeClient())
+    {
+        return false;
+    }
 
     if (!this->IsAuthenticated())
     {
@@ -41,8 +41,34 @@ void CRankPlayer::SaveOnDatabase()
         return;
     }
 
+    this->SetPoints(this->GetPoints() + this->GetPoints());
+    this->SetPoints(0);
+
     g_CMysql->UpdateUser(this->Get());
     Debug("Save player %lli on database", this->GetSteamId64());
+}
+
+void CRankPlayer::InitStats()
+{
+    this->SetPoints(0);
+    this->SetDeathSuicide(0);
+    this->SetDeathT(0);
+    this->SetDeathCT(0);
+    this->SetBombPlanted(0);
+    this->SetBombExploded(0);
+    this->SetBombDefused(0);
+    this->SetKillKnife(0);
+    this->SetKillHeadshot(0);
+    this->SetKillCT(0);
+    this->SetKillT(0);
+    this->SetTeamKillT(0);
+    this->SetTeamKillCT(0);
+}
+
+void CRankPlayer::Reset()
+{
+    this->InitStats();
+    this->SaveOnDatabase();
 }
 
 bool CPlayerManager::OnClientConnected(CPlayerSlot slot)
@@ -155,8 +181,7 @@ void CPlayerManager::SaveAll()
         }
 
         CRankPlayer *pPlayer = pController->GetRankPlayer();
-        //if (!pPlayer || !pPlayer->IsValidPlayer())
-        if (!pPlayer)
+        if (!pPlayer || !pPlayer->IsValidPlayer())
         {
             continue;
         }

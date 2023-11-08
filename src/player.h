@@ -18,6 +18,8 @@ public:
     }
 
     CRankPlayer *Get() { return this; };
+    void Reset();
+    void InitStats();
 
     bool IsValidPlayer();
 
@@ -91,7 +93,7 @@ private:
     CPlayerSlot m_slot;
 
     int m_iPoints;
-
+    
     int m_iDeathSuicide;
     int m_iDeathT;
     int m_iDeathCT;
@@ -125,7 +127,7 @@ public:
 
     void AddTeamPoint(int teamNumb, int point);
     void SaveAll();
-    
+
     CRankPlayer *GetPlayer(CPlayerSlot slot);
 
 private:

@@ -20,6 +20,7 @@
 #include <vendor/mysql/include/mysql_mm.h>
 #include "ctimer.h"
 #include "basecommands.h"
+#include "config.h"
 
 #define VPROF_ENABLED
 #include "tier0/vprof.h"
@@ -87,6 +88,7 @@ CAddresses *g_CAddresses = nullptr;
 CChat *g_CChat = nullptr;
 CMysql *g_CMysql = nullptr;
 CPlayerManager *g_CPlayerManager = nullptr;
+CConfig *g_CConfig = nullptr;
 
 CEntitySystem *g_pEntitySystem = nullptr;
 CGameResourceService *g_gGameResourceServiceServe = nullptr;
@@ -129,6 +131,15 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	if (ret == META_IFACE_FAILED)
 	{
 		snprintf(error, maxlen, "Missing MYSQL plugin");
+		Fatal(error);
+		return false;
+	}
+
+	g_CConfig = new CConfig();
+	char szConfigError[255] = "";
+	if (!g_CConfig->Init(szConfigError, sizeof(szConfigError)))
+	{
+		snprintf(error, maxlen, "Unable to init the configuration: %s", szConfigError);
 		Fatal(error);
 		return false;
 	}
@@ -215,6 +226,11 @@ bool CPlugin::Unload(char *error, size_t maxlen)
 	delete g_CGameConfig;
 	delete g_CChat;
 
+	if (g_CConfig)
+	{
+		g_CConfig->Destroy();
+		delete g_CConfig;
+	}
 	if (g_CMysql)
 	{
 		g_CMysql->Destroy();
@@ -371,8 +387,6 @@ const char *CPlugin::GetURL()
 {
 	return "https://www.verygames.net";
 }
-
-
 
 CON_COMMAND_EXTERN(rank_debugprint, Command_DebugPrint, "");
 void Command_DebugPrint(const CCommandContext &context, const CCommand &args)

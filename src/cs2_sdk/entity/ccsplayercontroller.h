@@ -11,6 +11,8 @@ class CCSPlayerController : public CBasePlayerController
 public:
     DECLARE_SCHEMA_CLASS(CCSPlayerController);
 
+    SCHEMA_FIELD(bool, m_bPawnIsAlive);
+    
     static CCSPlayerController *FromSlot(CPlayerSlot slot)
     {
         return (CCSPlayerController *)g_pEntitySystem->GetBaseEntity(CEntityIndex(slot.Get() + 1));
