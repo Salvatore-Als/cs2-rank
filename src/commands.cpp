@@ -7,6 +7,8 @@
 #include "config.h"
 #include "metamod_util.h"
 
+void Callback_GetTotalPlayers(int slot, std::map<std::string, int> players);
+
 CON_COMMAND_CHAT(rank, "Display your rank")
 {
     if (!player)
@@ -23,16 +25,23 @@ CON_COMMAND_CHAT(top, "Display your rank")
     int slot = player->GetPlayerSlot();
 
     g_CMysql->GetTopPlayers([slot](std::map<std::string, int> players)
-                            {
-    g_CChat->PrintToChat(slot, "--- TOP PLAYERS ---");
+                            { Callback_GetTotalPlayers(slot, players); });
+}
+
+void Callback_GetTotalPlayers(int slot, std::map<std::string, int> players)
+{
+    g_CChat->PrintToChat(slot, "%s", g_CConfig->Translate("TOP_PLAYERS_TITLE"));
 
     int iteration = 1;
-    for (const auto& pair : players) {
-            g_CChat->PrintToChat(slot, "%i - %s with %i point(s)", iteration, pair.first, pair.second);
-            iteration++;
-    } 
-    
-    g_CChat->PrintToChat(slot, "--- ----------- ---"); });
+    char szPlayer[256];
+
+    for (const auto &pair : players)
+    {
+        UTIL_Format(szPlayer, sizeof(szPlayer), g_CConfig->Translate("TOP_PLAYER"), iteration, pair.first, pair.second);
+        g_CChat->PrintToChat(slot, szPlayer);
+
+        iteration++;
+    }
 }
 
 CON_COMMAND_CHAT(resetrank, "Reset your rank")
@@ -47,7 +56,7 @@ CON_COMMAND_CHAT(resetrank, "Reset your rank")
         return;
 
     pPlayer->Reset();
-    g_CChat->PrintToChat(player, "Your rank has been reseted !");
+    g_CChat->PrintToChat(player, g_CConfig->Translate("RANK_RESET"));
 }
 
 CON_COMMAND_EXTERN(rank_debugtranslate, Command_DebugTranslate, "");
@@ -59,10 +68,10 @@ void Command_DebugTranslate(const CCommandContext &context, const CCommand &args
     char translate2[256];
     UTIL_Format(translate2, sizeof(translate2), g_CConfig->Translate("TEST_TRANSLATE_2"), "String value", 15);
 
-    char translate2[256];
-    UTIL_Format(translate2, sizeof(translate2), g_CConfig->Translate("NON_EXISTING"), "String value", 15);
+    char translate3[256];
+    UTIL_Format(translate3, sizeof(translate3), g_CConfig->Translate("NON_EXISTING"));
 
-    g_CChat->PrintToServerConsole("PREFIX - %s %s %s", translate1, translate2, "string");
+    g_CChat->PrintToServerConsole("PREFIX - %s %s %s %s", translate1, translate2, "string", translate3);
 }
 
 CON_COMMAND_EXTERN(rank_debugconfig, Command_DebugConfig, "");
