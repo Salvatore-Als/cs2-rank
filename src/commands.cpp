@@ -52,6 +52,25 @@ CON_COMMAND_CHAT(top, "Display your rank")
     g_CChat->PrintToChat(player, "Command works ");
 }
 
+CON_COMMAND_CHAT(resetrank, "Reset your rank")
+{
+    if (!player)
+    {
+        return;
+    }
+
+    int slot = player->GetPlayerSlot();
+    CRankPlayer *pPlayer = g_CPlayerManager->GetPlayer(slot);
+
+    if (!pPlayer)
+    {
+        return;
+    }
+    
+    pPlayer->Reset();
+    g_CChat->PrintToChat(player, "Your rank has been reseted !");
+}
+
 CON_COMMAND_EXTERN(rank_debugconfig, Command_DebugConfig, "");
 void Command_DebugConfig(const CCommandContext &context, const CCommand &args)
 {
