@@ -43,7 +43,8 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
     g_iPointsWinBombExplodedTeam = g_kvPoints->GetInt("points_win_bomb_exploded_team");
     g_iPointsWinBombDefusedPlayer = g_kvPoints->GetInt("points_win_bomb_defused_player");
     g_iPointsWinBombDefusedTeam = g_kvPoints->GetInt("points_win_bomb_defused_team");
-
+    g_iPointWinKillAssist = g_kvPoints->GetInt("points_win_kill_assist");
+    
     // Phrases configurations
 
     g_kvPhrases = new KeyValues("Phrases");

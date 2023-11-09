@@ -48,6 +48,9 @@ void CRankPlayer::InitStats()
     this->SetKillT(0);
     this->SetTeamKillT(0);
     this->SetTeamKillCT(0);
+    
+    this->SetKillAssistT(0);
+    this->SetKillAssistCT(0);
 }
 
 void CRankPlayer::Reset()

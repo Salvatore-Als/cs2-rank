@@ -76,6 +76,12 @@ public:
     int GetKillT() const { return m_iKillT; }
     void SetKillT(int value) { m_iKillT = value; }
 
+    int GetKillAssistCT() const { return m_iKillAssistCT; }
+    void SetKillAssistCT(int value) { m_iKillAssistCT = value; }
+
+    int GetKillAssistT() const { return m_iKillAssistT; }
+    void SetKillAssistT(int value) { m_iKillAssistT = value; }
+
     int GetTeamKillT() const { return m_iTeamKillT; }
     void SetTeamKillT(int value) { m_iTeamKillT = value; }
 
@@ -105,6 +111,8 @@ private:
     int m_iKillHeadshot;
     int m_iKillCT;
     int m_iKillT;
+    int m_iKillAssistCT;
+    int m_iKillAssistT;
 
     int m_iTeamKillT;
     int m_iTeamKillCT;

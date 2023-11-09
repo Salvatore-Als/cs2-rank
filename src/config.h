@@ -46,6 +46,7 @@ public:
     int GetPointsWinBombExplodedTeam() { return g_iPointsWinBombExplodedTeam; }
     int GetPointsWinBombDefusedPlayer() { return g_iPointsWinBombDefusedPlayer; }
     int GetPointsWinBombDefusedTeam() { return g_iPointsWinBombDefusedTeam; }
+    int GetPointsWinKillAssist() { return g_iPointWinKillAssist; }
 
 private:
     const char *g_pszMysqlHost;
@@ -59,6 +60,7 @@ private:
     const char *g_pszLanguage;
     std::vector<Phrase> g_vecPhrases;
 
+    int g_iPointWinKillAssist;
     int g_iPointsLooseSuicide;
     int g_iPointsLooseTeamkill;
     int g_iPointsLooseKillWeapon;

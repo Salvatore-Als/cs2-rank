@@ -21,6 +21,8 @@
   `kill_ct` int(11) NOT NULL DEFAULT 0, \
   `teamkill_ct` int(11) NOT NULL DEFAULT 0, \
   `teamkill_t` int(11) NOT NULL DEFAULT 0, \
+  `killassist_t` int(11) NOT NULL DEFAULT 0, \
+  `killassist_t` int(11) NOT NULL DEFAULT 0, \
   UNIQUE INDEX `authid` (`authid`) USING BTREE) \
   ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
 
@@ -33,7 +35,7 @@
 
 #define SELECT_USER "SELECT `points`, `death_suicide`, `death_t`, `death_ct`, `bomb_planted`, `bomb_exploded` \
 , `bomb_defused`, `kill_knife`, `kill_headshot`, `kill_t`, `kill_ct`, `teamkill_t` \
-, `teamkill_ct` FROM `verygames_rank` WHERE `authid` = '%lli'"
+, `teamkill_ct`, `killassist_t`, `killassist_ct` FROM `verygames_rank` WHERE `authid` = '%lli'"
 
 #define TOP "SELECT `name`, `points` FROM verygames_rank WHERE points >= %i ORDER BY points DESC LIMIT 15;"
 

@@ -112,6 +112,8 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 		pPlayer->SetKillCT(results->GetInt(10));
 		pPlayer->SetTeamKillT(results->GetInt(11));
 		pPlayer->SetTeamKillCT(results->GetInt(12));
+		pPlayer->SetKillAssistT(results->GetInt(13));
+		pPlayer->SetKillAssistCT(results->GetInt(14));
 	}
 }
 

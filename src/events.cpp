@@ -237,6 +237,24 @@ GAME_EVENT_F(player_death)
     else if (pAttackerController->m_iTeamNum == CS_TEAM_T)
         pAttacker->SetKillT(pAttacker->GetKillT() + 1);
 
+    CCSPlayerController *pAssisterController = (CCSPlayerController *)pEvent->GetPlayerController("assister");
+    if (pAssisterController)
+    {
+        CRankPlayer *pAssist = pAttackerController->GetRankPlayer();
+        if (pAssist && pAssist->IsValidPlayer() && pAssisterController->m_iTeamNum != pVictimController->m_iTeamNum)
+        {
+            UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("KILL_ASSIST"), g_CConfig->GetPointsWinKillAssist());
+            g_CChat->PrintToChat(pAttackerController, szTranslate);
+
+            pAttacker->SetPoints(pAttacker->GetPoints() + g_CConfig->GetPointsWinKillAssist());
+
+            if (pAssisterController->m_iTeamNum == CS_TEAM_T)
+                pAttacker->SetKillAssistT(pAttacker->GetKillAssistT() + 1);
+            else if (pAssisterController->m_iTeamNum == CS_TEAM_CT)
+                pAttacker->SetKillAssistCT(pAttacker->GetKillAssistCT() + 1);
+        }
+    }
+
     if (strstr(weapon, "knife") != nullptr)
     {
         pAttacker->SetPoints(pAttacker->GetPoints() + g_CConfig->GetPointsWinKillKnife());

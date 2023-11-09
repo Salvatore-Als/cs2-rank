@@ -34,6 +34,8 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Colors
 
 #### Commands
+- [ ]  Antiflood system
+- [ ]  !muterank
 - [x]  !rank
 - [x]  !restrank
 - [x]  !top
@@ -44,15 +46,15 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Player death by weapon
   - [x]  Attacker
   - [x]  Victim
-  - [ ]  Assist
+  - [X]  Assist
 - [x]  Player death by headshot
   - [x]  Attacker
   - [x]  Victim
-  - [ ]  Assist
+  - [X]  Assist
 - [x]  Player death by knife
   - [x]  Attacker
   - [x]  Victim
-  - [ ]  Assist
+  - [X]  Assist
 - [ ]  Bomb planted
   - [x]  Team
   - [ ]  Planter (Need to fix the phrases that are not sent)
