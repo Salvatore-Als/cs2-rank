@@ -147,7 +147,7 @@ void CPlayerManager::AddTeamPoint(int team, int point)
         if (!pPlayerT || !pPlayerT->IsValidPlayer())
             continue;
 
-        pPlayerT->SetPoints(pPlayerT->GetPoints() + point);
+        pPlayerT->AddPoints(point);
     }
 };
 

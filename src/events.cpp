@@ -81,8 +81,8 @@ GAME_EVENT_F(bomb_planted)
     if (!pPlayer || !pPlayer->IsValidPlayer())
         return;
 
-    pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombPlantedPlayer());
-    pPlayer->SetBombPlanted(pPlayer->GetBombPlanted() + 1);
+    pPlayer->AddPoints(g_CConfig->GetPointsWinBombPlantedPlayer());
+    pPlayer->AddBombPlanted(1);
 
     // TODO: phrases not sent, why
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_PLANT_PLAYER"), g_CConfig->GetPointsWinBombPlantedPlayer());
@@ -109,8 +109,8 @@ GAME_EVENT_F(bomb_defused)
     if (!pPlayer || !pPlayer->IsValidPlayer())
         return;
 
-    pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombDefusedPlayer());
-    pPlayer->SetBombDefused(pPlayer->GetBombDefused() + 1);
+    pPlayer->AddPoints(g_CConfig->GetPointsWinBombDefusedPlayer());
+    pPlayer->AddBombDefused(1);
 
     // TODO: phrases not sent, why
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_PLAYER"), g_CConfig->GetPointsWinBombDefusedPlayer());
@@ -137,8 +137,8 @@ GAME_EVENT_F(bomb_exploded)
     if (!pPlayer || !pPlayer->IsValidPlayer())
         return;
 
-    pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombPlantedPlayer());
-    pPlayer->SetBombExploded(pPlayer->GetBombExploded() + 1);
+    pPlayer->AddPoints(g_CConfig->GetPointsWinBombPlantedPlayer());
+    pPlayer->AddBombExploded(1);
 
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_EXPLODED_PLAYER"), g_CConfig->GetPointsWinBombExplodedPlayer());
     g_CChat->PrintToChat(pPlanterController, true, szTranslate);
@@ -199,8 +199,8 @@ GAME_EVENT_F(player_death)
     // Suicide
     if (pVictimController == pAttackerController)
     {
-        pAttacker->SetPoints(pAttacker->GetPoints() - g_CConfig->GetPointsLooseSuicide());
-        pAttacker->SetDeathSuicide(pAttacker->GetDeathSuicide() + 1);
+        pAttacker->RemovePoints(g_CConfig->GetPointsLooseSuicide());
+        pAttacker->AddDeathSuicide(1);
 
         UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("DEATH_SUICIDE"), g_CConfig->GetPointsLooseSuicide());
         g_CChat->PrintToChat(pAttackerController, true, szTranslate);
@@ -209,20 +209,20 @@ GAME_EVENT_F(player_death)
     }
 
     if (pVictimController->m_iTeamNum == CS_TEAM_CT)
-        pVictim->SetDeathCT(pVictim->GetDeathCT() + 1);
+        pVictim->AddDeathCT(1);
     else if (pVictimController->m_iTeamNum == CS_TEAM_T)
-        pVictim->SetDeathT(pVictim->GetDeathT() + 1);
+        pVictim->AddDeathT(1);
 
     // Teamkill, TODO: try with a deathmatch type FFA, not taking account if it's enable
     // OK
     if (pVictimController->m_iTeamNum.Get() == pAttackerController->m_iTeamNum.Get())
     {
-        pAttacker->SetPoints(pAttacker->GetPoints() - g_CConfig->GetPointsLooseTeamkill());
+        pAttacker->RemovePoints(g_CConfig->GetPointsLooseTeamkill());
 
         if (pAttackerController->m_iTeamNum == CS_TEAM_CT)
-            pAttacker->SetTeamKillCT(pAttacker->GetTeamKillCT() + 1);
+            pAttacker->AddTeamKillCT(1);
         else if (pAttackerController->m_iTeamNum == CS_TEAM_T)
-            pAttacker->SetTeamKillT(pAttacker->GetTeamKillT() + 1);
+            pAttacker->AddTeamKillT(1);
 
         UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("TEAMKILL"), g_CConfig->GetPointsLooseTeamkill());
         g_CChat->PrintToChat(pAttackerController, true, szTranslate);
@@ -233,9 +233,9 @@ GAME_EVENT_F(player_death)
     const char *weapon = pEvent->GetString("weapon");
 
     if (pAttackerController->m_iTeamNum == CS_TEAM_CT)
-        pAttacker->SetKillCT(pAttacker->GetKillCT() + 1);
+        pAttacker->AddKillCT(1);
     else if (pAttackerController->m_iTeamNum == CS_TEAM_T)
-        pAttacker->SetKillT(pAttacker->GetKillT() + 1);
+        pAttacker->AddKillT(1);
 
     CCSPlayerController *pAssisterController = (CCSPlayerController *)pEvent->GetPlayerController("assister");
     if (pAssisterController)
@@ -246,26 +246,26 @@ GAME_EVENT_F(player_death)
             UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("KILL_ASSIST"), g_CConfig->GetPointsWinKillAssist());
             g_CChat->PrintToChat(pAttackerController, true, szTranslate);
 
-            pAttacker->SetPoints(pAttacker->GetPoints() + g_CConfig->GetPointsWinKillAssist());
+            pAttacker->AddPoints(g_CConfig->GetPointsWinKillAssist());
 
             if (pAssisterController->m_iTeamNum == CS_TEAM_T)
-                pAttacker->SetKillAssistT(pAttacker->GetKillAssistT() + 1);
+                pAttacker->AddKillAssistT(1);
             else if (pAssisterController->m_iTeamNum == CS_TEAM_CT)
-                pAttacker->SetKillAssistCT(pAttacker->GetKillAssistCT() + 1);
+                pAttacker->AddKillAssistCT(1);
         }
     }
 
     if (strstr(weapon, "knife") != nullptr)
     {
-        pAttacker->SetPoints(pAttacker->GetPoints() + g_CConfig->GetPointsWinKillKnife());
-        pAttacker->SetKillKnife(pAttacker->GetKillKnife() + 1);
+        pAttacker->AddPoints(g_CConfig->GetPointsWinKillKnife());
+        pAttacker->AddKillKnife(1);
 
         UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("KILL_KNIFE"), g_CConfig->GetPointsWinKillKnife());
         g_CChat->PrintToChat(pAttackerController, true, szTranslate);
 
         if (!pVictim->IsFakeClient())
         {
-            pVictim->SetPoints(pVictim->GetPoints() - g_CConfig->GetPointsLooseKillKnife());
+            pVictim->RemovePoints(g_CConfig->GetPointsLooseKillKnife());
 
             UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("DEATH_BY_KNIFE"), g_CConfig->GetPointsLooseKillKnife());
             g_CChat->PrintToChat(pVictimController, true, szTranslate);
@@ -278,15 +278,15 @@ GAME_EVENT_F(player_death)
 
     if (bHeadshot)
     {
-        pAttacker->SetPoints(pAttacker->GetPoints() + g_CConfig->GetPointsWinKillWeaponHs());
-        pAttacker->SetKillHeadshot(pAttacker->GetKillHeadshot() + 1);
+        pAttacker->AddPoints(g_CConfig->GetPointsWinKillWeaponHs());
+        pAttacker->AddKillHeadshot(1);
 
         UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("KILL_HEADSHOT"), g_CConfig->GetPointsWinKillWeaponHs());
         g_CChat->PrintToChat(pAttackerController, true, szTranslate);
 
         if (!pVictim->IsFakeClient())
         {
-            pVictim->SetPoints(pVictim->GetPoints() - g_CConfig->GetPointsLooseKillWeaponHs());
+            pVictim->RemovePoints(g_CConfig->GetPointsLooseKillWeaponHs());
 
             UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("DEATH_BY_HEADSHOT"), g_CConfig->GetPointsLooseKillWeaponHs());
             g_CChat->PrintToChat(pVictimController, true, szTranslate);
@@ -294,14 +294,14 @@ GAME_EVENT_F(player_death)
     }
     else
     {
-        pAttacker->SetPoints(pAttacker->GetPoints() + g_CConfig->GetPointsWinKillWeapon());
+        pAttacker->AddPoints(g_CConfig->GetPointsWinKillWeapon());
 
         UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("KILL_WEAPON"), g_CConfig->GetPointsWinKillWeapon());
         g_CChat->PrintToChat(pAttackerController, true, szTranslate);
 
         if (!pVictim->IsFakeClient())
         {
-            pVictim->SetPoints(pVictim->GetPoints() - g_CConfig->GetPointsLooseKillWeapon());
+            pVictim->RemovePoints(g_CConfig->GetPointsLooseKillWeapon());
 
             UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("DEATH_BY_WEAPON"), g_CConfig->GetPointsLooseKillWeapon());
             g_CChat->PrintToChat(pVictimController, true, szTranslate);

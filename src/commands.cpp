@@ -67,7 +67,7 @@ CON_COMMAND_CHAT(rank, "Display your rank")
     }
 
     int minimumPoints = g_CConfig->GetMinimumPoints();
-    int playerPoints = pPlayer->GetPoints();
+    int playerPoints = pPlayer->GetPoints(false);
 
     if (playerPoints < minimumPoints)
     {
