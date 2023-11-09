@@ -50,17 +50,16 @@ public:
 	{
 	}
 
-    void PrintToServerConsole(const char *msg, ...);
 	void PrintToChatAll(const char *msg, ...);
 	void PrintToChatCT(const char *msg, ...);
 	void PrintToChatT(const char *msg, ...);
 
 	void PrintToChat(CPlayerSlot slot, const char *msg, ...);
-    void PrintToChat(CBasePlayerController *player, const char *msg, ...);
+	void PrintToChat(CBasePlayerController *player, const char *msg, ...);
+	std::string CChat::Colorizer(std::string str);
 
 private:
 	void PrintToChatTeam(int teamIndex, const char *msg);
-	std::string Replacing(std::string str);
 };
 
 extern CChat *g_CChat;

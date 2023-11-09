@@ -50,7 +50,7 @@ void Debug(const char *msg, ...)
 	char buf[1024] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 255, 255), "%s %s\n", PREFIX, buf);
+	ConColorMsg(Color(255, 0, 255, 255), PREFIX "%s\n", buf);
 
 	va_end(args);
 }
@@ -63,7 +63,7 @@ void Fatal(const char *msg, ...)
 	char buf[1024] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 0, 255), "%s %s\n", PREFIX, buf);
+	ConColorMsg(Color(255, 0, 0, 255), PREFIX "%s\n", buf);
 
 	va_end(args);
 }
@@ -76,7 +76,7 @@ void Warn(const char *msg, ...)
 	char buf[1024] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 165, 0, 255), "%s %s\n", PREFIX, buf);
+	ConColorMsg(Color(255, 165, 0, 255), PREFIX "%s\n", buf);
 
 	va_end(args);
 }

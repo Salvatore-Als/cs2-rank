@@ -30,7 +30,7 @@ public:
     const char *GetMysqlPassword() { return g_pszMysqlPassword; }
     const char *GetMysqlUser() { return g_pszMysqlUser; }
 
-    int GetMinimumKill() { return g_iMinimumKill; }
+    int GetMinimumPoints() { return g_iMinimumPoints; }
 
     int GetPointsLooseSuicide() { return g_iPointsLooseSuicide; }
     int GetPointsLooseTeamkill() { return g_iPointsLooseTeamkill; }
@@ -54,7 +54,7 @@ private:
     const char *g_pszMysqlPassword;
     int g_iMysqlPort;
 
-    int g_iMinimumKill;
+    int g_iMinimumPoints;
 
     const char *g_pszLanguage;
     std::vector<Phrase> g_vecPhrases;

@@ -17,7 +17,7 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
     g_pszMysqlUser = g_kvCore->GetString("user", nullptr);
     g_pszMysqlDatabase = g_kvCore->GetString("database", nullptr);
     g_iMysqlPort = g_kvCore->GetInt("port", 3306);
-    g_iMinimumKill = g_kvCore->GetInt("minimum_kill", 3306);
+    g_iMinimumPoints = g_kvCore->GetInt("minimum_points", 100);
 
     // Points configurations
 

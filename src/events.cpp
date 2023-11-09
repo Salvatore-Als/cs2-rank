@@ -45,20 +45,17 @@ void UnregisterEventListeners()
 GAME_EVENT_F(round_end)
 {
     // Update all player
+    
     for (int i = 0; i < g_pGlobals->maxClients; i++)
     {
         CCSPlayerController *pController = CCSPlayerController::FromSlot(i);
 
         if (!pController)
-        {
             continue;
-        }
 
         CRankPlayer *pPlayer = pController->GetRankPlayer();
         if (!pPlayer || !pPlayer->IsValidPlayer())
-        {
             continue;
-        }
 
         pPlayer->SaveOnDatabase();
     }
@@ -66,24 +63,17 @@ GAME_EVENT_F(round_end)
 
 GAME_EVENT_F(bomb_planted)
 {
-    // TODO: find why userid is not valid
+    // TODO: find why user is invalid
 
-    Debug("EVENT: bomb_planted");
     CCSPlayerController *pPlanterController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
     if (!pPlanterController)
-    {
-        Debug("- Invalid pPlanterController");
         return;
-    }
 
     CRankPlayer *pPlayer = pPlanterController->GetRankPlayer();
 
     if (!pPlayer || !pPlayer->IsValidPlayer())
-    {
-        Debug("- Invalid pPlayer");
         return;
-    }
 
     pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombPlantedPlayer());
     pPlayer->SetBombPlanted(pPlayer->GetBombPlanted() + 1);
@@ -100,25 +90,17 @@ GAME_EVENT_F(bomb_planted)
 
 GAME_EVENT_F(bomb_defused)
 {
-    // TODO: find why userid is not valid
-
-    Debug("EVENT: bomb_defused");
+    // TODO: find why user is not valid
 
     CCSPlayerController *pDefuserController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
     if (!pDefuserController)
-    {
-        Debug("- Invalid pDefuserController");
         return;
-    }
 
     CRankPlayer *pPlayer = pDefuserController->GetRankPlayer();
 
     if (!pPlayer || !pPlayer->IsValidPlayer())
-    {
-        Debug("- Invalid pPlayer");
         return;
-    }
 
     pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombDefusedPlayer());
     pPlayer->SetBombDefused(pPlayer->GetBombDefused() + 1);
@@ -135,17 +117,16 @@ GAME_EVENT_F(bomb_defused)
 
 GAME_EVENT_F(bomb_exploded)
 {
-    Debug("EVENT: bomb_exploded");
+    // TODO: terro who detoned the bomb
 
-    // TODO: exploded player
     // gPlayer->SetBombPlanted(pPlayer->GetBombPlanted() + 1);
     // gPlayer->SetPoint(gPlayer->GetPoint() + g_CConfig->GetPointsWinBombExplodedPlayer());
-
-    g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombExplodedTeam());
 
     char szTranslate[256];
     // UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_EXPLODED_PLAYER"), g_CConfig->GetPointsWinBombExplodedPlayer());
     // g_CChat->PrintToChat(pController, szTranslate);
+
+    g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombExplodedTeam());
 
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_EXPLODED"), g_CConfig->GetPointsWinBombDefusedTeam());
     g_CChat->PrintToChatAll(szTranslate);
@@ -160,7 +141,6 @@ GAME_EVENT_F(player_spawn)
 
     CHandle<CCSPlayerController> hController = pController->GetHandle();
 
-    // Gotta do this on the next frame...
     new CTimer(0.0f, false, [hController]()
                {
         CCSPlayerController *pController = hController.Get();
@@ -173,6 +153,11 @@ GAME_EVENT_F(player_spawn)
         if(!pPawn)
             return -1.0f;
         
+        CRankPlayer *pPlayer = pController->GetRankPlayer();
+
+        if(!pPlayer->IsFakeClient())
+            return -1.0f;
+
         pPawn->m_MoveType = MOVETYPE_NONE;
 
 		return -1.0f; });
@@ -180,32 +165,22 @@ GAME_EVENT_F(player_spawn)
 
 GAME_EVENT_F(player_death)
 {
-    Debug("EVENT: player_death");
-
     CCSPlayerController *pVictimController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
     CCSPlayerController *pAttackerController = (CCSPlayerController *)pEvent->GetPlayerController("attacker");
 
     if (!pVictimController || !pAttackerController)
-    {
-        Debug("- Invalid pVictimController (%p) or pAttackerController (%p)", pVictimController, pAttackerController);
         return;
-    }
 
     CRankPlayer *pVictim = pVictimController->GetRankPlayer();
     CRankPlayer *pAttacker = pAttackerController->GetRankPlayer();
 
     // Disable if invalid player
     if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer())
-    {
-        Debug("- Invalid pVictim (%p bot : %i) or pAttacker (%p bot %i)", pVictim, pVictim->IsFakeClient(), pAttacker, pAttacker->IsFakeClient());
         return;
-    }
 
-    if (pVictim->IsFakeClient())
-    {
-        Debug("- Victim is a fake client");
-        // TODO: RETURN, b'cause I have nobody to test with me :(
-    }
+    // TODO enable, b'cause I have nobody to test with me :(
+    // if (pVictim->IsFakeClient())
+    // return;
 
     char szTranslate[256];
 
@@ -244,8 +219,6 @@ GAME_EVENT_F(player_death)
     }
 
     const char *weapon = pEvent->GetString("weapon");
-
-    Debug("- With weapon %s", weapon);
 
     if (pAttackerController->m_iTeamNum == CS_TEAM_CT)
         pAttacker->SetKillCT(pAttacker->GetKillCT() + 1);

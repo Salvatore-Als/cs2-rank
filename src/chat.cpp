@@ -6,7 +6,7 @@
 #include "addresses.h"
 #include "config.h"
 
-std::string CChat::Replacing(std::string str)
+std::string CChat::Colorizer(std::string str)
 {
 	for (int i = 0; i < std::size(colorsHex); i++)
 	{
@@ -22,21 +22,6 @@ std::string CChat::Replacing(std::string str)
 	return str;
 }
 
-void CChat::PrintToServerConsole(const char *msg, ...)
-{
-	va_list args;
-	va_start(args, msg);
-
-	char buf[256];
-	V_vsnprintf(buf, sizeof(buf), msg, args);
-
-	va_end(args);
-
-	std::string replacedBuffer = this->Replacing(buf);
-
-	ConColorMsg(Color(0, 255, 0, 255), "%s\n", replacedBuffer.c_str());
-}
-
 void CChat::PrintToChatAll(const char *msg, ...)
 {
 	va_list args;
@@ -47,9 +32,12 @@ void CChat::PrintToChatAll(const char *msg, ...)
 
 	va_end(args);
 
-	std::string replacedBuffer = this->Replacing(buf);
+	char buffer[256];
+	UTIL_Format(buffer, sizeof(buffer), PREFIX "%s", buf);
 
-	g_CAddresses->UTIL_ClientPrintAll(HUD_PRINTTALK, replacedBuffer.c_str(), nullptr, nullptr, nullptr, nullptr);
+	std::string colorizedBuf = this->Colorizer(buffer);
+
+	g_CAddresses->UTIL_ClientPrintAll(HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
 }
 
 void CChat::PrintToChat(CPlayerSlot slot, const char *msg, ...)
@@ -65,9 +53,12 @@ void CChat::PrintToChat(CPlayerSlot slot, const char *msg, ...)
 	CEntityIndex index = (CEntityIndex)(slot.Get() + 1);
 	CBasePlayerController *player = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity(index);
 
-	std::string replacedBuffer = this->Replacing(buf);
+	char buffer[256];
+	UTIL_Format(buffer, sizeof(buffer), PREFIX "%s", buf);
 
-	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, replacedBuffer.c_str(), nullptr, nullptr, nullptr, nullptr);
+	std::string colorizedBuf = this->Colorizer(buffer);
+
+	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
 }
 
 void CChat::PrintToChat(CBasePlayerController *player, const char *msg, ...)
@@ -80,9 +71,12 @@ void CChat::PrintToChat(CBasePlayerController *player, const char *msg, ...)
 
 	va_end(args);
 
-	std::string replacedBuffer = this->Replacing(buf);
+	char buffer[256];
+	UTIL_Format(buffer, sizeof(buffer), PREFIX "%s", buf);
 
-	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, replacedBuffer.c_str(), nullptr, nullptr, nullptr, nullptr);
+	std::string colorizedBuf = this->Colorizer(buffer);
+
+	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
 }
 
 void CChat::PrintToChatCT(const char *msg, ...)

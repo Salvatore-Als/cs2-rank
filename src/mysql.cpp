@@ -135,7 +135,7 @@ void CMysql::GetTopPlayers(std::function<void(std::map<std::string, int>)> callb
 		return;
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), TOP, g_CConfig->GetMinimumKill());
+	V_snprintf(szQuery, sizeof(szQuery), TOP, g_CConfig->GetMinimumPoints());
 
 	g_pConnection->Query(szQuery, [callback, this](IMySQLQuery *cb)
 						 { this->Query_TopPlayers(cb, callback); });
@@ -162,7 +162,7 @@ void CMysql::GetRank(CRankPlayer *pPlayer, std::function<void(int)> callback)
 		return;
 	
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), RANK, pPlayer->GetPoints(), g_CConfig->GetMinimumKill());
+	V_snprintf(szQuery, sizeof(szQuery), RANK, pPlayer->GetPoints(), g_CConfig->GetMinimumPoints());
 
 	Debug(szQuery);
 
