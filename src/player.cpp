@@ -30,7 +30,7 @@ void CRankPlayer::SaveOnDatabase()
     Debug("Save player %lli on database", this->GetSteamId64());
 }
 
-void CRankPlayer::InitStats()
+void CRankPlayer::InitStats(bool setAnnouce)
 {
     this->SetPoints(0);
 
@@ -48,14 +48,17 @@ void CRankPlayer::InitStats()
     this->SetKillT(0);
     this->SetTeamKillT(0);
     this->SetTeamKillCT(0);
-    
+
     this->SetKillAssistT(0);
     this->SetKillAssistCT(0);
+
+    if (setAnnouce)
+        this->SetIgnoringAnnouce(false);
 }
 
 void CRankPlayer::Reset()
 {
-    this->InitStats();
+    this->InitStats(false);
     this->SaveOnDatabase();
 }
 

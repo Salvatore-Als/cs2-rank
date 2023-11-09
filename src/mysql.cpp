@@ -80,7 +80,7 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 
 	if (!results->FetchRow())
 	{
-		pPlayer->InitStats();
+		pPlayer->InitStats(true);
 
 		const char *name = g_pEngine->GetClientConVarValue(pPlayer->GetPlayerSlot(), "name");
 		uint64 steamId64 = pPlayer->GetSteamId64();
@@ -99,21 +99,22 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 	{
 		pPlayer->SetDatabaseAuthenticated();
 
-		pPlayer->SetPoints(results->GetInt(0));
-		pPlayer->SetDeathSuicide(results->GetInt(1));
-		pPlayer->SetDeathT(results->GetInt(2));
-		pPlayer->SetDeathCT(results->GetInt(3));
-		pPlayer->SetBombPlanted(results->GetInt(4));
-		pPlayer->SetBombExploded(results->GetInt(5));
-		pPlayer->SetBombDefused(results->GetInt(6));
-		pPlayer->SetKillKnife(results->GetInt(7));
-		pPlayer->SetKillHeadshot(results->GetInt(8));
-		pPlayer->SetKillT(results->GetInt(9));
-		pPlayer->SetKillCT(results->GetInt(10));
-		pPlayer->SetTeamKillT(results->GetInt(11));
-		pPlayer->SetTeamKillCT(results->GetInt(12));
-		pPlayer->SetKillAssistT(results->GetInt(13));
-		pPlayer->SetKillAssistCT(results->GetInt(14));
+		pPlayer->SetIgnoringAnnouce(results->GetInt(0) == 1 ? true : false);
+		pPlayer->SetPoints(results->GetInt(1));
+		pPlayer->SetDeathSuicide(results->GetInt(2));
+		pPlayer->SetDeathT(results->GetInt(3));
+		pPlayer->SetDeathCT(results->GetInt(4));
+		pPlayer->SetBombPlanted(results->GetInt(5));
+		pPlayer->SetBombExploded(results->GetInt(6));
+		pPlayer->SetBombDefused(results->GetInt(7));
+		pPlayer->SetKillKnife(results->GetInt(8));
+		pPlayer->SetKillHeadshot(results->GetInt(9));
+		pPlayer->SetKillT(results->GetInt(19));
+		pPlayer->SetKillCT(results->GetInt(11));
+		pPlayer->SetTeamKillT(results->GetInt(12));
+		pPlayer->SetTeamKillCT(results->GetInt(13));
+		pPlayer->SetKillAssistT(results->GetInt(14));
+		pPlayer->SetKillAssistCT(results->GetInt(15));
 	}
 }
 
@@ -126,7 +127,7 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 	uint64 steamId64 = pPlayer->GetSteamId64();
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER, g_pConnection->Escape(name), pPlayer->GetPoints(), pPlayer->GetDeathSuicide(), pPlayer->GetDeathT(), pPlayer->GetDeathCT(), pPlayer->GetBombPlanted(), pPlayer->GetBombExploded(), pPlayer->GetBombDefused(), pPlayer->GetKillKnife(), pPlayer->GetKillHeadshot(), pPlayer->GetKillT(), pPlayer->GetKillCT(), pPlayer->GetTeamKillT(), pPlayer->GetKillCT(), steamId64);
+	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER, g_pConnection->Escape(name), pPlayer->IsIgnoringAnnouce() ,pPlayer->GetPoints(), pPlayer->GetDeathSuicide(), pPlayer->GetDeathT(), pPlayer->GetDeathCT(), pPlayer->GetBombPlanted(), pPlayer->GetBombExploded(), pPlayer->GetBombDefused(), pPlayer->GetKillKnife(), pPlayer->GetKillHeadshot(), pPlayer->GetKillT(), pPlayer->GetKillCT(), pPlayer->GetTeamKillT(), pPlayer->GetKillCT(), steamId64);
 
 	Debug("UpdateUser Request : %s", szQuery);
 
@@ -180,18 +181,15 @@ void CMysql::Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback)
 
 	if (!results)
 	{
-		Debug("No result ?");
 		callback(-1);
 		return;
 	}
 
 	if (!results->FetchRow())
 	{
-		Debug("No fetchrow");
 		callback(-1);
 		return;
 	}
 
-	Debug("REsult %i", results->GetInt(0));
 	callback(results->GetInt(0) + 1);
 }

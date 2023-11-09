@@ -1,7 +1,7 @@
 #include "chat.h"
 #include "utils/module.h"
 #include "abstract.h"
-#include "entity/cbaseentity.h"
+#include "entity/ccsplayercontroller.h"
 #include <string>
 #include "addresses.h"
 #include "config.h"
@@ -40,29 +40,18 @@ void CChat::PrintToChatAll(const char *msg, ...)
 	g_CAddresses->UTIL_ClientPrintAll(HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
 }
 
-void CChat::PrintToChat(CPlayerSlot slot, const char *msg, ...)
+void CChat::PrintToChat(CPlayerSlot slot, bool canBeIgnore, const char *msg, ...)
 {
-	va_list args;
-	va_start(args, msg);
-
-	char buf[256];
-	V_vsnprintf(buf, sizeof(buf), msg, args);
-
-	va_end(args);
-
 	CEntityIndex index = (CEntityIndex)(slot.Get() + 1);
-	CBasePlayerController *player = (CBasePlayerController *)g_pEntitySystem->GetBaseEntity(index);
+	CCSPlayerController *pController = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity(index);
 
-	char buffer[256];
-	UTIL_Format(buffer, sizeof(buffer), PREFIX "%s", buf);
+	if (!pController)
+		return;
 
-	std::string colorizedBuf = this->Colorizer(buffer);
+	CRankPlayer *pPlayer = pController->GetRankPlayer();
+	if (!pPlayer || (pPlayer->IsIgnoringAnnouce() && canBeIgnore))
+		return;
 
-	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
-}
-
-void CChat::PrintToChat(CBasePlayerController *player, const char *msg, ...)
-{
 	va_list args;
 	va_start(args, msg);
 
@@ -76,10 +65,37 @@ void CChat::PrintToChat(CBasePlayerController *player, const char *msg, ...)
 
 	std::string colorizedBuf = this->Colorizer(buffer);
 
+	g_CAddresses->ClientPrint(pController, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
+}
+
+void CChat::PrintToChat(CBasePlayerController *player, bool canBeIgnore, const char *msg, ...)
+{
+	CCSPlayerController *pController = (CCSPlayerController *)player;
+
+	if (!pController)
+		return;
+
+	CRankPlayer *pPlayer = pController->GetRankPlayer();
+	if (!pPlayer || (pPlayer->IsIgnoringAnnouce() && canBeIgnore))
+		return;
+
+	va_list args;
+	va_start(args, msg);
+
+	char buf[256];
+	V_vsnprintf(buf, sizeof(buf), msg, args);
+
+	va_end(args);
+
+	char buffer[256];
+	UTIL_Format(buffer, sizeof(buffer), PREFIX "%s", buf);
+
+	std::string colorizedBuf = this->Colorizer(buffer);
+
 	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
 }
 
-void CChat::PrintToChatCT(const char *msg, ...)
+void CChat::PrintToChatCT(bool canBeIgnore, const char *msg, ...)
 {
 	va_list args;
 	va_start(args, msg);
@@ -89,10 +105,10 @@ void CChat::PrintToChatCT(const char *msg, ...)
 
 	va_end(args);
 
-	this->PrintToChatTeam(CS_TEAM_CT, buf);
+	this->PrintToChatTeam(CS_TEAM_CT, canBeIgnore, buf);
 }
 
-void CChat::PrintToChatT(const char *msg, ...)
+void CChat::PrintToChatT(bool canBeIgnore, const char *msg, ...)
 {
 	va_list args;
 	va_start(args, msg);
@@ -102,24 +118,20 @@ void CChat::PrintToChatT(const char *msg, ...)
 
 	va_end(args);
 
-	this->PrintToChatTeam(CS_TEAM_T, buf);
+	this->PrintToChatTeam(CS_TEAM_T, canBeIgnore, buf);
 }
 
-void CChat::PrintToChatTeam(int teamIndex, const char *msg)
+void CChat::PrintToChatTeam(int teamIndex, bool canBeIgnore, const char *msg)
 {
 	for (int i = 0; i < 64; i++)
 	{
 		CBaseEntity2 *player = (CBaseEntity2 *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(i + 1));
 		if (!player)
-		{
 			continue;
-		}
 
 		if (player->m_iTeamNum.Get() != teamIndex)
-		{
 			continue;
-		}
 
-		this->PrintToChat(i, msg);
+		this->PrintToChat(i, canBeIgnore, msg);
 	}
 }

@@ -15,11 +15,12 @@ public:
         m_SteamID = nullptr;
         m_bConnected = false;
         m_bDatabaseAuthenticated = false;
+        m_bIgnoringAnnouce = false;
     }
 
     CRankPlayer *Get() { return this; };
     void Reset();
-    void InitStats();
+    void InitStats(bool setAnnouce);
 
     bool IsValidPlayer();
 
@@ -42,6 +43,9 @@ public:
 
     void SetPlayerSlot(CPlayerSlot slot) { m_slot = slot; }
     CPlayerSlot GetPlayerSlot() { return m_slot; }
+
+    bool IsIgnoringAnnouce() { return m_bIgnoringAnnouce; }
+    void SetIgnoringAnnouce(bool value) { m_bIgnoringAnnouce = value; }
 
     int GetPoints() const { return m_iPoints; }
     void SetPoints(int value) { m_iPoints = value; }
@@ -89,6 +93,7 @@ public:
     void SetTeamKillCT(int value) { m_iTeamKillCT = value; }
 
 private:
+    bool m_bIgnoringAnnouce;
     bool m_bAuthenticated;
     bool m_bConnected;
     bool m_bFakeClient;
@@ -98,7 +103,7 @@ private:
     CPlayerSlot m_slot;
 
     int m_iPoints;
-    
+
     int m_iDeathSuicide;
     int m_iDeathT;
     int m_iDeathCT;

@@ -51,15 +51,15 @@ public:
 	}
 
 	void PrintToChatAll(const char *msg, ...);
-	void PrintToChatCT(const char *msg, ...);
-	void PrintToChatT(const char *msg, ...);
+	void PrintToChatCT(bool canBeIgnore, const char *msg, ...);
+	void PrintToChatT(bool canBeIgnore, const char *msg, ...);
 
-	void PrintToChat(CPlayerSlot slot, const char *msg, ...);
-	void PrintToChat(CBasePlayerController *player, const char *msg, ...);
+	void PrintToChat(CPlayerSlot slot, bool canBeIgnore, const char *msg, ...);
+	void PrintToChat(CBasePlayerController *player, bool canBeIgnore, const char *msg, ...);
 	std::string CChat::Colorizer(std::string str);
 
 private:
-	void PrintToChatTeam(int teamIndex, const char *msg);
+	void PrintToChatTeam(int teamIndex, bool canBeIgnore, const char *msg);
 };
 
 extern CChat *g_CChat;

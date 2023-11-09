@@ -14,7 +14,27 @@ void Callback_GetRank(CRankPlayer *pPlayer, int rank);
 CON_COMMAND_CHAT(test, "Test")
 {
     int slot = player->GetPlayerSlot();
-    g_CChat->PrintToChat(slot, "{red}TEST {green}COLOR");
+    g_CChat->PrintToChat(slot, true, "{red}TEST {green}COLOR");
+}
+
+CON_COMMAND_CHAT(mm_rankannouce, "Ignore rank annoucement")
+{
+    int slot = player->GetPlayerSlot();
+    CRankPlayer *pPlayer = player->GetRankPlayer();
+
+    if (!pPlayer)
+        return;
+
+    if (pPlayer->IsIgnoringAnnouce())
+    {
+        pPlayer->SetIgnoringAnnouce(false);
+        g_CChat->PrintToChat(slot, false, g_CConfig->Translate("IGNORE_ANNOUCE_ENABLE"));
+    }
+    else
+    {
+        pPlayer->SetIgnoringAnnouce(true);
+        g_CChat->PrintToChat(slot, false, g_CConfig->Translate("IGNORE_ANNOUCE_DESABLE"));
+    }
 }
 
 CON_COMMAND_CHAT(rank, "Display your rank")
@@ -25,9 +45,9 @@ CON_COMMAND_CHAT(rank, "Display your rank")
     int slot = player->GetPlayerSlot();
     CRankPlayer *pPlayer = player->GetRankPlayer();
 
-    if (!pPlayer->IsDatabaseAuthenticated())
+    if (!pPlayer || !pPlayer->IsDatabaseAuthenticated())
     {
-        g_CChat->PrintToChat(slot, "%s", g_CConfig->Translate("NO_DB_AUTHICATED"));
+        g_CChat->PrintToChat(slot, false, "%s", g_CConfig->Translate("NO_DB_AUTHICATED"));
         return;
     }
 
@@ -41,7 +61,7 @@ CON_COMMAND_CHAT(rank, "Display your rank")
         char szBuffer[256];
         UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("MISSING_POINTS"), missingPoints);
 
-        g_CChat->PrintToChat(slot, szBuffer);
+        g_CChat->PrintToChat(slot, false, szBuffer);
         return;
     }
 
@@ -51,7 +71,7 @@ CON_COMMAND_CHAT(rank, "Display your rank")
 
 void Callback_GetRank(CRankPlayer *pPlayer, int rank)
 {
-    g_CChat->PrintToChat(pPlayer->GetPlayerSlot(), "Rank is %i", rank);
+    g_CChat->PrintToChat(pPlayer->GetPlayerSlot(), false, "Rank is %i", rank);
 }
 
 CON_COMMAND_CHAT(top, "Shot the top players")
@@ -67,12 +87,11 @@ void Callback_GetTotalPlayers(int slot, std::map<std::string, int> players)
 {
     if (players.empty())
     {
-
-        g_CChat->PrintToChat(slot, "%s", g_CConfig->Translate("TOP_PLAYERS_NOTAVAILABLE"));
+        g_CChat->PrintToChat(slot, "%s", false, g_CConfig->Translate("TOP_PLAYERS_NOTAVAILABLE"));
         return;
     }
 
-    g_CChat->PrintToChat(slot, "%s", g_CConfig->Translate("TOP_PLAYERS_TITLE"));
+    g_CChat->PrintToChat(slot, "%s", false, g_CConfig->Translate("TOP_PLAYERS_TITLE"));
 
     // Sort, to be sure
     std::vector<std::pair<std::string, int>> playerVector(players.begin(), players.end());
@@ -86,7 +105,7 @@ void Callback_GetTotalPlayers(int slot, std::map<std::string, int> players)
     for (const auto &pair : playerVector)
     {
         UTIL_Format(szPlayer, sizeof(szPlayer), g_CConfig->Translate("TOP_PLAYER"), iteration, pair.first, pair.second);
-        g_CChat->PrintToChat(slot, "%s", szPlayer);
+        g_CChat->PrintToChat(slot, false, "%s", szPlayer);
 
         iteration++;
     }
@@ -100,9 +119,12 @@ CON_COMMAND_CHAT(resetrank, "Reset your rank")
     int slot = player->GetPlayerSlot();
     CRankPlayer *pPlayer = g_CPlayerManager->GetPlayer(slot);
 
-    if (!pPlayer)
+    if (!pPlayer || !pPlayer->IsDatabaseAuthenticated())
+    {
+        g_CChat->PrintToChat(slot, false, "%s", g_CConfig->Translate("NO_DB_AUTHICATED"));
         return;
+    }
 
     pPlayer->Reset();
-    g_CChat->PrintToChat(player, g_CConfig->Translate("RANK_RESET"));
+    g_CChat->PrintToChat(player, false, g_CConfig->Translate("RANK_RESET"));
 }

@@ -8,6 +8,7 @@
 #define CREATE_TABLE "CREATE TABLE IF NOT EXISTS `verygames_rank` ( \
   `authid` BIGINT(64) NOT NULL DEFAULT '0', \
   `name` varchar(32) NOT NULL, \
+  `ignore_annouce` NOT NULL DEFAULT 0, \
   `points` int(11) NOT NULL DEFAULT 0, \
   `death_suicide` int(11) NOT NULL DEFAULT 0, \
   `death_t` int(11) NOT NULL DEFAULT 0, \
@@ -28,12 +29,12 @@
 
 #define INSERT_USER "INSERT INTO `verygames_rank` (`authid`, `name`) VALUES ('%lli', '%s');"
 
-#define UPDATE_USER "UPDATE `verygames_rank` SET `name` = '%s', \
+#define UPDATE_USER "UPDATE `verygames_rank` SET `name` = '%s', `ignore_annouce` = '%i' \
 `points` = %d, `death_suicide` = %d, `death_t` = %d, `death_ct` = %d, `bomb_planted` = %d, \
 `bomb_exploded` = %d, `bomb_defused` = %d, `kill_knife` = %d, `kill_headshot` = %d, `kill_t` = %d, \
 `kill_ct` = %d, `teamkill_t` = %d, `teamkill_ct` = %d WHERE `authid` = '%lli';"
 
-#define SELECT_USER "SELECT `points`, `death_suicide`, `death_t`, `death_ct`, `bomb_planted`, `bomb_exploded` \
+#define SELECT_USER "SELECT `ignore_annouce`, `points`, `death_suicide`, `death_t`, `death_ct`, `bomb_planted`, `bomb_exploded` \
 , `bomb_defused`, `kill_knife`, `kill_headshot`, `kill_t`, `kill_ct`, `teamkill_t` \
 , `teamkill_ct`, `killassist_t`, `killassist_ct` FROM `verygames_rank` WHERE `authid` = '%lli'"
 
