@@ -20,7 +20,9 @@
   `kill_t` int(11) NOT NULL DEFAULT 0, \
   `kill_ct` int(11) NOT NULL DEFAULT 0, \
   `teamkill_ct` int(11) NOT NULL DEFAULT 0, \
-  `teamkill_t` int(11) NOT NULL DEFAULT 0) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
+  `teamkill_t` int(11) NOT NULL DEFAULT 0, \
+  UNIQUE INDEX `authid` (`authid`) USING BTREE) \
+  ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
 
 #define INSERT_USER "INSERT INTO `verygames_rank` (`authid`, `name`) VALUES ('%lli', '%s');"
 
