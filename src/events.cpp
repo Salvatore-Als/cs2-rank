@@ -45,7 +45,7 @@ void UnregisterEventListeners()
 GAME_EVENT_F(round_end)
 {
     // Update all player
-    
+
     for (int i = 0; i < g_pGlobals->maxClients; i++)
     {
         CCSPlayerController *pController = CCSPlayerController::FromSlot(i);
@@ -63,7 +63,13 @@ GAME_EVENT_F(round_end)
 
 GAME_EVENT_F(bomb_planted)
 {
-    // TODO: find why user is invalid
+    g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombPlantedTeam());
+
+    char szTranslate[256];
+    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_PLANT_TEAM"), g_CConfig->GetPointsWinBombPlantedTeam());
+    g_CChat->PrintToChatAll(szTranslate);
+
+    // Planter process
 
     CCSPlayerController *pPlanterController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
@@ -78,19 +84,20 @@ GAME_EVENT_F(bomb_planted)
     pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombPlantedPlayer());
     pPlayer->SetBombPlanted(pPlayer->GetBombPlanted() + 1);
 
-    g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombPlantedTeam());
-
-    char szTranslate[256];
-    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_PLANT_TEAM"), g_CConfig->GetPointsWinBombPlantedTeam());
-    g_CChat->PrintToChatAll(szTranslate);
-
+    // TODO: phrases not sent, why
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_PLANT_PLAYER"), g_CConfig->GetPointsWinBombPlantedPlayer());
     g_CChat->PrintToChat(pPlanterController, szTranslate);
 }
 
 GAME_EVENT_F(bomb_defused)
 {
-    // TODO: find why user is not valid
+    g_CPlayerManager->AddTeamPoint(CS_TEAM_CT, g_CConfig->GetPointsWinBombDefusedTeam());
+
+    char szTranslate[256];
+    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_TEAM"), g_CConfig->GetPointsWinBombDefusedTeam());
+    g_CChat->PrintToChatAll(szTranslate);
+
+    // Defuser process
 
     CCSPlayerController *pDefuserController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
@@ -105,31 +112,36 @@ GAME_EVENT_F(bomb_defused)
     pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombDefusedPlayer());
     pPlayer->SetBombDefused(pPlayer->GetBombDefused() + 1);
 
-    g_CPlayerManager->AddTeamPoint(CS_TEAM_CT, g_CConfig->GetPointsWinBombDefusedTeam());
-
-    char szTranslate[256];
-    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_TEAM"), g_CConfig->GetPointsWinBombDefusedTeam());
-    g_CChat->PrintToChatAll(szTranslate);
-
+    // TODO: phrases not sent, why
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_PLAYER"), g_CConfig->GetPointsWinBombDefusedPlayer());
     g_CChat->PrintToChat(pDefuserController, szTranslate);
 }
 
 GAME_EVENT_F(bomb_exploded)
 {
-    // TODO: terro who detoned the bomb
-
-    // gPlayer->SetBombPlanted(pPlayer->GetBombPlanted() + 1);
-    // gPlayer->SetPoint(gPlayer->GetPoint() + g_CConfig->GetPointsWinBombExplodedPlayer());
-
-    char szTranslate[256];
-    // UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_EXPLODED_PLAYER"), g_CConfig->GetPointsWinBombExplodedPlayer());
-    // g_CChat->PrintToChat(pController, szTranslate);
-
     g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombExplodedTeam());
 
-    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_EXPLODED"), g_CConfig->GetPointsWinBombDefusedTeam());
+    char szTranslate[256];
+    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_EXPLODED_TEAM"), g_CConfig->GetPointsWinBombExplodedTeam());
     g_CChat->PrintToChatAll(szTranslate);
+
+    // Planter process
+
+    CCSPlayerController *pPlanterController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
+
+    if (!pPlanterController)
+        return;
+
+    CRankPlayer *pPlayer = pPlanterController->GetRankPlayer();
+
+    if (!pPlayer || !pPlayer->IsValidPlayer())
+        return;
+
+    pPlayer->SetPoints(pPlayer->GetPoints() + g_CConfig->GetPointsWinBombPlantedPlayer());
+    pPlayer->SetBombExploded(pPlayer->GetBombExploded() + 1);
+
+    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_EXPLODED_PLAYER"), g_CConfig->GetPointsWinBombExplodedPlayer());
+    g_CChat->PrintToChat(pPlanterController, szTranslate);
 }
 
 GAME_EVENT_F(player_spawn)
