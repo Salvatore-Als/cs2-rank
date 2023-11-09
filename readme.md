@@ -29,7 +29,9 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Phrases
 - [x]  Points
 
-#### Configuration
+#### Core
+- [x]  Rank stats
+- [x]  Sessions stats
 - [x]  Translation system
 - [x]  Colors
 
@@ -40,8 +42,9 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  !rank
 - [x]  !restrank
 - [x]  !top
-- [ ]  !sessions (ranking from map)
 - [ ]  !stats (HS percent, knife percent, death with percent T&CT, kill with percent T&CT)
+- [ ]  !sessions (ranking from map)
+- [ ]  !sessionstats (HS percent, knife percent, death with percent T&CT, kill with percent T&CT)
 
 #### Event triggers
 - [x]  Player death by weapon
