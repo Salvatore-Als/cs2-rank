@@ -210,13 +210,14 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	g_CPlayerManager = new CPlayerManager();
 	g_CMysql = new CMysql();
 
-	new CTimer(1.0f, true, []()
-			   { g_CPlayerManager->TryAuthenticate(); return 1.0f; });
-
 	g_pCVar = icvar;
 	ConVar_Register(FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL);
 
+	g_pEngine->ServerCommand("sv_hibernate_when_empty 0");
+
 	srand(time(0));
+	new CTimer(1.0f, true, []()
+			   {	g_CPlayerManager->TryAuthenticate(); return 1.0f; });
 
 	return true;
 }

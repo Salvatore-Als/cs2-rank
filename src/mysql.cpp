@@ -20,10 +20,8 @@ void CMysql::Connect()
 	info.database = g_CConfig->GetMysqlDatabase();
 	info.port = g_CConfig->GetMysqlPort();
 
-	Debug("%s %s %s %s %i", info.host, info.user, info.pass, info.database, info.port);
-
 	g_pConnection = g_pMysqlClient->CreateMySQLConnection(info);
-
+	
 	g_pConnection->Connect([this](bool connect)
 						   {
 		if (!connect)
