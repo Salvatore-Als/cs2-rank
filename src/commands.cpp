@@ -11,13 +11,28 @@
 void Callback_GetTotalPlayers(int slot, std::map<std::string, int> players);
 void Callback_GetRank(CRankPlayer *pPlayer, int rank);
 
-CON_COMMAND_CHAT(test, "Test")
+CON_COMMAND_CHAT(rankh, "Display rank commands")
 {
     int slot = player->GetPlayerSlot();
-    g_CChat->PrintToChat(slot, true, "{red}TEST {green}COLOR");
+    CRankPlayer *pPlayer = player->GetRankPlayer();
+
+    if (!pPlayer)
+        return;
+
+    char szBuffer[256];
+
+    for (int i = 0; i < g_Commands.Count(); i++)
+    {
+        CChatCommand *value = g_Commands[i];
+        const char *name = value->GetName();
+        const char *description = value->GetDescription();
+
+        UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("PRINT_COMMAND"), name, description);
+        g_CChat->PrintToChat(slot, false, szBuffer);
+    }
 }
 
-CON_COMMAND_CHAT(mm_rankannouce, "Ignore rank annoucement")
+CON_COMMAND_CHAT(rankannouce, "Ignore rank annoucement")
 {
     int slot = player->GetPlayerSlot();
     CRankPlayer *pPlayer = player->GetRankPlayer();
@@ -74,7 +89,7 @@ void Callback_GetRank(CRankPlayer *pPlayer, int rank)
     g_CChat->PrintToChat(pPlayer->GetPlayerSlot(), false, "Rank is %i", rank);
 }
 
-CON_COMMAND_CHAT(top, "Shot the top players")
+CON_COMMAND_CHAT(top, "Display the top players")
 {
 
     int slot = player->GetPlayerSlot();

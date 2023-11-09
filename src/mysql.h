@@ -29,7 +29,7 @@
 
 #define INSERT_USER "INSERT INTO `verygames_rank` (`authid`, `name`) VALUES ('%lli', '%s');"
 
-#define UPDATE_USER "UPDATE `verygames_rank` SET `name` = '%s', `ignore_annouce` = '%i', \
+#define UPDATE_USER "UPDATE `verygames_rank` SET `name` = '%s', `ignore_annouce` = %d, \
 `points` = %d, `death_suicide` = %d, `death_t` = %d, `death_ct` = %d, `bomb_planted` = %d, \
 `bomb_exploded` = %d, `bomb_defused` = %d, `kill_knife` = %d, `kill_headshot` = %d, `kill_t` = %d, \
 `kill_ct` = %d, `teamkill_t` = %d, `teamkill_ct` = %d WHERE `authid` = '%lli';"
