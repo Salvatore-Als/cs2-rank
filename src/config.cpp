@@ -17,7 +17,9 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
     g_pszMysqlUser = g_kvCore->GetString("user", nullptr);
     g_pszMysqlDatabase = g_kvCore->GetString("database", nullptr);
     g_iMysqlPort = g_kvCore->GetInt("port", 3306);
+
     g_iMinimumPoints = g_kvCore->GetInt("minimum_points", 100);
+    g_iMinimumSessionPoints = g_kvCore->GetInt("minimum_session_points", 15);
 
     // Points configurations
 
@@ -79,7 +81,7 @@ const char *CConfig::Translate(const std::string &key)
             return phrase.translation.c_str();
     }
 
-    return "MISSING TRANSLATION";
+    return key.c_str();
 }
 
 void CConfig::Destroy()

@@ -31,6 +31,7 @@ public:
     const char *GetMysqlUser() { return g_pszMysqlUser; }
 
     int GetMinimumPoints() { return g_iMinimumPoints; }
+    int GetMinimumSessionPoints() { return g_iMinimumSessionPoints; }
 
     int GetPointsLooseSuicide() { return g_iPointsLooseSuicide; }
     int GetPointsLooseTeamkill() { return g_iPointsLooseTeamkill; }
@@ -56,7 +57,8 @@ private:
     int g_iMysqlPort;
 
     int g_iMinimumPoints;
-
+    int g_iMinimumSessionPoints;
+    
     const char *g_pszLanguage;
     std::vector<Phrase> g_vecPhrases;
 

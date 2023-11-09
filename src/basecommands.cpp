@@ -16,11 +16,7 @@ void ParseChatCommand(const char *pMessage, CCSPlayerController *pController)
     uint16 index = g_Commands.Find(hash_32_fnv1a_const(args[0]));
 
     if (!g_Commands.IsValidIndex(index))
-    {
-        Debug("Invalid command index");
         return;
-    }
 
-    Debug("Valid command index");
     (*g_Commands[index])(args, pController);
 }
