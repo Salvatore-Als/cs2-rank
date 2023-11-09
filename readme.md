@@ -19,6 +19,10 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 
 # TODO List
 
+#### Security
+- [ ]  Detect and unload plugin if hibernation is set as true
+- [ ]  Unload plugin if there is no mysql connection
+
 #### Configuration
 - [x]  Mysql
 - [x]  Core
@@ -82,6 +86,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 
 ## Require
 - CS2 Serveur (Linux or Window)
+- Remove server hibernation `sv_hibernate_when_empty 0`
 - mysql_mm plugins by Poggu : https://github.com/Poggicek/mysql_mm
 
 ## Features
