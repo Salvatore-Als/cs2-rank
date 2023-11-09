@@ -20,7 +20,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 # TODO List
 
 #### Security
-- [ ]  Detect and unload plugin if hibernation is set as true
+- [X]  For hibernation to false
 - [X]  Unload plugin if there is no mysql connection
 
 #### Configuration
