@@ -21,7 +21,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 
 #### Security
 - [ ]  Detect and unload plugin if hibernation is set as true
-- [ ]  Unload plugin if there is no mysql connection
+- [X]  Unload plugin if there is no mysql connection
 
 #### Configuration
 - [x]  Mysql

@@ -9,6 +9,7 @@
 #include "networksystem/inetworkserializer.h"
 #include <iserver.h>
 
+#define DEBUG_PREFIX "VG Rank - "
 #define PREFIX " {RED}[VG Rank] "
 #define PLUGIN_NAME "VeryGames Rank"
 #define PLUGIN_DESCRIPTION "Rank system"

@@ -4,6 +4,7 @@
 #include "player.h"
 #include <map>
 #include "config.h"
+#include "main.h"
 
 using namespace std;
 
@@ -19,16 +20,16 @@ void CMysql::Connect()
 	info.database = g_CConfig->GetMysqlDatabase();
 	info.port = g_CConfig->GetMysqlPort();
 
+	Debug("%s %s %s %s %i", info.host, info.user, info.pass, info.database, info.port);
+
 	g_pConnection = g_pMysqlClient->CreateMySQLConnection(info);
 
 	g_pConnection->Connect([this](bool connect)
 						   {
 		if (!connect)
 		{
-			Fatal("Failed to connect the mysql database");
-			this->Destroy();
-
-			// UNLOAD PLUGIN
+			Fatal("Failed to connect the mysql database, unloading");
+			g_CPlugin.ForceUnload();
 		} else {
 			Debug("Connected to database !");
 			this->CreateDatabaseIfNotExist();
@@ -37,8 +38,11 @@ void CMysql::Connect()
 
 void CMysql::Destroy()
 {
-	g_pConnection->Destroy();
-	g_pConnection = nullptr;
+	if (g_pConnection)
+	{
+		g_pConnection->Destroy();
+		g_pConnection = nullptr;
+	}
 }
 
 void CMysql::CreateDatabaseIfNotExist()
@@ -160,7 +164,7 @@ void CMysql::GetRank(CRankPlayer *pPlayer, std::function<void(int)> callback)
 {
 	if (!g_pConnection)
 		return;
-	
+
 	char szQuery[MAX_QUERY_SIZES];
 	V_snprintf(szQuery, sizeof(szQuery), RANK, pPlayer->GetPoints(), g_CConfig->GetMinimumPoints());
 

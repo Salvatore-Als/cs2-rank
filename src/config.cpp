@@ -82,8 +82,13 @@ const char *CConfig::Translate(const std::string &key)
 }
 
 void CConfig::Destroy()
-{
-    delete g_kvPoints;
-    delete g_kvPhrases;
-    delete g_kvCore;
+{   
+    if(g_kvPoints)
+        delete g_kvPoints;
+    
+    if(g_kvPhrases)
+        delete g_kvPhrases;
+    
+    if(g_kvCore)
+        delete g_kvCore;
 }

@@ -50,7 +50,7 @@ void Debug(const char *msg, ...)
 	char buf[1024] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 255, 255), PREFIX "%s\n", buf);
+	ConColorMsg(Color(255, 0, 255, 255), DEBUG_PREFIX "%s\n", buf);
 
 	va_end(args);
 }
@@ -63,7 +63,7 @@ void Fatal(const char *msg, ...)
 	char buf[1024] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 0, 255), PREFIX "%s\n", buf);
+	ConColorMsg(Color(255, 0, 0, 255), DEBUG_PREFIX "%s\n", buf);
 
 	va_end(args);
 }
@@ -76,7 +76,7 @@ void Warn(const char *msg, ...)
 	char buf[1024] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 165, 0, 255), PREFIX "%s\n", buf);
+	ConColorMsg(Color(255, 165, 0, 255), DEBUG_PREFIX "%s\n", buf);
 
 	va_end(args);
 }
@@ -115,6 +115,7 @@ CSchemaSystem *g_pSchemaSystem2 = nullptr;
 float g_flUniversalTime;
 float g_flLastTickedTime;
 bool g_bHasTicked;
+PluginId g_pluginId;
 
 CUtlMap<uint32, CChatCommand *> g_Commands(0, 0, DefLessFunc(uint32));
 
@@ -126,6 +127,8 @@ CGlobalVars *GetServerGlobals()
 PLUGIN_EXPOSE(CPlugin, g_CPlugin);
 bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
+	g_pluginId = id;
+
 	PLUGIN_SAVEVARS();
 
 	GET_V_IFACE_ANY(GetServerFactory, g_pGameclients, ISource2GameClients, SOURCE2GAMECLIENTS_INTERFACE_VERSION);
@@ -218,6 +221,14 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	return true;
 }
 
+void CPlugin::ForceUnload()
+{
+	char buffer[256];
+	UTIL_Format(buffer, sizeof(buffer), "meta unload %i", g_pluginId);
+
+	g_pEngine->ServerCommand(buffer);
+}
+
 bool CPlugin::Unload(char *error, size_t maxlen)
 {
 	SH_REMOVE_HOOK_MEMFUNC(INetworkServerService, StartupServer, g_pNetworkServerService, this, &CPlugin::Hook_StartupServer, true);
@@ -232,8 +243,11 @@ bool CPlugin::Unload(char *error, size_t maxlen)
 		delete g_CAddresses;
 	}
 
-	delete g_CGameConfig;
-	delete g_CChat;
+	if (g_CGameConfig)
+		delete g_CGameConfig;
+
+	if (g_CChat)
+		delete g_CChat;
 
 	if (g_CConfig)
 	{
