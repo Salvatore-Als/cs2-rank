@@ -35,7 +35,8 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 
 #### Commands
 - [ ]  Antiflood system
-- [ ]  !muterank
+- [x]  !rankh
+- [x]  !rankannouce
 - [x]  !rank
 - [x]  !restrank
 - [x]  !top
@@ -96,12 +97,13 @@ Provider rank and stats system, as well a web interface
 
 ## Commands
 The plugin includes the following commands:
-- `!mm_rankannouce` - Allows players to disable/enable points annoucement.
-- `!mm_rank` - Allows players to check their current rank and points.
-- `!mm_top` - Display the top-ranked players.
-- `!mm_resetrank` - Resets a player's rank and points.
-- `!mm_session` - Displays rank for the current map.
-- `!mm!stats` - Displays players statistics.
+- `!rankh` - Display available commands.
+- `!rankannouce` - Allows players to disable/enable points annoucement.
+- `!rank` - Allows players to check their current rank and points.
+- `!top` - Display the top-ranked players.
+- `!resetrank` - Resets a player's rank and points.
+- `!session` - Displays rank for the current map.
+- `!stats` - Displays players statistics.
 
 ## Configuration
 The plugin offers a configuration file that allows you to customize its behavior according to your server's requirements. You can modify settings such as points gained or deducted for different actions and other gameplay-related parameters.
