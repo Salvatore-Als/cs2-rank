@@ -7,10 +7,13 @@
 #include "config.h"
 #include "metamod_util.h"
 #include <algorithm>
+#include "player.h"
 
 void Print_TopPlayer(CPlayerSlot slot, std::map<std::string, int> players, bool session);
 void Print_Rank(CPlayerSlot slot, int rank, bool session);
+void Print_Stats(CPlayerSlot slot, bool session);
 std::map<std::string, int> GetMappedPlayer(int max, int minimumKill);
+double CalcPercent(int want, int total);
 
 // command to get all the cmds
 CON_COMMAND_CHAT(rankh, "Display rank commands")
@@ -126,21 +129,6 @@ CON_COMMAND_CHAT(ranksession, "Display your rank for the current session")
     Print_Rank(pPlayer->GetPlayerSlot(), rank + 1, true);
 }
 
-// print the rank to a player slot, by checking if we need to display session message
-void Print_Rank(CPlayerSlot slot, int rank, bool session)
-{
-    if (rank < 1)
-    {
-        g_CChat->PrintToChat(slot, false, g_CConfig->Translate("NOT_RANKED"));
-        return;
-    }
-
-    char szBuffer[256];
-    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate(session ? "RANK_SESSION" : "RANK"), rank);
-
-    g_CChat->PrintToChat(slot, false, szBuffer, rank);
-}
-
 // top command
 CON_COMMAND_CHAT(top, "Display the top players")
 {
@@ -161,6 +149,69 @@ CON_COMMAND_CHAT(topsession, "Display the top players for the current session")
 
     std::map<std::string, int> players = GetMappedPlayer(14, g_CConfig->GetMinimumSessionPoints());
     Print_TopPlayer(player->GetPlayerSlot(), players, true);
+}
+
+// command to reset rank
+CON_COMMAND_CHAT(resetrank, "Reset your rank")
+{
+    if (!player)
+        return;
+
+    int slot = player->GetPlayerSlot();
+    CRankPlayer *pPlayer = g_CPlayerManager->GetPlayer(slot);
+
+    if (!pPlayer || !pPlayer->IsDatabaseAuthenticated())
+    {
+        g_CChat->PrintToChat(slot, false, "%s", g_CConfig->Translate("NO_DB_AUTHICATED"));
+        return;
+    }
+
+    pPlayer->Reset();
+    g_CChat->PrintToChat(player, false, g_CConfig->Translate("RANK_RESET"));
+}
+
+// command to show the stats
+CON_COMMAND_CHAT(stats, "Show your stats")
+{
+    if (!player)
+        return;
+
+    int slot = player->GetPlayerSlot();
+    CRankPlayer *pPlayer = g_CPlayerManager->GetPlayer(slot);
+
+    if (!pPlayer || !pPlayer->IsDatabaseAuthenticated())
+    {
+        g_CChat->PrintToChat(slot, false, "%s", g_CConfig->Translate("NO_DB_AUTHICATED"));
+        return;
+    }
+
+    Print_Stats(slot, false);
+}
+
+// command to show the stats
+CON_COMMAND_CHAT(statssessions, "Show your stats")
+{
+    if (!player)
+        return;
+
+    int slot = player->GetPlayerSlot();
+
+    Print_Stats(slot, true);
+}
+
+// print the rank to a player slot, by checking if we need to display session message
+void Print_Rank(CPlayerSlot slot, int rank, bool session)
+{
+    if (rank < 1)
+    {
+        g_CChat->PrintToChat(slot, false, g_CConfig->Translate("NOT_RANKED"));
+        return;
+    }
+
+    char szBuffer[256];
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate(session ? "RANK_SESSION" : "RANK"), rank);
+
+    g_CChat->PrintToChat(slot, false, szBuffer, rank);
 }
 
 // Print top player
@@ -191,23 +242,70 @@ void Print_TopPlayer(CPlayerSlot slot, std::map<std::string, int> players, bool 
     }
 }
 
-// command to reset rank
-CON_COMMAND_CHAT(resetrank, "Reset your rank")
+void Print_Stats(CPlayerSlot slot, bool session)
 {
-    if (!player)
-        return;
-
-    int slot = player->GetPlayerSlot();
     CRankPlayer *pPlayer = g_CPlayerManager->GetPlayer(slot);
 
-    if (!pPlayer || !pPlayer->IsDatabaseAuthenticated())
-    {
-        g_CChat->PrintToChat(slot, false, "%s", g_CConfig->Translate("NO_DB_AUTHICATED"));
+    if (!pPlayer)
         return;
-    }
 
-    pPlayer->Reset();
-    g_CChat->PrintToChat(player, false, g_CConfig->Translate("RANK_RESET"));
+    char szBuffer[256];
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate(session ? "STAT_SESSION_TITLE" : "STAT_TITLE"), pPlayer->GetPoints(session));
+    g_CChat->PrintToChat(slot, false, szBuffer);
+
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_POINTS"), pPlayer->GetPoints(session));
+    g_CChat->PrintToChat(slot, false, szBuffer);
+
+    int totalKill = pPlayer->GetKillCT(session) + pPlayer->GetKillT(session);
+    double percentKillT = CalcPercent(pPlayer->GetKillT(session), totalKill);
+    double percentKillCT = CalcPercent(pPlayer->GetKillCT(session), totalKill);
+
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_KILL"), totalKill, percentKillT, percentKillCT);
+    g_CChat->PrintToChat(slot, false, szBuffer);
+
+    int totalDeath = pPlayer->GetDeathCT(session) + pPlayer->GetDeathT(session);
+    double percentDeathT = CalcPercent(pPlayer->GetDeathT(session), totalDeath);
+    double percentDeathCT = CalcPercent(pPlayer->GetDeathCT(session), totalDeath);
+
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_DEATH"), totalDeath, percentDeathT, percentDeathCT);
+    g_CChat->PrintToChat(slot, false, szBuffer);
+
+    int totalAssist = pPlayer->GetKillAssistT(session) + pPlayer->GetKillAssistT(session);
+    double parcentAssistT = CalcPercent(pPlayer->GetKillAssistT(session), totalAssist);
+    double parcentAssistCT = CalcPercent(pPlayer->GetKillAssistCT(session), totalAssist);
+
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_ASSIST"), totalAssist, parcentAssistT, parcentAssistCT);
+    g_CChat->PrintToChat(slot, false, szBuffer);
+
+    int totalTeamKill = pPlayer->GetTeamKillCT(session) + pPlayer->GetTeamKillT(session);
+    double percentTeamKillT = CalcPercent(pPlayer->GetTeamKillT(session), totalTeamKill);
+    double percentTeamKillCT = CalcPercent(pPlayer->GetTeamKillCT(session), totalTeamKill);
+
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_TEAMKILL"), totalTeamKill, percentTeamKillT, percentTeamKillCT);
+    g_CChat->PrintToChat(slot, false, szBuffer);
+
+    double percentSuicide = CalcPercent(pPlayer->GetDeathSuicide(session), totalDeath);
+
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_SUICIDE"), percentSuicide);
+    g_CChat->PrintToChat(slot, false, szBuffer);
+
+    double parcentHeadshot = CalcPercent(pPlayer->GetKillHeadshot(session), totalKill);
+
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_HEADSHOT"), parcentHeadshot);
+    g_CChat->PrintToChat(slot, false, szBuffer);
+
+    double percentKnife = CalcPercent(pPlayer->GetKillKnife(session), totalKill);
+
+    UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_KNIFE"), percentKnife);
+    g_CChat->PrintToChat(slot, false, szBuffer);
+}
+
+double CalcPercent(int want, int total)
+{
+    if (want <= 0 || total <= 0)
+        return 0.0;
+
+    return (static_cast<float>(want) / static_cast<float>(total)) * 100.0;
 }
 
 // get mapped player

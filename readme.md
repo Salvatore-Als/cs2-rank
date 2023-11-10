@@ -40,12 +40,12 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  !rankh
 - [x]  !rankannouce
 - [x]  !rank
-- [ ]  !stats (HS percent, knife percent, death with percent T&CT, kill with percent T&CT)
+- [x]  !stats
 - [x]  !top
 - [x]  !restrank
-- [x]  !topsession (ranking from map)
-- [X]  !ranksession (HS percent, knife percent, death with percent T&CT, kill with percent T&CT)
-- [ ]  !statsession (HS percent, knife percent, death with percent T&CT, kill with percent T&CT)
+- [x]  !topsession
+- [x]  !ranksession
+- [x]  !statsession
 
 #### Event triggers
 - [x]  Player death by weapon

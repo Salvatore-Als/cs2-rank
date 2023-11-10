@@ -23,7 +23,7 @@
   `teamkill_ct` int(11) NOT NULL DEFAULT 0, \
   `teamkill_t` int(11) NOT NULL DEFAULT 0, \
   `killassist_t` int(11) NOT NULL DEFAULT 0, \
-  `killassist_t` int(11) NOT NULL DEFAULT 0, \
+  `killassist_ct` int(11) NOT NULL DEFAULT 0, \
   UNIQUE INDEX `authid` (`authid`) USING BTREE) \
   ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
 
