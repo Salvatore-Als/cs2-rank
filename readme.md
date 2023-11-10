@@ -104,10 +104,12 @@ The plugin includes the following commands:
 - `!rankh` - Display available commands.
 - `!rankannouce` - Allows players to disable/enable points annoucement.
 - `!rank` - Allows players to check their current rank and points.
+- `!stats` - Displays players statistics.
 - `!top` - Display the top-ranked players.
 - `!resetrank` - Resets a player's rank and points.
-- `!session` - Displays rank for the current map.
-- `!stats` - Displays players statistics.
+- `!ranksession` - Displays rank for the current map.
+- `!topsessions` - Displays players statistics for the current map;
+- `!statssessions` - Displays players statistics from for current map.
 
 ## Configuration
 The plugin offers a configuration file that allows you to customize its behavior according to your server's requirements. You can modify settings such as points gained or deducted for different actions and other gameplay-related parameters.
