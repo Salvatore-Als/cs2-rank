@@ -22,7 +22,7 @@ public:
     bool Init(char *conf_error, int conf_error_size);
     void Destroy();
 
-    const char *CConfig::Translate(const std::string &key);
+    const char *Translate(const std::string &key);
 
     int GetMysqlPort() { return g_iMysqlPort; }
     const char *GetMysqlHost() { return g_pszMysqlHost; }
