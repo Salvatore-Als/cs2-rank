@@ -8,7 +8,7 @@
 #define CREATE_TABLE "CREATE TABLE IF NOT EXISTS `verygames_rank` ( \
   `authid` BIGINT(64) NOT NULL DEFAULT '0', \
   `name` varchar(32) NOT NULL, \
-  `ignore_annouce` NOT NULL DEFAULT 0, \
+  `ignore_annouce` INT(11) NOT NULL DEFAULT 0, \
   `points` int(11) NOT NULL DEFAULT 0, \
   `death_suicide` int(11) NOT NULL DEFAULT 0, \
   `death_t` int(11) NOT NULL DEFAULT 0, \
