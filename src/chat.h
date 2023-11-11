@@ -56,7 +56,7 @@ public:
 
 	void PrintToChat(CPlayerSlot slot, bool canBeIgnore, const char *msg, ...);
 	void PrintToChat(CBasePlayerController *player, bool canBeIgnore, const char *msg, ...);
-	std::string CChat::Colorizer(std::string str);
+	std::string Colorizer(std::string str);
 
 private:
 	void PrintToChatTeam(int teamIndex, bool canBeIgnore, const char *msg);

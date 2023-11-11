@@ -88,7 +88,11 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Teamkill CT
 
 #### Web page
+- [x]  Theme
 - [ ]  Global rank system
+  - [x]  Table with rank
+  - [ ]  Player searching
+  - [ ]  Pagination
 - [ ]  Stats page per user
 
 ## Require

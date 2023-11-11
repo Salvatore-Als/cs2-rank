@@ -2,3 +2,4 @@ build/
 //hl2sdk-cs2/
 .vscode/
 //metamod-source/
+external/web/node_modules
