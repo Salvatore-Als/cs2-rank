@@ -90,11 +90,11 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 
 #### Web page
 - [x]  Theme
-- [ ]  Lazy load images
+- [x]  Lazy load images
 - [ ]  Global rank system
   - [x]  Table with rank
   - [ ]  Player searching
-  - [ ]  Pagination
+  - [x]  Pagination
 - [ ]  Stats page per user (After the end of statistics)
 
 ## Require
