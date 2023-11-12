@@ -22,6 +22,7 @@ define("MINIMUM_POINTS", 10); // Minimum points to be on the rank, should be the
 
 ## Preview 
 https://prnt.sc/uNZIyTaTY8Zr
+
 https://prnt.sc/6nzllbxfRFfb
 
 ## Theme
