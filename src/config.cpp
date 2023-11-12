@@ -1,5 +1,7 @@
 #include <config.h>
 #include "abstract.h"
+#include "player.h"
+#include "entity/ccsplayercontroller.h"
 
 bool CConfig::Init(char *conf_error, int conf_error_size)
 {
@@ -20,6 +22,8 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
 
     g_iMinimumPoints = g_kvCore->GetInt("minimum_points", 100);
     g_iMinimumSessionPoints = g_kvCore->GetInt("minimum_session_points", 15);
+
+    g_iMinimumPlayers = g_kvCore->GetInt("minimum_players", 5);
 
     // Points configurations
 
@@ -94,4 +98,25 @@ void CConfig::Destroy()
     
     if(g_kvCore)
         delete g_kvCore;
+}
+
+bool CConfig::IsMinimumPlayerReached()
+{   
+    int iNumb = 0;
+
+    for (int i = 0; i < g_pGlobals->maxClients; i++)
+    {
+        CCSPlayerController *pController = CCSPlayerController::FromSlot(i);
+
+        if (!pController)
+            continue;
+
+        CRankPlayer *pPlayer = pController->GetRankPlayer();
+        if (!pPlayer || !pPlayer->IsConnected() || pPlayer->IsFakeClient())
+            continue;
+
+        iNumb++;
+    }
+
+    return iNumb >= g_iMinimumPlayers;
 }

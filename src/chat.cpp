@@ -49,7 +49,7 @@ void CChat::PrintToChat(CPlayerSlot slot, bool canBeIgnore, const char *msg, ...
 		return;
 
 	CRankPlayer *pPlayer = pController->GetRankPlayer();
-	if (!pPlayer || (pPlayer->IsIgnoringAnnouce() && canBeIgnore))
+	if (pPlayer && (pPlayer->IsIgnoringAnnouce() && canBeIgnore))
 		return;
 
 	va_list args;
@@ -76,7 +76,7 @@ void CChat::PrintToChat(CBasePlayerController *player, bool canBeIgnore, const c
 		return;
 
 	CRankPlayer *pPlayer = pController->GetRankPlayer();
-	if (!pPlayer || (pPlayer->IsIgnoringAnnouce() && canBeIgnore))
+	if (pPlayer && (pPlayer->IsIgnoringAnnouce() && canBeIgnore))
 		return;
 
 	va_list args;

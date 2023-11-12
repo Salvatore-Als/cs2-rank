@@ -44,8 +44,6 @@ void UnregisterEventListeners()
 
 GAME_EVENT_F(round_end)
 {
-    // Update all player
-
     for (int i = 0; i < g_pGlobals->maxClients; i++)
     {
         CCSPlayerController *pController = CCSPlayerController::FromSlot(i);
@@ -63,6 +61,9 @@ GAME_EVENT_F(round_end)
 
 GAME_EVENT_F(bomb_planted)
 {
+    if (!g_CConfig->IsMinimumPlayerReached())
+        return;
+
     g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombPlantedTeam());
 
     char szTranslate[256];
@@ -91,6 +92,9 @@ GAME_EVENT_F(bomb_planted)
 
 GAME_EVENT_F(bomb_defused)
 {
+    if (!g_CConfig->IsMinimumPlayerReached())
+        return;
+
     g_CPlayerManager->AddTeamPoint(CS_TEAM_CT, g_CConfig->GetPointsWinBombDefusedTeam());
 
     char szTranslate[256];
@@ -119,6 +123,9 @@ GAME_EVENT_F(bomb_defused)
 
 GAME_EVENT_F(bomb_exploded)
 {
+   if (!g_CConfig->IsMinimumPlayerReached())
+        return;
+
     g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombExplodedTeam());
 
     char szTranslate[256];
@@ -146,6 +153,9 @@ GAME_EVENT_F(bomb_exploded)
 
 GAME_EVENT_F(player_spawn)
 {
+    if (!g_CConfig->IsMinimumPlayerReached())
+        return;
+
     CCSPlayerController *pController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
     if (!pController)
@@ -177,6 +187,9 @@ GAME_EVENT_F(player_spawn)
 
 GAME_EVENT_F(player_death)
 {
+   if (!g_CConfig->IsMinimumPlayerReached())
+        return;
+
     CCSPlayerController *pVictimController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
     CCSPlayerController *pAttackerController = (CCSPlayerController *)pEvent->GetPlayerController("attacker");
 
