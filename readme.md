@@ -36,7 +36,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Colors
 
 #### Commands
-- [ ]  Antiflood system
+- [x]  Antiflood system
 - [x]  !rankh
 - [x]  !rankannouce
 - [x]  !rank
