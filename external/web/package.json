@@ -5,8 +5,9 @@
   "main": "fiveserver.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css:dev": "npx tailwindcss -i input/style.css -o src/style.css --watch",
-    "build:css": "npx tailwindcss -i input/style.css -o src/style.css"
+    "build:css:dev": "npx tailwindcss -i input/style.css -o src/css/style.css --watch",
+    "build:css": "npx tailwindcss -i input/style.css -o src/css/style.css",
+    "php": "php -S 127.0.0.1:8000 -t ./src"
   },
   "author": "",
   "license": "ISC",

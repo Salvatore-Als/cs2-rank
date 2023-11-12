@@ -1,5 +1,5 @@
 <?php 
-    define("STEAMAPI_KEY", ""); // Your Steam WebAPI-Key found at https://steamcommunity.com/dev/apikey
+    define("STEAMAPI_KEY", "7CB6FE053A2C8B31E4E26CF46E55ADE4"); // Your Steam WebAPI-Key found at https://steamcommunity.com/dev/apikey
 
     define("MYSQL_HOST", "localhost"); // Mysql host
     define("MYSQL_PASSWORD", "8io/PAz838st03"); // Mysql password
@@ -7,7 +7,7 @@
     define("MYSQL_USER", "root"); // Mysql user
 
     define("TITLE", "CS2 Rank");
-    define("DEFAULT_STEAM_PICTURE", "https://avatars.cloudflare.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg");
 
+    define("PLAYERS_PER_PAGE", "50");
     define("MINIMUM_POINTS", 10); // Minimum points to be on the rank, should be the same config as your plugin connfig
 ?>
