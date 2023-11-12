@@ -73,7 +73,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
   - [ ]  Defuser (Need to fix the phrases that are not sent)
 
 #### Stats triggers
-- [ ]  Register last connection on connect and disconnect
+- [x]  Register last connection
 - [ ]  Stats per weapons
 - [x]  Headshot
 - [x]  Knife

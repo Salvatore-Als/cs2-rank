@@ -92,7 +92,7 @@ void CChat::PrintToChat(CBasePlayerController *player, bool canBeIgnore, const c
 
 	std::string colorizedBuf = this->Colorizer(buffer);
 
-	g_CAddresses->ClientPrint(player, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
+	g_CAddresses->ClientPrint(pController, HUD_PRINTTALK, colorizedBuf.c_str(), nullptr, nullptr, nullptr, nullptr);
 }
 
 void CChat::PrintToChatCT(bool canBeIgnore, const char *msg, ...)

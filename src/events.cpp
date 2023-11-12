@@ -77,13 +77,13 @@ GAME_EVENT_F(bomb_planted)
     if (!pPlanterController)
         return;
 
-    CRankPlayer *pPlayer = pPlanterController->GetRankPlayer();
+    CRankPlayer *pPlanter = pPlanterController->GetRankPlayer();
 
-    if (!pPlayer || !pPlayer->IsValidPlayer())
+    if (!pPlanter || !pPlanter->IsValidPlayer())
         return;
 
-    pPlayer->AddPoints(g_CConfig->GetPointsWinBombPlantedPlayer());
-    pPlayer->AddBombPlanted(1);
+    pPlanter->AddPoints(g_CConfig->GetPointsWinBombPlantedPlayer());
+    pPlanter->AddBombPlanted(1);
 
     // TODO: phrases not sent, why
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_PLANT_PLAYER"), g_CConfig->GetPointsWinBombPlantedPlayer());
@@ -108,13 +108,13 @@ GAME_EVENT_F(bomb_defused)
     if (!pDefuserController)
         return;
 
-    CRankPlayer *pPlayer = pDefuserController->GetRankPlayer();
+    CRankPlayer *pDefuser = pDefuserController->GetRankPlayer();
 
-    if (!pPlayer || !pPlayer->IsValidPlayer())
+    if (!pDefuser || !pDefuser->IsValidPlayer())
         return;
 
-    pPlayer->AddPoints(g_CConfig->GetPointsWinBombDefusedPlayer());
-    pPlayer->AddBombDefused(1);
+    pDefuser->AddPoints(g_CConfig->GetPointsWinBombDefusedPlayer());
+    pDefuser->AddBombDefused(1);
 
     // TODO: phrases not sent, why
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_PLAYER"), g_CConfig->GetPointsWinBombDefusedPlayer());
@@ -123,7 +123,7 @@ GAME_EVENT_F(bomb_defused)
 
 GAME_EVENT_F(bomb_exploded)
 {
-   if (!g_CConfig->IsMinimumPlayerReached())
+    if (!g_CConfig->IsMinimumPlayerReached())
         return;
 
     g_CPlayerManager->AddTeamPoint(CS_TEAM_T, g_CConfig->GetPointsWinBombExplodedTeam());
@@ -139,13 +139,15 @@ GAME_EVENT_F(bomb_exploded)
     if (!pPlanterController)
         return;
 
-    CRankPlayer *pPlayer = pPlanterController->GetRankPlayer();
+    CRankPlayer *pPlanter = pPlanterController->GetRankPlayer();
 
-    if (!pPlayer || !pPlayer->IsValidPlayer())
+    if (!pPlanter || !pPlanter->IsValidPlayer())
         return;
 
-    pPlayer->AddPoints(g_CConfig->GetPointsWinBombPlantedPlayer());
-    pPlayer->AddBombExploded(1);
+    pPlanter->AddPoints(g_CConfig->GetPointsWinBombExplodedPlayer());
+    pPlanter->AddBombExploded(1);
+
+    Debug("exploded - planter %p %s %i", pPlanterController, pPlanterController->GetPlayerName(), pPlanter->GetPoints());
 
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_EXPLODED_PLAYER"), g_CConfig->GetPointsWinBombExplodedPlayer());
     g_CChat->PrintToChat(pPlanterController, true, szTranslate);
@@ -187,7 +189,7 @@ GAME_EVENT_F(player_spawn)
 
 GAME_EVENT_F(player_death)
 {
-   if (!g_CConfig->IsMinimumPlayerReached())
+    if (!g_CConfig->IsMinimumPlayerReached())
         return;
 
     CCSPlayerController *pVictimController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
