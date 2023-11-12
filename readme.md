@@ -103,7 +103,8 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - mysql_mm plugins by Poggu : https://github.com/Poggicek/mysql_mm
 
 ## Features
-Provider rank and stats system, as well a web interface
+Provider rank and stats system.
+Providing a web interface https://github.com/Salvatore-Als/cs2-rank/tree/main/external/web
 
 ## Commands
 The plugin includes the following commands:
