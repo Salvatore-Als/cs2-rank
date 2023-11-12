@@ -62,6 +62,49 @@ void CRankPlayer::Reset()
     this->SaveOnDatabase();
 }
 
+bool CRankPlayer::IsFlooding()
+{
+    float time = g_pGlobals->curtime;
+    float newTime = time + 0.75;
+
+    if (m_flLastTalkTime >= time)
+    {
+        if (m_iFloodTokens >= 3)
+        {
+            m_flLastTalkTime = newTime + 7.0;
+            return true;
+        }
+        else
+        {
+            m_iFloodTokens++;
+        }
+    }
+    else if (m_iFloodTokens > 0)
+    {
+        m_iFloodTokens--;
+    }
+
+    m_flLastTalkTime = newTime;
+    return false;
+}
+
+void CRankPlayer::PrintDebug(bool session)
+{
+    Debug("- %s : GetPoints %i", session ? "SESSION" : "GLOBAL", this->GetPoints(session));
+    Debug("- %s : GetDeathSuicide %i", session ? "SESSION" : "GLOBAL", this->GetDeathSuicide(session));
+    Debug("- %s : GetDeathT %i", session ? "SESSION" : "GLOBAL", this->GetDeathT(session));
+    Debug("- %s : GetDeathCT %i", session ? "SESSION" : "GLOBAL", this->GetDeathCT(session));
+    Debug("- %s : GetBombPlanted %i", session ? "SESSION" : "GLOBAL", this->GetBombPlanted(session));
+    Debug("- %s : GetBombExploded %i", session ? "SESSION" : "GLOBAL", this->GetBombExploded(session));
+    Debug("- %s : GetBombDefused %i", session ? "SESSION" : "GLOBAL", this->GetBombDefused(session));
+    Debug("- %s : GetKillKnife %i", session ? "SESSION" : "GLOBAL", this->GetKillKnife(session));
+    Debug("- %s : GetKillHeadshot %i", session ? "SESSION" : "GLOBAL", this->GetKillHeadshot(session));
+    Debug("- %s : GetKillT %i", session ? "SESSION" : "GLOBAL", this->GetKillT(session));
+    Debug("- %s : GetKillCT %i", session ? "SESSION" : "GLOBAL", this->GetKillCT(session));
+    Debug("- %s : GetTeamKillT %i", session ? "SESSION" : "GLOBAL", this->GetTeamKillT(session));
+    Debug("- %s : GetTeamKillCT %i", session ? "SESSION" : "GLOBAL", this->GetTeamKillCT(session));
+}
+
 bool CPlayerManager::OnClientConnected(CPlayerSlot slot)
 {
     Assert(m_vecPlayers[slot.Get()] == nullptr);

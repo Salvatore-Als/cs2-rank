@@ -34,9 +34,10 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Sessions stats
 - [x]  Translation system
 - [x]  Colors
+- [ ]  Deathmatch FFA support
 
 #### Commands
-- [ ]  Antiflood system
+- [x]  Antiflood system
 - [x]  !rankh
 - [x]  !rankannouce
 - [x]  !rank
@@ -65,7 +66,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
   - [ ]  Planter (Need to fix the phrases that are not sent)
 - [ ]  Bomb Exploded
   - [x]  Team
-  - [ ]  Planter (Need to fix the phrases that are not sent)
+  - [X]  Planter
   -  Need to fix the phrases that are not sent
 - [ ]  Bomb Defused
   - [x]  Team

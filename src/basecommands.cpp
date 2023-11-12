@@ -5,10 +5,7 @@
 void ParseChatCommand(const char *pMessage, CCSPlayerController *pController)
 {
     if (!pController || !pController->IsConnected())
-    {
-        Debug("Invalid controller");
         return;
-    }
 
     CCommand args;
     args.Tokenize(pMessage + 1);

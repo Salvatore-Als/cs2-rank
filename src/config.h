@@ -30,8 +30,11 @@ public:
     const char *GetMysqlPassword() { return g_pszMysqlPassword; }
     const char *GetMysqlUser() { return g_pszMysqlUser; }
 
+    bool IsMinimumPlayerReached();
+    
     int GetMinimumPoints() { return g_iMinimumPoints; }
     int GetMinimumSessionPoints() { return g_iMinimumSessionPoints; }
+    int GetMinimumPlayers() { return g_iMinimumPlayers; }
 
     int GetPointsLooseSuicide() { return g_iPointsLooseSuicide; }
     int GetPointsLooseTeamkill() { return g_iPointsLooseTeamkill; }
@@ -56,6 +59,7 @@ private:
     const char *g_pszMysqlPassword;
     int g_iMysqlPort;
 
+    int g_iMinimumPlayers;
     int g_iMinimumPoints;
     int g_iMinimumSessionPoints;
     

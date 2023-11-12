@@ -38,6 +38,10 @@ public:
     void Reset();
     void InitStats(bool setAnnouce);
 
+    void PrintDebug(bool session);
+
+    bool IsFlooding();
+
     bool IsValidPlayer();
 
     void SaveOnDatabase();
@@ -328,6 +332,9 @@ private:
     int m_iTeamKillT_S;
     int m_iTeamKillCT;
     int m_iTeamKillCT_S;
+
+    int m_iFloodTokens;
+	float m_flLastTalkTime;
 };
 
 class CPlayerManager

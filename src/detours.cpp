@@ -8,6 +8,8 @@
 #include "entity/ccsplayercontroller.h"
 #include "tier0/memdbgon.h"
 #include "basecommands.h"
+#include "chat.h"
+#include "config.h"
 
 extern CEntitySystem *g_pEntitySystem;
 extern IGameEventManager2 *g_pGameEventManager;
@@ -18,8 +20,9 @@ DECLARE_DETOUR(Host_Say, Detour_Host_Say);
 
 void FASTCALL Detour_Host_Say(CCSPlayerController *pController, CCommand &args, bool teamonly, int unk1, const char *unk2)
 {
-	// Silent command
-	if (*args[1] != '/')
+	bool bFlooding = pController && pController->GetRankPlayer()->IsFlooding();
+
+	if (*args[1] != '/' && !bFlooding)
 	{
 		Host_Say(pController, args, teamonly, unk1, unk2);
 
@@ -39,7 +42,12 @@ void FASTCALL Detour_Host_Say(CCSPlayerController *pController, CCommand &args, 
 	}
 
 	if (*args[1] == '!' || *args[1] == '/')
-		ParseChatCommand(args.ArgS() + 1, pController);
+	{
+		if (bFlooding)
+			g_CChat->PrintToChat(pController, false, g_CConfig->Translate("CHAT_FLOODING"));
+		else
+			ParseChatCommand(args.ArgS() + 1, pController);
+	}
 }
 
 bool InitDetours(CGameConfig *gameConfig)
