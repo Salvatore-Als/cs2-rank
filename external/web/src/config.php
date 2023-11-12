@@ -7,7 +7,7 @@
     define("MYSQL_USER", "root"); // Mysql user
 
     define("TITLE", "CS2 Rank");
-    define("DEFAULT_STEAM_PICTURE", "https://avatars.cloudflare.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg");
 
+    define("PLAYERS_PER_PAGE", "50");
     define("MINIMUM_POINTS", 10); // Minimum points to be on the rank, should be the same config as your plugin connfig
 ?>
