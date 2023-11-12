@@ -100,6 +100,8 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 	{
 		pPlayer->SetDatabaseAuthenticated();
 
+		Debug("Connected points %i", results->GetInt(1));
+
 		pPlayer->SetIgnoringAnnouce(results->GetInt(0) == 1 ? true : false);
 		pPlayer->SetPoints(results->GetInt(1), false);
 		pPlayer->SetDeathSuicide(results->GetInt(2), false);
@@ -110,7 +112,7 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 		pPlayer->SetBombDefused(results->GetInt(7), false);
 		pPlayer->SetKillKnife(results->GetInt(8), false);
 		pPlayer->SetKillHeadshot(results->GetInt(9)), false;
-		pPlayer->SetKillT(results->GetInt(19), false);
+		pPlayer->SetKillT(results->GetInt(10), false);
 		pPlayer->SetKillCT(results->GetInt(11), false);
 		pPlayer->SetTeamKillT(results->GetInt(12), false);
 		pPlayer->SetTeamKillCT(results->GetInt(13), false);
@@ -123,6 +125,9 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 {
 	if (!g_pConnection)
 		return;
+
+	pPlayer->PrintDebug(false);
+	pPlayer->PrintDebug(true);
 
 	const char *name = g_pEngine->GetClientConVarValue(pPlayer->GetPlayerSlot(), "name");
 	uint64 steamId64 = pPlayer->GetSteamId64();

@@ -24,9 +24,7 @@ public:
 	void operator()(const CCommand &args, CCSPlayerController *player)
 	{
 		if (player && !player->IsConnected())
-		{
 			return;
-		}
 
 		m_pfnCallback(args, player);
 	}
@@ -45,9 +43,13 @@ void ParseChatCommand(const char *, CCSPlayerController *);
 	static void name##_con_callback(const CCommandContext &context, const CCommand &args)                                           \
 	{                                                                                                                               \
 		CCSPlayerController *pController = nullptr;                                                                                 \
-		if (context.GetPlayerSlot().Get() != -1)                                                                                    \
+		if (context.GetPlayerSlot().Get() != -1) {                                                                                  \
 			pController = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(context.GetPlayerSlot().Get() + 1)); \
-                                                                                                                                    \
+			if( pController && pController->GetRankPlayer()->IsFlooding()) {														\
+				g_CChat->PrintToChat(pController, false, g_CConfig->Translate("CHAT_FLOODING"));									\
+				return;																												\
+			}																														\
+    	}                                                                                                                        	\
 		name##_chat_command(args, pController);                                                                                     \
 	}                                                                                                                               \
 	static ConCommandRefAbstract name##_ref;                                                                                        \

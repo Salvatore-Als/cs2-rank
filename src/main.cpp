@@ -432,33 +432,8 @@ void Command_DebugPrint(const CCommandContext &context, const CCommand &args)
 		return;
 	}
 
-	Debug("- GetPoints %i", pPlayer->GetPoints());
-	Debug("- GetDeathSuicide %i", pPlayer->GetDeathSuicide());
-	Debug("- GetDeathT %i", pPlayer->GetDeathT());
-	Debug("- GetDeathCT %i", pPlayer->GetDeathCT());
-	Debug("- GetBombPlanted %i", pPlayer->GetBombPlanted());
-	Debug("- GetBombExploded %i", pPlayer->GetBombExploded());
-	Debug("- GetBombDefused %i", pPlayer->GetBombDefused());
-	Debug("- GetKillKnife %i", pPlayer->GetKillKnife());
-	Debug("- GetKillHeadshot %i", pPlayer->GetKillHeadshot());
-	Debug("- GetKillT %i", pPlayer->GetKillT());
-	Debug("- GetKillCT %i", pPlayer->GetKillCT());
-	Debug("- GetTeamKillT %i", pPlayer->GetTeamKillT());
-	Debug("- GetTeamKillCT %i", pPlayer->GetTeamKillCT());
-
-	Debug("- GetPoints S %i", pPlayer->GetPoints(true));
-	Debug("- GetDeathSuicide S %i", pPlayer->GetDeathSuicide(true));
-	Debug("- GetDeathT S %i", pPlayer->GetDeathT(true));
-	Debug("- GetDeathCT S %i", pPlayer->GetDeathCT(true));
-	Debug("- GetBombPlanted S %i", pPlayer->GetBombPlanted(true));
-	Debug("- GetBombExploded S %i", pPlayer->GetBombExploded(true));
-	Debug("- GetBombDefused S %i", pPlayer->GetBombDefused(true));
-	Debug("- GetKillKnife S %i", pPlayer->GetKillKnife(true));
-	Debug("- GetKillHeadshotS  %i", pPlayer->GetKillHeadshot(true));
-	Debug("- GetKillT S %i", pPlayer->GetKillT(true));
-	Debug("- GetKillCT S %i", pPlayer->GetKillCT(true));
-	Debug("- GetTeamKillT S %i", pPlayer->GetTeamKillT(true));
-	Debug("- GetTeamKillCT S %i", pPlayer->GetTeamKillCT(true));
+	pPlayer->PrintDebug(false);
+	pPlayer->PrintDebug(true);
 }
 
 CON_COMMAND_EXTERN(rank_debugadd, Command_DebugAdd, "");
@@ -496,19 +471,7 @@ void Command_DebugAdd(const CCommandContext &context, const CCommand &args)
 	}
 
 	Debug("Before SET");
-	Debug("- GetPoints %i", pPlayer->GetPoints(false));
-	Debug("- GetDeathSuicide %i", pPlayer->GetDeathSuicide(false));
-	Debug("- GetDeathT %i", pPlayer->GetDeathT(false));
-	Debug("- GetDeathCT %i", pPlayer->GetDeathCT(false));
-	Debug("- GetBombPlanted %i", pPlayer->GetBombPlanted(false));
-	Debug("- GetBombExploded %i", pPlayer->GetBombExploded(false));
-	Debug("- GetBombDefused %i", pPlayer->GetBombDefused(false));
-	Debug("- GetKillKnife %i", pPlayer->GetKillKnife(false));
-	Debug("- GetKillHeadshot %i", pPlayer->GetKillHeadshot(false));
-	Debug("- GetKillT %i", pPlayer->GetKillT(false));
-	Debug("- GetKillCT %i", pPlayer->GetKillCT(false));
-	Debug("- GetTeamKillT %i", pPlayer->GetTeamKillT(false));
-	Debug("- GetTeamKillCT %i", pPlayer->GetTeamKillCT(false));
+	pPlayer->PrintDebug(false);
 
 	pPlayer->AddPoints(10);
 	pPlayer->AddDeathSuicide(10);
@@ -525,19 +488,7 @@ void Command_DebugAdd(const CCommandContext &context, const CCommand &args)
 	pPlayer->AddTeamKillCT(10);
 
 	Debug("After SET");
-	Debug("- GetPoints %i", pPlayer->GetPoints(false));
-	Debug("- GetDeathSuicide %i", pPlayer->GetDeathSuicide(false));
-	Debug("- GetDeathT %i", pPlayer->GetDeathT(false));
-	Debug("- GetDeathCT %i", pPlayer->GetDeathCT(false));
-	Debug("- GetBombPlanted %i", pPlayer->GetBombPlanted(false));
-	Debug("- GetBombExploded %i", pPlayer->GetBombExploded(false));
-	Debug("- GetBombDefused %i", pPlayer->GetBombDefused(false));
-	Debug("- GetKillKnife %i", pPlayer->GetKillKnife(false));
-	Debug("- GetKillHeadshot %i", pPlayer->GetKillHeadshot(false));
-	Debug("- GetKillT %i", pPlayer->GetKillT(false));
-	Debug("- GetKillCT %i", pPlayer->GetKillCT(false));
-	Debug("- GetTeamKillT %i", pPlayer->GetTeamKillT(false));
-	Debug("- GetTeamKillCT %i", pPlayer->GetTeamKillCT(false));
+	pPlayer->PrintDebug(false);
 
 	Debug("Saving in database");
 	pPlayer->SaveOnDatabase();
