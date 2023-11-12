@@ -1,5 +1,5 @@
 <?php 
-    define("STEAMAPI_KEY", "7CB6FE053A2C8B31E4E26CF46E55ADE4"); // Your Steam WebAPI-Key found at https://steamcommunity.com/dev/apikey
+    define("STEAMAPI_KEY", ""); // Your Steam WebAPI-Key found at https://steamcommunity.com/dev/apikey
 
     define("MYSQL_HOST", "localhost"); // Mysql host
     define("MYSQL_PASSWORD", "8io/PAz838st03"); // Mysql password
