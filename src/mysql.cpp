@@ -5,6 +5,7 @@
 #include <map>
 #include "config.h"
 #include "main.h"
+#include <ctime>
 
 using namespace std;
 
@@ -127,7 +128,7 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 	uint64 steamId64 = pPlayer->GetSteamId64();
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER, g_pConnection->Escape(name), pPlayer->IsIgnoringAnnouce(), pPlayer->GetPoints(), pPlayer->GetDeathSuicide(), pPlayer->GetDeathT(), pPlayer->GetDeathCT(), pPlayer->GetBombPlanted(), pPlayer->GetBombExploded(), pPlayer->GetBombDefused(), pPlayer->GetKillKnife(), pPlayer->GetKillHeadshot(), pPlayer->GetKillT(), pPlayer->GetKillCT(), pPlayer->GetTeamKillT(), pPlayer->GetKillCT(), steamId64);
+	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER, g_pConnection->Escape(name), pPlayer->IsIgnoringAnnouce(), pPlayer->GetPoints(), pPlayer->GetDeathSuicide(), pPlayer->GetDeathT(), pPlayer->GetDeathCT(), pPlayer->GetBombPlanted(), pPlayer->GetBombExploded(), pPlayer->GetBombDefused(), pPlayer->GetKillKnife(), pPlayer->GetKillHeadshot(), pPlayer->GetKillT(), pPlayer->GetKillCT(), pPlayer->GetTeamKillT(), pPlayer->GetKillCT(), std::time(0), steamId64);
 
 	Debug("UpdateUser Request : %s", szQuery);
 
