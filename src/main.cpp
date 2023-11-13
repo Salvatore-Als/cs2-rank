@@ -90,6 +90,7 @@ SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
 SH_DECL_HOOK5_void(IServerGameClients, ClientDisconnect, SH_NOATTRIB, 0, CPlayerSlot, int, const char *, uint64, const char *);
 SH_DECL_HOOK6_void(IServerGameClients, OnClientConnected, SH_NOATTRIB, 0, CPlayerSlot, const char *, uint64, const char *, const char *, bool);
 SH_DECL_HOOK6(IServerGameClients, ClientConnect, SH_NOATTRIB, 0, bool, CPlayerSlot, const char *, uint64, const char *, bool, CBufferString *);
+SH_DECL_HOOK3_void(ICvar, DispatchConCommand, SH_NOATTRIB, 0, ConCommandHandle, const CCommandContext &, const CCommand &);
 
 CPlugin g_CPlugin;
 // IServerGameDLL *g_pSource2Server = nullptr;
@@ -139,11 +140,14 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	GET_V_IFACE_ANY(GetServerFactory, g_pSource2GameClients, IServerGameClients, SOURCE2GAMECLIENTS_INTERFACE_VERSION);
 	GET_V_IFACE_ANY(GetServerFactory, g_pSource2Server, ISource2Server, SOURCE2SERVER_INTERFACE_VERSION);
 
+	g_pCVar = icvar;
+
 	SH_ADD_HOOK_MEMFUNC(INetworkServerService, StartupServer, g_pNetworkServerService, this, &CPlugin::Hook_StartupServer, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameClients, OnClientConnected, g_pSource2GameClients, this, &CPlugin::Hook_OnClientConnected, false);
 	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientConnect, g_pSource2GameClients, this, &CPlugin::Hook_ClientConnect, false);
 	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, g_pSource2GameClients, this, &CPlugin::Hook_ClientDisconnect, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, g_pSource2Server, this, &CPlugin::Hook_GameFrame, true);
+	SH_ADD_HOOK_MEMFUNC(ICvar, DispatchConCommand, g_pCVar, this, &CPlugin::Hook_DispatchConCommand, false);
 
 	g_CConfig = new CConfig();
 	char szConfigError[255] = "";
@@ -210,7 +214,6 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	g_CPlayerManager = new CPlayerManager();
 	g_CMysql = new CMysql();
 
-	g_pCVar = icvar;
 	ConVar_Register(FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL);
 
 	g_pEngine->ServerCommand("sv_hibernate_when_empty 0");
@@ -237,6 +240,7 @@ bool CPlugin::Unload(char *error, size_t maxlen)
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientConnect, g_pSource2GameClients, this, &CPlugin::Hook_ClientConnect, false);
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, g_pSource2GameClients, this, &CPlugin::Hook_ClientDisconnect, true);
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, g_pSource2Server, this, &CPlugin::Hook_GameFrame, true);
+	SH_REMOVE_HOOK_MEMFUNC(ICvar, DispatchConCommand, g_pCVar, this, &CPlugin::Hook_DispatchConCommand, false);
 
 	if (g_CAddresses)
 	{
@@ -344,6 +348,53 @@ bool CPlugin::Hook_ClientConnect(CPlayerSlot slot, const char *pszName, uint64 x
 void CPlugin::Hook_ClientDisconnect(CPlayerSlot slot, int reason, const char *pszName, uint64 xuid, const char *pszNetworkID)
 {
 	g_CPlayerManager->OnClientDisconnect(slot);
+}
+
+void CPlugin::Hook_DispatchConCommand(ConCommandHandle cmdHandle, const CCommandContext &ctx, const CCommand &args)
+{
+	if (!g_pEntitySystem)
+		return;
+
+	auto slot = ctx.GetPlayerSlot();
+
+	bool bSay = V_strcmp(args.Arg(0), "say");
+	bool bTeamSay = V_strcmp(args.Arg(0), "say_team");
+
+	if (slot != -1 && (bSay || bTeamSay))
+	{
+		auto pController = CCSPlayerController::FromSlot(slot);
+		bool bFlooding = pController && pController->GetRankPlayer()->IsFlooding();
+
+		if (*args[1] != '/' && !bFlooding)
+		{
+			SH_CALL(g_pCVar, &ICvar::DispatchConCommand)
+			(cmdHandle, ctx, args);
+
+			if (pController)
+			{
+				IGameEvent *pEvent = g_pGameEventManager->CreateEvent("player_chat");
+
+				if (pEvent)
+				{
+					pEvent->SetBool("teamonly", bTeamSay);
+					pEvent->SetInt("userid", pController->entindex());
+					pEvent->SetString("text", args[1]);
+
+					g_pGameEventManager->FireEvent(pEvent, true);
+				}
+			}
+		}
+
+		if (*args[1] == '!' || *args[1] == '/')
+		{
+			if (bFlooding)
+				g_CChat->PrintToChat(pController, false, g_CConfig->Translate("CHAT_FLOODING"));
+			else
+				ParseChatCommand(args.ArgS() + 1, pController);
+		}
+
+		RETURN_META(MRES_SUPERCEDE);
+	}
 }
 
 void CPlugin::AllPluginsLoaded()
