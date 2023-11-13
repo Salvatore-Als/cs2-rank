@@ -22,7 +22,8 @@ public:
 	void Hook_OnClientConnected(CPlayerSlot slot, const char *pszName, uint64 xuid, const char *pszNetworkID, const char *pszAddress, bool bFakePlayer);
 	bool Hook_ClientConnect(CPlayerSlot slot, const char *pszName, uint64 xuid, const char *pszNetworkID, bool unk1, CBufferString *pRejectReason);
 	void Hook_GameFrame( bool simulating, bool bFirstTick, bool bLastTick );
-
+	void Hook_DispatchConCommand(ConCommandHandle cmd, const CCommandContext& ctx, const CCommand& args);
+	
 	void ForceUnload();
 public:
 	const char *ExtractCommandMessage(const CCommand &args, int skip);
