@@ -34,7 +34,9 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Sessions stats
 - [x]  Translation system
 - [x]  Colors
+- [x]  Cross server ranking
 - [ ]  Deathmatch FFA support
+- [ ]  Documentation
 
 #### Commands
 - [x]  Antiflood system
