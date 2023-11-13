@@ -7,11 +7,11 @@
 #include "player.h"
 #include "ctimer.h"
 #include "config.h"
+#include "main.h"
 
 extern IGameEventManager2 *g_pGameEventManager;
 extern IServerGameClients *g_pSource2GameClients;
 extern CEntitySystem *g_pEntitySystem;
-// extern CChat *g_CChat;
 
 CUtlVector<CGameEventListener *> g_vecEventListeners;
 
@@ -20,13 +20,12 @@ void RegisterEventListeners()
     if (!g_pGameEventManager)
     {
         Fatal("Unable to RegisterEventListeners, g_pGameEventManager is null");
+        g_CPlugin.ForceUnload();
         return;
     }
 
     FOR_EACH_VEC(g_vecEventListeners, i)
-    {
-        g_pGameEventManager->AddListener(g_vecEventListeners[i], g_vecEventListeners[i]->GetEventName(), true);
-    }
+    g_pGameEventManager->AddListener(g_vecEventListeners[i], g_vecEventListeners[i]->GetEventName(), true);
 }
 
 void UnregisterEventListeners()
@@ -35,9 +34,7 @@ void UnregisterEventListeners()
         return;
 
     FOR_EACH_VEC(g_vecEventListeners, i)
-    {
-        g_pGameEventManager->RemoveListener(g_vecEventListeners[i]);
-    }
+    g_pGameEventManager->RemoveListener(g_vecEventListeners[i]);
 
     g_vecEventListeners.Purge();
 }
@@ -85,9 +82,14 @@ GAME_EVENT_F(bomb_planted)
     pPlanter->AddPoints(g_CConfig->GetPointsWinBombPlantedPlayer());
     pPlanter->AddBombPlanted(1);
 
-    // TODO: phrases not sent, why
-    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_PLANT_PLAYER"), g_CConfig->GetPointsWinBombPlantedPlayer());
-    g_CChat->PrintToChat(pPlanterController, true, szTranslate);
+    // Need to wait the next frame, either planter not receive the message
+    new CTimer(0.0f, false, [pPlanterController]() {
+        char szTranslate[256];
+
+        UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_PLANT_PLAYER"), g_CConfig->GetPointsWinBombPlantedPlayer());
+        g_CChat->PrintToChat(pPlanterController, true, szTranslate);
+        return -1.0f; 
+    });
 }
 
 GAME_EVENT_F(bomb_defused)
@@ -116,9 +118,14 @@ GAME_EVENT_F(bomb_defused)
     pDefuser->AddPoints(g_CConfig->GetPointsWinBombDefusedPlayer());
     pDefuser->AddBombDefused(1);
 
-    // TODO: phrases not sent, why
-    UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_PLAYER"), g_CConfig->GetPointsWinBombDefusedPlayer());
-    g_CChat->PrintToChat(pDefuserController, true, szTranslate);
+    // Need to wait the next frame, either defuser not receive the message
+    new CTimer(0.0f, false, [pDefuserController]() {
+        char szTranslate[256];
+
+        UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_PLAYER"), g_CConfig->GetPointsWinBombDefusedPlayer());
+        g_CChat->PrintToChat(pDefuserController, true, szTranslate);
+        return -1.0f; 
+    });
 }
 
 GAME_EVENT_F(bomb_exploded)
