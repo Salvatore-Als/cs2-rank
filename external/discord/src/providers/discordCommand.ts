@@ -2,6 +2,10 @@ import { ChannelType, SlashCommandBuilder, SlashCommandChannelOption, SlashComma
 import { IGroup } from "../interface/IGroup";
 
 export function rankCommand(groups: IGroup[]): SlashCommandBuilder {
+    const mapping = groups.map((group: IGroup) => {
+        return { name: group.custom_name ? group.custom_name : group.reference, value: group.reference }
+    });
+
     const command: any = new SlashCommandBuilder()
         .setName('rank')
         .setDescription('Get your rank')
@@ -10,16 +14,7 @@ export function rankCommand(groups: IGroup[]): SlashCommandBuilder {
                 .setName('group')
                 .setDescription('Select the group')
                 .setRequired(true)
-                .addChoices(
-                    {
-                        name: "FFA 2 - custom label",
-                        value: "ffa1"
-                    },
-                    {
-                        name: "Français - custom label",
-                        value: "ffa2"
-                    }
-                ))
+                .addChoices(...mapping))
         .addStringOption((option: SlashCommandStringOption) =>
             option
                 .setName('player')
@@ -31,6 +26,10 @@ export function rankCommand(groups: IGroup[]): SlashCommandBuilder {
 }
 
 export function topCommand(groups: IGroup[]): SlashCommandBuilder {
+    const mapping = groups.map((group: IGroup) => {
+        return { name: group.custom_name ? group.custom_name : group.reference, value: group.reference }
+    });
+
     const command: any = new SlashCommandBuilder()
         .setName('top')
         .setDescription('Get the top')
@@ -39,21 +38,7 @@ export function topCommand(groups: IGroup[]): SlashCommandBuilder {
                 .setName('group')
                 .setDescription('Select the group')
                 .setRequired(true)
-                .addChoices(
-                    {
-                        name: "FFA 2 - custom label",
-                        value: "ffa1"
-                    },
-                    {
-                        name: "Français - custom label",
-                        value: "ffa2"
-                    }
-                ))
-        .addStringOption((option: SlashCommandStringOption) =>
-            option
-                .setName('player')
-                .setDescription('Enter authid or name')
-                .setRequired(true)
+                .addChoices(...mapping)
         );
 
     return command;

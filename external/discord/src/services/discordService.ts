@@ -5,6 +5,8 @@ import _ from 'lodash';
 import LoggerService from './loggerService';
 import DiscordProvider from '../providers/discordProvider';
 import moment from 'moment';
+import MysqlService from './mysqlService';
+import { ITopPlayer } from '../interface/ITop';
 
 const embededGhostField: any = {
     name: EmptyString,
@@ -19,6 +21,9 @@ export default class DiscordService {
 
     @Inject
     private _loggerService: LoggerService;
+
+    @Inject
+    private _mysqlService: MysqlService;
 
     private _client: Discord.Client = null;
 
@@ -41,10 +46,10 @@ export default class DiscordService {
                 if (interaction.isChatInputCommand()) {
                     switch (interaction.commandName) {
                         case 'rank':
-                            await this._getRank(interaction);
+                            await this._sendRank(interaction);
                             break;
                         case 'top':
-                            await this._getTop(interaction);
+                            await this._sendTop(interaction);
                             break;
                     }
 
@@ -56,7 +61,7 @@ export default class DiscordService {
         });
     }
 
-    private async _getRank(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
+    private async _sendRank(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
         const userId: string = interaction.user.id;
         const player: string = interaction.options.getString('player', true);
         const group: string = interaction.options.getString('group', true);
@@ -65,39 +70,56 @@ export default class DiscordService {
 
         embeded.setAuthor({ name: "KRIAX" })
             .setTitle('You have X points')
-            .setDescription(`You are ranked XXX`)
             .setThumbnail("https://avatars.cloudflare.steamstatic.com/a6f6a9c1958fd89781c4ddd94e79ce96bd231275_full.jpg")
-            .setFooter({ text: moment(new Date()).locale(process.env.LOCALE ?? "en").format('LLL') });
+            .setFooter({ text: moment(new Date()).locale(process.env.LOCALE ?? "en").format('LLL') })
+            .addFields({ name: "Kill: X", value: `%ct %t \n %headshot \n %knife`, inline: true })
+            .addFields({ name: "Assist: X", value: `%ct %t`, inline: true })
+            .addFields(embededGhostField)
+            .addFields({ name: "Death: x", value: `%suicide`, inline: true })
+            .addFields({ name: "Bomb: X", value: `%planted \n %defused \n %exploded`, inline: true });
 
-        embeded.addFields({ name: "Kill: X", value: `%ct %t \n %headshot \n %knife`, inline: true });
-        embeded.addFields({ name: "Assist: X", value: `%ct %t`, inline: true });
-        embeded.addFields(embededGhostField);
-        embeded.addFields({ name: "Death: x", value: `%suicide`, inline: true });
-        embeded.addFields({ name: "Bomb: X", value: `%planted \n %defused \n %exploded`, inline: true });
+        // if not ranked
+        //             .setDescription(`You are not ranked yet`)
+        // .setColor(IColor.Warning)
+
+        embeded.setDescription(`You are ranked XXX`)
+            .setColor(IColor.Success);
 
         await interaction.reply({ embeds: [embeded], ephemeral: true });
     }
 
-    private async _getTop(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
-        const userId: string = interaction.user.id;
-        const player: string = interaction.options.getString('player', true);
-        const group: string = interaction.options.getString('group', true);
+    private async _sendTop(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
+        try {
+            const userId: string = interaction.user.id; // Need for future feature
+            const group: string = interaction.options.getString('group', true);
+            const players: ITopPlayer[] = await this._mysqlService.getTop(group);
 
-        this._loggerService.debug(group);
-        this._loggerService.debug(player);
+            let content: string = "";
 
-        let embeded: Discord.EmbedBuilder = null
-        let content: string = "";
+            let index = 1;
+            for (let player of players) {
+                content = content + `\n ${index} - ${player.name} with ${player.points}`;
+                index++;
+            }
 
-        const embeds: Discord.EmbedBuilder[] = []
-        embeded = new Discord.EmbedBuilder();
+            const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+            embeded
+                .setTitle("TOP Players")
+                .setColor(IColor.Success)
+                .setDescription(content)
 
+            await interaction.reply({ embeds: [embeded], ephemeral: true });
+        } catch (error: any) {
+            this._sendError(interaction);
+            this._loggerService.error(error);
+        }
+    }
+
+    private async _sendError(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
+        const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
         embeded
-            .setTitle("EMBED TITLE").setColor(IColor.Success)
-            .setDescription("EMBED CONTENT");
-
-        embeds.push(embeded);
-
-        await interaction.reply({ embeds: embeds, ephemeral: true });
+            .setTitle("TOP Players")
+            .setColor(IColor.Danger)
+            .setDescription("I cannot perform this action");
     }
 }

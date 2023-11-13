@@ -4,12 +4,17 @@ import _ from 'lodash';
 import { Inject, Singleton } from 'typescript-ioc';
 import LoggerService from '../services/loggerService';
 import { rankCommand, topCommand } from './discordCommand';
+import MysqlService from '../services/mysqlService';
+import { IGroup } from '../interface/IGroup';
 
 
 @Singleton
 export default class DiscordProvider {
     @Inject
     private _loggerService: LoggerService;
+
+    @Inject
+    private _mysqlService: MysqlService;
 
     private _intents: Discord.IntentsBitField = new Discord.IntentsBitField([
         Discord.IntentsBitField.Flags.GuildMembers,
@@ -43,7 +48,9 @@ export default class DiscordProvider {
     }
 
     public async run(): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
+            const groups: IGroup[] = await this._mysqlService.getGroups();
+
             const start = new Date().getTime();
 
             this._client.login(process.env.DISCORD_TOKEN as string);
@@ -51,7 +58,7 @@ export default class DiscordProvider {
             this._client.on('ready', async (client: Discord.Client<true>) => {
                 await this._rest.put(
                     Routes.applicationCommands(client.user.id), {
-                    body: [rankCommand([]).toJSON(), topCommand([]).toJSON()]
+                    body: [rankCommand(groups).toJSON(), topCommand(groups).toJSON()]
                 });
 
                 this._loggerService.info("[Discord Provider] Running " + (new Date().getTime() - start) / 1000);

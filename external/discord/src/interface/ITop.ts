@@ -1,5 +1,5 @@
-import { IPlayer } from "./IPlayer";
-
-export interface ITop {
-    players: IPlayer[];
+export interface ITopPlayer {
+    name: string;
+    points: number;
+    authid: string;
 }
