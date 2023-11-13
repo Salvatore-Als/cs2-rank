@@ -25,6 +25,8 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
 
     g_iMinimumPlayers = g_kvCore->GetInt("minimum_players", 5);
 
+    g_pszServerReference = g_kvCore->GetString("server_reference", "DEFAULT");
+
     // Points configurations
 
     g_kvPoints = new KeyValues("Points");

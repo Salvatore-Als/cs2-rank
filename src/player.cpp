@@ -154,6 +154,9 @@ void CPlayerManager::TryAuthenticate()
 
         if (m_vecPlayers[i]->IsAuthenticated())
         {
+            if(!m_vecPlayers[i]->IsDatabaseAuthenticated())
+                g_CMysql->GetUser(m_vecPlayers[i]->Get());
+            
             continue;
         }
 
@@ -161,7 +164,7 @@ void CPlayerManager::TryAuthenticate()
         {
             m_vecPlayers[i]->SetAuthenticated();
             m_vecPlayers[i]->SetSteamId(g_pEngine->GetClientSteamID(i));
-            g_CMysql->GetUser(m_vecPlayers[i]->Get());
+            //g_CMysql->GetUser(m_vecPlayers[i]->Get());
         }
     }
 }

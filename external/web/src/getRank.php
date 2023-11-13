@@ -3,6 +3,12 @@
 
     $dbh = new PDO("mysql:host=" . MYSQL_HOST . ";dbname=" . MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD);
     $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $server = isset($_GET['server']) ? strval($_GET['server']) : null;
+
+    if(!isset($server) || empty($server)) {
+        echo "Empty server";
+        exit(404);
+    }
 
     $cache = [];
 
@@ -10,6 +16,7 @@
         global $dbh;
         global $page;
         global $cache;
+        global $server;
 
         if(in_array($page, $cache, true)) {
             return $cache[$page];
@@ -19,7 +26,8 @@
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
         
-        $sth = $dbh->prepare('SELECT * FROM verygames_rank WHERE points >= :minPoints ORDER BY points DESC LIMIT :offset, :limit');
+        $sth = $dbh->prepare('SELECT * FROM verygames_rank_users WHERE points >= :minPoints AND server = :server ORDER BY points DESC LIMIT :offset, :limit');
+        $sth->bindValue(':server', $server, PDO::PARAM_STR);
         $sth->bindValue(':minPoints', MINIMUM_POINTS, PDO::PARAM_INT);
         $sth->bindValue(':offset', $offset, PDO::PARAM_INT);
         $sth->bindValue(':limit', PLAYERS_PER_PAGE, PDO::PARAM_INT);
@@ -86,12 +94,14 @@
     function getTotalPage() {
         global $dbh;
         global $page;
+        global $server;
 
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
-        
-        $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result from verygames_rank');
+            
+        $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM verygames_rank_users WHERE server = :server');
+        $sth->bindValue(':server', $server, PDO::PARAM_INT);
         $sth->bindValue(':itemsPerPage', PLAYERS_PER_PAGE, PDO::PARAM_INT);
         $sth->execute();
 
@@ -108,6 +118,6 @@
     }
 
     header("Content-Type: application/json");
-    echo json_encode(['currentPage' => $page, 'totalPage' => getTotalPage(), 'results' => getPlayers()]);
+    echo json_encode(['currentPage' => $page, 'totalPage' => getTotalPage(), 'server' => $server, 'results' => getPlayers()]);
     exit();
 ?>

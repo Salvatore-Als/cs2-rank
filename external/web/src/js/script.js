@@ -3,13 +3,15 @@ const localStorageKey = 'cs2ranktheme';
 
 let currentPage = 1;
 let totalPage = 0;
+let server = null;
+let servers = [];
 
 if (localStorage[localStorageKey] == 'dark') {
     document.documentElement.classList.add('dark');
 }
 
 switchIcon();
-getPlayers();
+getServers();
 
 function nextPage() {
     if (currentPage + 1 > totalPage) {
@@ -48,8 +50,57 @@ function lazyProfileImage() {
     }
 }
 
+function reloadPlayers() {
+    const serversSelect = document.getElementById('servers-select');
+
+    if (!serversSelect) {
+        return;
+    }
+
+    server = servers[serversSelect.selectedIndex];
+
+    currentPage = 1;
+    getPlayers();
+}
+
+function getServers() {
+    const serversSelect = document.getElementById('servers-select');
+
+    if (!serversSelect) {
+        return;
+    }
+
+    serversSelect.innerHTML = "";
+
+    $.ajax({
+        url: 'getServers.php',
+        method: 'GET',
+        success: function (response) {
+            serversSelect.innerHTML = "";
+
+            const result = JSON.parse(JSON.stringify(response));
+            servers = result?.results;
+
+            if (!servers?.length) {
+                return;
+            }
+
+            server = servers[0];
+
+            for (let server of servers) {
+                const newOption = document.createElement("option");
+                newOption.text = server.custom_name ? server.custom_name : server.reference;
+                newOption.value = server.reference;
+                serversSelect.add(newOption);
+            }
+
+            getPlayers();
+        }
+    });
+}
+
 function getPlayers() {
-    const playersTable = document.getElementById('players-tables');
+    const playersTable = document.getElementById('players-table');
 
     if (!playersTable) {
         return;
@@ -64,7 +115,10 @@ function getPlayers() {
     $.ajax({
         url: 'getRank.php',
         method: 'GET',
-        data: { page: currentPage },
+        data: {
+            page: currentPage,
+            server: server?.reference
+        },
         success: function (response) {
             playersTable.innerHTML = "";
 

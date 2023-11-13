@@ -1,6 +1,3 @@
-<?php
-    include 'config.php';
-?>
 <!doctype html>
 <html>
 <head>
@@ -13,9 +10,9 @@
 <body class="bg-gray-100 dark:bg-gray-900">
     <section class="m-5 flex flex-col gap-4">
         <div class="flex">
-            <h1 class="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                <?php echo TITLE ?>
-            </h1>
+
+            <select id="servers-select" onChange="reloadPlayers()" class="max-w-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></select>
+
             <div class="cursor-pointer ml-auto text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
                 <i id="theme-icon" onclick="changeTheme()"></i>
             </div>
@@ -35,7 +32,7 @@
                         <th scope="col" class="px-6 py-4 font-medium text-gray-900 dark:text-white">Bomb</th>
                     </tr>
                 </thead>
-                <tbody id="players-tables">
+                <tbody id="players-table">
                     
                 </tbody>
             </table>

@@ -5,8 +5,21 @@
 #include "player.h"
 #include <map>
 
-#define CREATE_TABLE "CREATE TABLE IF NOT EXISTS `verygames_rank` ( \
+#define CREATE_SERVERS_TABLE "CREATE TABLE IF NOT EXISTS `verygames_rank_servers` ( \
+  `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
+  `reference` varchar(32) NOT NULL, \
+  `custom_name` varchar(64), \
+  UNIQUE INDEX `id` (`id`) USING BTREE) \
+  ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
+
+#define SELECT_SERVER "SELECT `id` FROM `verygames_rank_servers` WHERE `reference` = '%s'"
+
+#define INSERT_SERVER "INSERT INTO `verygames_rank_servers` (`reference`) VALUES ('%s');"
+
+#define CREATE_USERS_TABLE "CREATE TABLE IF NOT EXISTS `verygames_rank_users` ( \
+  `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
   `authid` BIGINT(64) NOT NULL DEFAULT '0', \
+  `server` varchar(32) NOT NULL, \
   `name` varchar(32) NOT NULL, \
   `ignore_annouce` INT(11) NOT NULL DEFAULT 0, \
   `points` int(11) NOT NULL DEFAULT 0, \
@@ -25,23 +38,23 @@
   `teamkill_t` int(11) NOT NULL DEFAULT 0, \
   `killassist_t` int(11) NOT NULL DEFAULT 0, \
   `killassist_ct` int(11) NOT NULL DEFAULT 0, \
-  UNIQUE INDEX `authid` (`authid`) USING BTREE) \
+  UNIQUE INDEX `id` (`id`) USING BTREE) \
   ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
 
-#define INSERT_USER "INSERT INTO `verygames_rank` (`authid`, `name`) VALUES ('%lli', '%s');"
+#define INSERT_USER "INSERT INTO `verygames_rank_users` (`authid`, `name`, `server`) VALUES ('%lli', '%s', '%s');"
 
-#define UPDATE_USER "UPDATE `verygames_rank` SET `name` = '%s', `ignore_annouce` = %d, \
+#define UPDATE_USER "UPDATE `verygames_rank_users` SET `name` = '%s', `ignore_annouce` = %d, \
 `points` = %d, `death_suicide` = %d, `death_t` = %d, `death_ct` = %d, `bomb_planted` = %d, \
 `bomb_exploded` = %d, `bomb_defused` = %d, `kill_knife` = %d, `kill_headshot` = %d, `kill_t` = %d, \
-`kill_ct` = %d, `teamkill_t` = %d, `teamkill_ct` = %d, `lastconnect` = %d WHERE `authid` = '%lli';"
+`kill_ct` = %d, `teamkill_t` = %d, `teamkill_ct` = %d, `lastconnect` = %d WHERE `authid` = '%lli' AND `server` = '%s';"
 
 #define SELECT_USER "SELECT `ignore_annouce`, `points`, `death_suicide`, `death_t`, `death_ct`, `bomb_planted`, `bomb_exploded` \
 , `bomb_defused`, `kill_knife`, `kill_headshot`, `kill_t`, `kill_ct`, `teamkill_t` \
-, `teamkill_ct`, `killassist_t`, `killassist_ct` FROM `verygames_rank` WHERE `authid` = '%lli'"
+, `teamkill_ct`, `killassist_t`, `killassist_ct` FROM `verygames_rank_users` WHERE `authid` = '%lli' AND `server` = '%s'"
 
-#define TOP "SELECT `name`, `points` FROM verygames_rank WHERE points >= %i ORDER BY points DESC LIMIT 15;"
+#define TOP "SELECT `name`, `points` FROM verygames_rank_users WHERE points >= %i AND `server` = '%s' ORDER BY points DESC LIMIT 15;"
 
-#define RANK "SELECT COUNT(*) FROM `verygames_rank` WHERE `points` > %i;"
+#define RANK "SELECT COUNT(*) FROM `verygames_rank_users` WHERE `points` > %i AND `server` = '%s';"
 
 extern IVEngineServer2 *g_pEngine;
 extern IMySQLClient *g_pMysqlClient;
@@ -70,6 +83,7 @@ private:
   void Connect();
   void CreateDatabaseIfNotExist();
 
+  void Query_GetServerReference(IMySQLQuery *cb);
   void Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer);
   void Query_TopPlayers(IMySQLQuery *cb, std::function<void(std::map<std::string, int>)> callback);
   void Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback);

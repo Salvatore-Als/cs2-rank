@@ -34,7 +34,9 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Sessions stats
 - [x]  Translation system
 - [x]  Colors
+- [x]  Cross server ranking
 - [ ]  Deathmatch FFA support
+- [ ]  Documentation
 
 #### Commands
 - [x]  Antiflood system
@@ -104,7 +106,8 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 
 ## Features
 Provider rank and stats system.
-Providing a web interface https://github.com/Salvatore-Als/cs2-rank/tree/main/external/web
+A web interface is available https://github.com/Salvatore-Als/cs2-rank/tree/main/external/web
+
 
 ## Commands
 The plugin includes the following commands:
