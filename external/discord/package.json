@@ -1,0 +1,21 @@
+{
+  "name": "cs2-rank",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node bootstrap.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kriax",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "moment": "^2.29.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "typescript-ioc": "^3.2.2",
+    "winston": "^3.11.0"
+  }
+}
