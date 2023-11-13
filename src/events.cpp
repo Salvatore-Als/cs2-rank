@@ -154,8 +154,6 @@ GAME_EVENT_F(bomb_exploded)
     pPlanter->AddPoints(g_CConfig->GetPointsWinBombExplodedPlayer());
     pPlanter->AddBombExploded(1);
 
-    Debug("exploded - planter %p %s %i", pPlanterController, pPlanterController->GetPlayerName(), pPlanter->GetPoints());
-
     UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_EXPLODED_PLAYER"), g_CConfig->GetPointsWinBombExplodedPlayer());
     g_CChat->PrintToChat(pPlanterController, true, szTranslate);
 }
