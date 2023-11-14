@@ -1,4 +1,6 @@
 build/
 .vscode/
 external/web/node_modules/
+external/discord/node_modules/
+external/discord/.env
 fiveserver.config.js

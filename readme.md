@@ -107,7 +107,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 ## Features
 Provider rank and stats system.
 A web interface is available https://github.com/Salvatore-Als/cs2-rank/tree/main/external/web
-
+A discord bot is available https://github.com/Salvatore-Als/cs2-rank/tree/main/external/discord
 
 ## Commands
 The plugin includes the following commands:
