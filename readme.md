@@ -99,14 +99,22 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
   - [x]  Pagination
 - [ ]  Stats page per user (After the end of statistics)
 
+#### Discord Bot
+- [x]  Translation
+- [x]  Command `/rank`
+- [x]  Command `/top`
+- [x]  Command `/ranklink`
+
 ## Require
 - CS2 Serveur (Linux or Window)
 - Remove server hibernation `sv_hibernate_when_empty 0`
 - mysql_mm plugins by Poggu : https://github.com/Poggicek/mysql_mm
 
 ## Features
-Provider rank and stats system.
+Provide rank and stats system.
+
 A web interface is available https://github.com/Salvatore-Als/cs2-rank/tree/main/external/web
+
 A discord bot is available https://github.com/Salvatore-Als/cs2-rank/tree/main/external/discord
 
 ## Commands

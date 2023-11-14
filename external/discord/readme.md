@@ -14,7 +14,10 @@
 - This command links your Discord account to your Steam account. With a linked account, `/rank <group>` works without a search string.
 
 ## How Linked Accounts Work
-After typing `/ranklink <steamid64>`, the bot gives you a unique name. You need to change your Steam account name and retype `/ranklink <steamid64>`. If the name matches, you will be registered in the database.
+After typing `/ranklink <steamid64>`, the bot gives you a unique name. You need to change your Steam account name and retype `/ranklink <steamid64>`. 
+If the name matches, you will be registered in the database.
+
+The link name is available for 5 minutes; after this period, you will need to repeat the process.
 
 ## How to Run the Bot?
 The bot is written with Nodejs and Typescript.
