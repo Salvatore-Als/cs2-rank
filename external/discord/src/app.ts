@@ -4,6 +4,7 @@ import LoggerService from "./services/loggerService";
 import DiscordService from "./services/discordService";
 import MysqlService from "./services/mysqlService";
 import MysqlProvider from "./providers/mysqlProvider";
+import TranslationService from "./services/translationService";
 
 export default class App {
     @Inject
@@ -21,15 +22,20 @@ export default class App {
     @Inject
     private _mysqlService: MysqlService;
 
+    @Inject
+    private _translationService: TranslationService;
+
     constructor() {
 
     }
 
     public async run(): Promise<void> {
         try {
-            this._loggerService.run();
-
             // Don't touch the running order !
+
+            this._loggerService.run();
+            this._translationService.run();
+
             await this._mysqlProvider.run();
             await this._mysqlService.run();
 

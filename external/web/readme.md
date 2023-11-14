@@ -31,12 +31,13 @@ Don't forget to type `npm install` before !
 You must upload the content of the `src` folder to your website, I advise you to make a specific site or folder.
 
 ## Api ?
-There is no API, it's a simple web page, but you can use getRank.php to get the rank `https://yoursite.com.getRank.php?page=1`. For example on a discord bot :)
+There is no API, it's a simple web page, but you can use getRank.php to get the rank `https://yoursite.com.getRank.php?page=1&server=ffa`. For example on a discord bot :)
 This page return this structure : 
 ```
     {
         "currentPage": 1,
         "totalPage": 12,
+        "server": "ffa",
         "results: [
             {
                 "authid": 76561198018935405,

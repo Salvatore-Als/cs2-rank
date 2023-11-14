@@ -7,6 +7,18 @@ import DiscordProvider from '../providers/discordProvider';
 import moment from 'moment';
 import MysqlService from './mysqlService';
 import { ITopPlayer } from '../interface/ITop';
+import { IPlayer, IPlayerMetaData } from '../interface/IPlayer';
+import TranslationService from './translationService';
+import { ITranslateKey } from '../interface/ITranslate';
+import { ILinkedAccout } from '../interface/ILinkedAccount';
+import SteamService from './steamService';
+import { ISteamProfile } from '../interface/ISteamProfile';
+
+interface RequestLink {
+    authid: string;
+    name: string;
+    expire: moment.Moment;
+}
 
 const embededGhostField: any = {
     name: EmptyString,
@@ -25,9 +37,15 @@ export default class DiscordService {
     @Inject
     private _mysqlService: MysqlService;
 
-    private _client: Discord.Client = null;
+    @Inject
+    private _translationService: TranslationService;
 
-    // TODO: user action cache to prevent flood
+    @Inject
+    private _steamService: SteamService;
+
+    private _linkedAccounts: Map<string, string> = new Map();
+    private _requestLinkedAccounts: Map<string, RequestLink> = new Map();
+    private _client: Discord.Client = null;
 
     constructor() {
 
@@ -37,7 +55,16 @@ export default class DiscordService {
         this._client = this._discordProvider.client;
         this._subscribe();
 
+        await this._getLinkedAccounts();
+
         this._loggerService.info("[Discord Service] Running ");
+    }
+
+    private async _getLinkedAccounts(): Promise<void> {
+        const linkedAccounts: ILinkedAccout[] = await this._mysqlService.getLinkedAccounts();
+        linkedAccounts.map((linkedAccount: ILinkedAccout) => this._linkedAccounts.set(linkedAccount.discordid, linkedAccount.authid));
+
+        this._loggerService.debug(`[Discord Service] Found ${linkedAccounts?.length} linked accounts`);
     }
 
     private _subscribe(): void {
@@ -45,11 +72,13 @@ export default class DiscordService {
             try {
                 if (interaction.isChatInputCommand()) {
                     switch (interaction.commandName) {
-                        case 'rank':
+                        case this._translationService.translate(ITranslateKey.Command_Rank):
                             await this._sendRank(interaction);
                             break;
-                        case 'top':
+                        case this._translationService.translate(ITranslateKey.Command_Top):
                             await this._sendTop(interaction);
+                        case this._translationService.translate(ITranslateKey.Command_Link):
+                            await this._sendLink(interaction);
                             break;
                     }
 
@@ -62,35 +91,94 @@ export default class DiscordService {
     }
 
     private async _sendRank(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
-        const userId: string = interaction.user.id;
-        const player: string = interaction.options.getString('player', true);
-        const group: string = interaction.options.getString('group', true);
+        try {
+            const userId: string = interaction.user.id;
+            const group: string = interaction.options.getString('group', true);
+            let search: string = interaction.options.getString('player', false);
 
-        const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+            let searchIsAuthid: boolean = false;
 
-        embeded.setAuthor({ name: "KRIAX" })
-            .setTitle('You have X points')
-            .setThumbnail("https://avatars.cloudflare.steamstatic.com/a6f6a9c1958fd89781c4ddd94e79ce96bd231275_full.jpg")
-            .setFooter({ text: moment(new Date()).locale(process.env.LOCALE ?? "en").format('LLL') })
-            .addFields({ name: "Kill: X", value: `%ct %t \n %headshot \n %knife`, inline: true })
-            .addFields({ name: "Assist: X", value: `%ct %t`, inline: true })
-            .addFields(embededGhostField)
-            .addFields({ name: "Death: x", value: `%suicide`, inline: true })
-            .addFields({ name: "Bomb: X", value: `%planted \n %defused \n %exploded`, inline: true });
+            // Search a string value
+            if (search?.trim()?.length) {
+                const regex: RegExp = new RegExp(/^\d{17}$/);
+                searchIsAuthid = regex.test(search);
+            } else {
+                search = this._linkedAccounts.get(userId);
+                searchIsAuthid = true;
 
-        // if not ranked
-        //             .setDescription(`You are not ranked yet`)
-        // .setColor(IColor.Warning)
+                // There is no linked account
+                if (!search) {
 
-        embeded.setDescription(`You are ranked XXX`)
-            .setColor(IColor.Success);
+                    const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+                    embeded
+                        .setTitle(this._translationService.translate(ITranslateKey.Title_LinkAccount))
+                        .setColor(IColor.Success)
+                        .setDescription(this._translationService.translate(ITranslateKey.Sentence_LinkNeeded, this._translationService.translate(ITranslateKey.Command_Link)))
 
-        await interaction.reply({ embeds: [embeded], ephemeral: true });
+                    await interaction.reply({ embeds: [embeded], ephemeral: true });
+                    return;
+                }
+            }
+
+            const player: IPlayer = searchIsAuthid ? await this._mysqlService.getRankByAuthid(search, group) : await this._mysqlService.getRankByName(search, group);
+
+            if (!player) {
+                this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_PlayerNotFound));
+                return;
+            }
+
+            player.metaData = await this.processMetaData(player);
+
+            const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+
+            embeded
+                .setAuthor({ name: this._translationService.translate(ITranslateKey.Sentence_Rank, player.rank) })
+                .setDescription(this._translationService.translate(ITranslateKey.Sentence_Points, player.points))
+                .setTitle(player.metaData?.steamProfile?.name)
+                .setURL(`https://steamcommunity.com/profiles/${player.authid}`)
+                .setThumbnail(player.metaData.steamProfile?.picture)
+                .setFooter({ text: moment(new Date()).locale(process.env.LOCALE ?? "en").format('LLL') })
+                .addFields({
+                    name: this._translationService.translate(ITranslateKey.StatsTitle_Kills, player.metaData.kill.total),
+                    value: this._translationService.translate(ITranslateKey.Stats_Kills, player.metaData.kill.ct, player.metaData.kill.t, player.metaData.headshot, player.metaData.knife),
+                    inline: false
+                })
+                .addFields({
+                    name: this._translationService.translate(ITranslateKey.StatsTitle_Assits, player.metaData.killAssist.total),
+                    value: this._translationService.translate(ITranslateKey.Stats_Assits, player.metaData.killAssist.ct, player.metaData.killAssist.t),
+                    inline: false
+                })
+                .addFields({
+                    name: this._translationService.translate(ITranslateKey.StatsTitle_Deaths, player.metaData.death.total),
+                    value: this._translationService.translate(ITranslateKey.Stats_Assits, player.metaData.death.ct, player.metaData.death.t, player.metaData.death.suicide),
+                    inline: false
+                })
+                .addFields({
+                    name: this._translationService.translate(ITranslateKey.StatsTitle_Bomb),
+                    value: this._translationService.translate(ITranslateKey.Stats_Bomb, player.metaData.bomb.planted, player.metaData.bomb.exploded, player.metaData.bomb.defused),
+                    inline: false
+                });
+
+            if (player.rank > 0) {
+                embeded
+                    .setAuthor({ name: this._translationService.translate(ITranslateKey.Sentence_Rank, player.rank) })
+                    .setColor(IColor.Success);
+            } else {
+                embeded
+                    .setAuthor({ name: this._translationService.translate(ITranslateKey.Sentence_NoRank) })
+                    .setColor(IColor.Warning);
+            }
+
+            await interaction.reply({ embeds: [embeded], ephemeral: true });
+        } catch (error: any) {
+            this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_ActionNotPossible));
+            this._loggerService.error(error);
+            console.log(error);
+        }
     }
 
     private async _sendTop(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
         try {
-            const userId: string = interaction.user.id; // Need for future feature
             const group: string = interaction.options.getString('group', true);
             const players: ITopPlayer[] = await this._mysqlService.getTop(group);
 
@@ -98,28 +186,162 @@ export default class DiscordService {
 
             let index = 1;
             for (let player of players) {
-                content = content + `\n ${index} - ${player.name} with ${player.points}`;
+                content = content + `\n` + this._translationService.translate(ITranslateKey.Stats_TopPlayer, index, player.name, player.points);
                 index++;
             }
 
             const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
             embeded
-                .setTitle("TOP Players")
+                .setTitle(this._translationService.translate(ITranslateKey.Title_TopPlayers))
                 .setColor(IColor.Success)
                 .setDescription(content)
 
             await interaction.reply({ embeds: [embeded], ephemeral: true });
         } catch (error: any) {
-            this._sendError(interaction);
+            this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_ActionNotPossible));
             this._loggerService.error(error);
         }
     }
 
-    private async _sendError(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
+    private async _sendLink(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
+        try {
+            const userId: string = interaction.user.id;
+            const authid: string = interaction.options.getString('steamid64', true);
+
+            // Discord already linked
+            if (this._linkedAccounts.has(userId)) {
+                const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+                embeded
+                    .setTitle(this._translationService.translate(ITranslateKey.Title_LinkAccount))
+                    .setDescription(this._translationService.translate(ITranslateKey.Sentence_DiscordAlreadyLinked))
+                    .setColor(IColor.Danger);
+
+                await interaction.reply({ embeds: [embeded], ephemeral: true });
+
+                return;
+            }
+
+            // Steam already linked
+            const linkedAuthids: string[] = Array.from(this._linkedAccounts.values());
+            if (linkedAuthids?.includes(authid)) {
+                const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+                embeded
+                    .setTitle(this._translationService.translate(ITranslateKey.Title_LinkAccount))
+                    .setDescription(this._translationService.translate(ITranslateKey.Sentence_SteamAlreadyLinked))
+                    .setColor(IColor.Danger);
+
+                await interaction.reply({ embeds: [embeded], ephemeral: true });
+                return;
+            }
+
+            // Already a registration request or request expired
+            const requestLink: RequestLink = this._requestLinkedAccounts.get(userId);
+            const now: moment.Moment = moment();
+
+            if (requestLink && now.isBefore(requestLink?.expire)) {
+                const steamProfile: ISteamProfile = await this._steamService.getProfile(requestLink.authid);
+
+                // Matching, register client
+                if (steamProfile.name == requestLink.name) {
+                    this._requestLinkedAccounts.delete(userId);
+                    this._linkedAccounts.set(userId, requestLink.authid);
+
+                    await this._mysqlService.createLinkedAccount(authid, userId);
+
+                    const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+                    embeded
+                        .setTitle(this._translationService.translate(ITranslateKey.Title_LinkAccount))
+                        .setDescription(this._translationService.translate(ITranslateKey.Sentence_DiscordLinked))
+                        .setColor(IColor.Success);
+
+                    await interaction.reply({ embeds: [embeded], ephemeral: true });
+                } else {
+                    await this._sendRenameNeeded(interaction, requestLink);
+                }
+
+                return;
+            }
+
+            const milis: number = new Date().getTime();
+            const newRequestLink: RequestLink = {
+                authid: authid,
+                name: "CS2RANK_" + milis,
+                expire: moment().add(5, "minutes")
+            };
+
+            this._requestLinkedAccounts.set(userId, newRequestLink);
+            await this._sendRenameNeeded(interaction, newRequestLink);
+        } catch (error: any) {
+            this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_ActionNotPossible));
+            this._loggerService.error(error);
+        }
+    }
+
+    private async _sendRenameNeeded(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>, requestLink: RequestLink): Promise<void> {
         const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
         embeded
-            .setTitle("TOP Players")
+            .setTitle(this._translationService.translate(ITranslateKey.Title_LinkAccount))
+            .setColor(IColor.Info)
+            .setDescription(this._translationService.translate(ITranslateKey.Sentence_RenameNeeded, requestLink.name, this._translationService.translate(ITranslateKey.Command_Link)))
+            .setFooter({ text: moment(requestLink.expire).locale(process.env.LOCALE ?? "en").format('LL LTS') })
+
+        await interaction.reply({ embeds: [embeded], ephemeral: true });
+    }
+
+    private async _sendError(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>, error: string): Promise<void> {
+        const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+        embeded
+            .setTitle(this._translationService.translate(ITranslateKey.Title_Error))
             .setColor(IColor.Danger)
-            .setDescription("I cannot perform this action");
+            .setDescription(error);
+        await interaction.reply({ embeds: [embeded], ephemeral: true });
+    }
+
+    private async processMetaData(player: IPlayer): Promise<IPlayerMetaData> {
+        const totalKill: number = player.kill_ct + player.kill_t;
+        const totalDeath: number = player.death_ct + player.death_t;
+        const tototalKillAssit: number = player.killassist_ct + player.killassist_ct;
+
+        const minimumPoints: number = Number(process.env.MINIMUM_POINTS);
+
+        const metaData: IPlayerMetaData = {
+            missingRankPoints: minimumPoints - player.points,
+            headshot: this.getPercent(player.kill_headshot, totalKill),
+            knife: this.getPercent(player.kill_knife, totalKill),
+            death: {
+                total: totalDeath,
+                ct: this.getPercent(player.death_ct, totalDeath),
+                t: this.getPercent(player.death_t, totalDeath),
+                suicide: this.getPercent(player.death_suicide, totalDeath),
+            },
+            kill: {
+                total: totalKill,
+                ct: this.getPercent(player.kill_ct, totalKill),
+                t: this.getPercent(player.kill_t, totalKill),
+            },
+            killAssist: {
+                total: tototalKillAssit,
+                ct: this.getPercent(player.killassist_ct, tototalKillAssit),
+                t: this.getPercent(player.killassist_t, tototalKillAssit),
+            },
+            bomb: {
+                planted: player.bomb_planted,
+                exploded: player.bomb_exploded,
+                defused: player.bomb_defused
+            }
+        }
+
+        metaData.steamProfile = await this._steamService.getProfile(player.authid);
+
+        return metaData;
+    }
+
+    private getPercent(want: number, total: number): number {
+        if (want <= 0 || total <= 0) {
+            return 0;
+        }
+
+        const percentage: number = (want / total) * 100;
+        return parseFloat(percentage.toFixed(0));
     }
 }

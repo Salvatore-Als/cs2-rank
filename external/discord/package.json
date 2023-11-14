@@ -10,8 +10,11 @@
   "author": "Kriax",
   "license": "ISC",
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "axios": "^1.6.1",
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
+    "fast-xml-parser": "^4.3.2",
     "moment": "^2.29.4",
     "mysql2": "^3.6.3",
     "ts-node": "^10.9.1",

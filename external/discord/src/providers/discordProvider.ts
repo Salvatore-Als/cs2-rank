@@ -1,11 +1,12 @@
 import * as Discord from 'discord.js';
-import { Partials, Routes, REST } from "discord.js";
+import { Partials, Routes, REST, SlashCommandBuilder, SlashCommandStringOption } from "discord.js";
 import _ from 'lodash';
 import { Inject, Singleton } from 'typescript-ioc';
 import LoggerService from '../services/loggerService';
-import { rankCommand, topCommand } from './discordCommand';
 import MysqlService from '../services/mysqlService';
 import { IGroup } from '../interface/IGroup';
+import TranslationService from '../services/translationService';
+import { ITranslateKey } from '../interface/ITranslate';
 
 
 @Singleton
@@ -16,10 +17,8 @@ export default class DiscordProvider {
     @Inject
     private _mysqlService: MysqlService;
 
-    private _intents: Discord.IntentsBitField = new Discord.IntentsBitField([
-        Discord.IntentsBitField.Flags.GuildMembers,
-        Discord.IntentsBitField.Flags.GuildMessages
-    ]);
+    @Inject
+    private _translationService: TranslationService;
 
     private _rest: Discord.REST;
 
@@ -50,6 +49,9 @@ export default class DiscordProvider {
     public async run(): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const groups: IGroup[] = await this._mysqlService.getGroups();
+            const groupMapping = groups.map((group: IGroup) => {
+                return { name: group.custom_name ? group.custom_name : group.reference, value: group.reference }
+            });
 
             const start = new Date().getTime();
 
@@ -58,7 +60,7 @@ export default class DiscordProvider {
             this._client.on('ready', async (client: Discord.Client<true>) => {
                 await this._rest.put(
                     Routes.applicationCommands(client.user.id), {
-                    body: [rankCommand(groups).toJSON(), topCommand(groups).toJSON()]
+                    body: [this.buildRankCommand(groupMapping).toJSON(), this.buildTopCommand(groupMapping).toJSON(), this.buildLinkCommand(groupMapping).toJSON()]
                 });
 
                 this._loggerService.info("[Discord Provider] Running " + (new Date().getTime() - start) / 1000);
@@ -69,5 +71,54 @@ export default class DiscordProvider {
                 return reject("[Discord Provider] Connect error " + error);
             });
         });
+    }
+
+    private buildRankCommand(groups: { name: string, value: string }[]): SlashCommandBuilder {
+        const command: any = new SlashCommandBuilder()
+            .setName(this._translationService.translate(ITranslateKey.Command_Rank))
+            .setDescription(this._translationService.translate(ITranslateKey.Command_DescriptionRank))
+            .addStringOption((option: SlashCommandStringOption) =>
+                option
+                    .setName('group')
+                    .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionGroup))
+                    .setRequired(true)
+                    .addChoices(...groups))
+            .addStringOption((option: SlashCommandStringOption) =>
+                option
+                    .setName('player')
+                    .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionPlayer))
+                    .setRequired(false)
+            );
+
+        return command;
+    }
+
+    private buildTopCommand(groups: { name: string, value: string }[]): SlashCommandBuilder {
+        const command: any = new SlashCommandBuilder()
+            .setName(this._translationService.translate(ITranslateKey.Command_Top))
+            .setDescription(this._translationService.translate(ITranslateKey.Command_DescriptionTop))
+            .addStringOption((option: SlashCommandStringOption) =>
+                option
+                    .setName('group')
+                    .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionGroup))
+                    .setRequired(true)
+                    .addChoices(...groups)
+            );
+
+        return command;
+    }
+
+    private buildLinkCommand(groups: { name: string, value: string }[]): SlashCommandBuilder {
+        const command: any = new SlashCommandBuilder()
+            .setName(this._translationService.translate(ITranslateKey.Command_Link))
+            .setDescription(this._translationService.translate(ITranslateKey.Command_Link))
+            .addStringOption((option: SlashCommandStringOption) =>
+                option
+                    .setName('steamid64')
+                    .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionSteamid))
+                    .setRequired(true)
+            );
+
+        return command;
     }
 }

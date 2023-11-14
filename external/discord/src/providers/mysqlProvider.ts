@@ -8,10 +8,12 @@ export default class MysqlProvider {
     private _loggerService: LoggerService;
 
     async run() {
+        const start = new Date().getTime();
+
         const firstConnect: Connection = await this._createConnection();
         firstConnect.destroy();
 
-        this._loggerService.info("[Mysql Provider] Running ");
+        this._loggerService.info("[Mysql Provider] Running " + (new Date().getTime() - start) / 1000);
     }
 
     private async _createConnection(): Promise<Connection> {
@@ -24,10 +26,11 @@ export default class MysqlProvider {
         });
     }
 
-    async query<T>(query: string, values?: any): Promise<T[]> {
+    async query<T>(query: string, values?: any): Promise<T> {
+        this._loggerService.debug(`[Mysql Provider] Executing query\n- Query: ${query}\n- Parameters: ${values}`);
         const connect: Connection = await this._createConnection();
         const [result] = await connect.execute(query, values);
-        const mysqlResult: T[] = result as T[];
+        const mysqlResult: T = result as T;
 
         connect.destroy();
 
