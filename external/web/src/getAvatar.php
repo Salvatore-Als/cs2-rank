@@ -3,9 +3,9 @@
 
     $default = "https://avatars.cloudflare.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg";
 
-    if (empty($_GET['authid']) || strlen($_GET['authid']) != 17) {
+    if (empty($_GET['authid']) || strlen($_GET['authid']) != 17 || !is_numeric($_GET['authid'])) {
         echo $default;
-        exit(404);
+        exit;
     }
 
     $authid = htmlspecialchars($_GET['authid']);
