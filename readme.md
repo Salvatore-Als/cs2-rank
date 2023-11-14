@@ -69,7 +69,6 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Bomb Exploded
   - [x]  Team
   - [X]  Planter
-  -  Need to fix the phrases that are not sent
 - [x]  Bomb Defused
   - [x]  Team
   - [x]  Defuser
