@@ -76,7 +76,7 @@ void CMysql::Query_GetRankReference(IMySQLQuery *cb)
 		return;
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), INSERT_REFERENCE, g_pConnection->Escape(g_CConfig->GetRankReference()));
+	V_snprintf(szQuery, sizeof(szQuery), INSERT_REFERENCE, g_pConnection->Escape(g_CConfig->GetRankReference()).c_str());
 
 	Debug("InsertReference request : %s", szQuery);
 
@@ -91,7 +91,7 @@ void CMysql::GetUser(CRankPlayer *pPlayer)
 	uint64 steamId64 = pPlayer->GetSteamId64();
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), SELECT_USER, steamId64, g_pConnection->Escape(g_CConfig->GetRankReference()));
+	V_snprintf(szQuery, sizeof(szQuery), SELECT_USER, steamId64, g_pConnection->Escape(g_CConfig->GetRankReference()).c_str());
 
 	Debug("GetUser Request : %s", szQuery);
 
@@ -119,7 +119,7 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 		// NOTE : Only set the authid and name, because the other data have a default value set on the database schema
 
 		char szQuery[MAX_QUERY_SIZES];
-		V_snprintf(szQuery, sizeof(szQuery), INSERT_USER, steamId64, g_pConnection->Escape(name), g_pConnection->Escape(g_CConfig->GetRankReference()));
+		V_snprintf(szQuery, sizeof(szQuery), INSERT_USER, steamId64, g_pConnection->Escape(name).c_str(), g_pConnection->Escape(g_CConfig->GetRankReference()).c_str());
 
 		Debug("InsertUser request : %s", szQuery);
 
@@ -165,7 +165,7 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 	uint64 steamId64 = pPlayer->GetSteamId64();
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER, g_pConnection->Escape(name), pPlayer->IsIgnoringAnnouce(), pPlayer->GetPoints(), pPlayer->GetDeathSuicide(), pPlayer->GetDeathT(), pPlayer->GetDeathCT(), pPlayer->GetBombPlanted(), pPlayer->GetBombExploded(), pPlayer->GetBombDefused(), pPlayer->GetKillKnife(), pPlayer->GetKillHeadshot(), pPlayer->GetKillT(), pPlayer->GetKillCT(), pPlayer->GetTeamKillT(), pPlayer->GetKillCT(), std::time(0), steamId64, g_pConnection->Escape(g_CConfig->GetRankReference()));
+	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER, g_pConnection->Escape(name).c_str(), pPlayer->IsIgnoringAnnouce(), pPlayer->GetPoints(), pPlayer->GetDeathSuicide(), pPlayer->GetDeathT(), pPlayer->GetDeathCT(), pPlayer->GetBombPlanted(), pPlayer->GetBombExploded(), pPlayer->GetBombDefused(), pPlayer->GetKillKnife(), pPlayer->GetKillHeadshot(), pPlayer->GetKillT(), pPlayer->GetKillCT(), pPlayer->GetTeamKillT(), pPlayer->GetKillCT(), std::time(0), steamId64, g_pConnection->Escape(g_CConfig->GetRankReference()).c_str());
 
 	Debug("UpdateUser Request : %s", szQuery);
 
@@ -178,7 +178,7 @@ void CMysql::GetTopPlayers(std::function<void(std::map<std::string, int>)> callb
 		return;
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), TOP, g_CConfig->GetMinimumPoints(), g_pConnection->Escape(g_CConfig->GetRankReference()));
+	V_snprintf(szQuery, sizeof(szQuery), TOP, g_CConfig->GetMinimumPoints(), g_pConnection->Escape(g_CConfig->GetRankReference()).c_str());
 
 	g_pConnection->Query(szQuery, [callback, this](IMySQLQuery *cb)
 						 { this->Query_TopPlayers(cb, callback); });
@@ -205,7 +205,7 @@ void CMysql::GetRank(CRankPlayer *pPlayer, std::function<void(int)> callback)
 		return;
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), RANK, pPlayer->GetPoints(false), g_pConnection->Escape(g_CConfig->GetRankReference()));
+	V_snprintf(szQuery, sizeof(szQuery), RANK, pPlayer->GetPoints(false), g_pConnection->Escape(g_CConfig->GetRankReference()).c_str());
 
 	Debug(szQuery);
 
