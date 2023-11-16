@@ -235,7 +235,7 @@ void Print_TopPlayer(CPlayerSlot slot, std::map<std::string, int> players, bool 
 
     for (const auto &pair : playerVector)
     {
-        UTIL_Format(szPlayer, sizeof(szPlayer), g_CConfig->Translate("TOP_PLAYER"), iteration, pair.first, pair.second);
+        UTIL_Format(szPlayer, sizeof(szPlayer), g_CConfig->Translate("TOP_PLAYER"), iteration, pair.first.c_str(), pair.second);
         g_CChat->PrintToChat(slot, false, "%s", szPlayer);
 
         iteration++;
