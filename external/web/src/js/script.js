@@ -85,9 +85,9 @@ function getReferences() {
                 return;
             }
 
-            reference = refernces[0];
+            reference = references[0];
 
-            for (let refernce of references) {
+            for (let reference of references) {
                 const newOption = document.createElement("option");
                 newOption.text = reference.custom_name ? reference.custom_name : reference.reference;
                 newOption.value = reference.reference;
