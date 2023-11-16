@@ -3,10 +3,10 @@
 
     $dbh = new PDO("mysql:host=" . MYSQL_HOST . ";dbname=" . MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD);
     $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $server = isset($_GET['server']) ? strval($_GET['server']) : null;
+    $reference = isset($_GET['reference']) ? strval($_GET['reference']) : null;
 
-    if(!isset($server) || empty($server)) {
-        echo "Empty server";
+    if(!isset($reference) || empty($reference)) {
+        echo "Empty reference";
         exit(404);
     }
 
@@ -16,7 +16,7 @@
         global $dbh;
         global $page;
         global $cache;
-        global $server;
+        global $reference;
 
         if(in_array($page, $cache, true)) {
             return $cache[$page];
@@ -26,8 +26,8 @@
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
         
-        $sth = $dbh->prepare('SELECT * FROM verygames_rank_users WHERE points >= :minPoints AND server = :server ORDER BY points DESC LIMIT :offset, :limit');
-        $sth->bindValue(':server', $server, PDO::PARAM_STR);
+        $sth = $dbh->prepare('SELECT * FROM verygames_rank_users WHERE points >= :minPoints AND reference = :reference ORDER BY points DESC LIMIT :offset, :limit');
+        $sth->bindValue(':reference', $reference, PDO::PARAM_STR);
         $sth->bindValue(':minPoints', MINIMUM_POINTS, PDO::PARAM_INT);
         $sth->bindValue(':offset', $offset, PDO::PARAM_INT);
         $sth->bindValue(':limit', PLAYERS_PER_PAGE, PDO::PARAM_INT);
@@ -94,14 +94,14 @@
     function getTotalPage() {
         global $dbh;
         global $page;
-        global $server;
+        global $reference;
 
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
             
-        $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM verygames_rank_users WHERE server = :server');
-        $sth->bindValue(':server', $server, PDO::PARAM_INT);
+        $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM verygames_rank_users WHERE reference = :reference');
+        $sth->bindValue(':reference', $reference, PDO::PARAM_INT);
         $sth->bindValue(':itemsPerPage', PLAYERS_PER_PAGE, PDO::PARAM_INT);
         $sth->execute();
 
@@ -118,6 +118,6 @@
     }
 
     header("Content-Type: application/json");
-    echo json_encode(['currentPage' => $page, 'totalPage' => getTotalPage(), 'server' => $server, 'results' => getPlayers()]);
+    echo json_encode(['currentPage' => $page, 'totalPage' => getTotalPage(), 'reference' => $reference, 'results' => getPlayers()]);
     exit();
 ?>

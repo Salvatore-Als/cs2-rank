@@ -3,15 +3,15 @@ const localStorageKey = 'cs2ranktheme';
 
 let currentPage = 1;
 let totalPage = 0;
-let server = null;
-let servers = [];
+let reference = null;
+let references = [];
 
 if (localStorage[localStorageKey] == 'dark') {
     document.documentElement.classList.add('dark');
 }
 
 switchIcon();
-getServers();
+getReferences();
 
 function nextPage() {
     if (currentPage + 1 > totalPage) {
@@ -51,47 +51,47 @@ function lazyProfileImage() {
 }
 
 function reloadPlayers() {
-    const serversSelect = document.getElementById('servers-select');
+    const referencesSelect = document.getElementById('references-select');
 
-    if (!serversSelect) {
+    if (!referencesSelect) {
         return;
     }
 
-    server = servers[serversSelect.selectedIndex];
+    reference = references[referencesSelect.selectedIndex];
 
     currentPage = 1;
     getPlayers();
 }
 
-function getServers() {
-    const serversSelect = document.getElementById('servers-select');
+function getReferences() {
+    const referencesSelect = document.getElementById('references-select');
 
-    if (!serversSelect) {
+    if (!referencesSelect) {
         return;
     }
 
-    serversSelect.innerHTML = "";
+    referencesSelect.innerHTML = "";
 
     $.ajax({
-        url: 'getServers.php',
+        url: 'getReferences.php',
         method: 'GET',
         success: function (response) {
-            serversSelect.innerHTML = "";
+            referencesSelect.innerHTML = "";
 
             const result = JSON.parse(JSON.stringify(response));
-            servers = result?.results;
+            references = result?.results;
 
-            if (!servers?.length) {
+            if (!references?.length) {
                 return;
             }
 
-            server = servers[0];
+            reference = refernces[0];
 
-            for (let server of servers) {
+            for (let refernce of references) {
                 const newOption = document.createElement("option");
-                newOption.text = server.custom_name ? server.custom_name : server.reference;
-                newOption.value = server.reference;
-                serversSelect.add(newOption);
+                newOption.text = reference.custom_name ? reference.custom_name : reference.reference;
+                newOption.value = reference.reference;
+                referencesSelect.add(newOption);
             }
 
             getPlayers();
@@ -117,7 +117,7 @@ function getPlayers() {
         method: 'GET',
         data: {
             page: currentPage,
-            server: server?.reference
+            reference: reference?.reference
         },
         success: function (response) {
             playersTable.innerHTML = "";
