@@ -44,6 +44,7 @@ size_t UTIL_Format(char *buffer, size_t maxlength, const char *fmt, ...)
 
 void Debug(const char *msg, ...)
 {
+#ifdef _DEBUG
 	va_list args;
 	va_start(args, msg);
 
@@ -53,6 +54,7 @@ void Debug(const char *msg, ...)
 	ConColorMsg(Color(255, 0, 255, 255), DEBUG_PREFIX "%s\n", buf);
 
 	va_end(args);
+#endif
 }
 
 void Fatal(const char *msg, ...)
@@ -443,13 +445,19 @@ const char *CPlugin::GetDescription()
 
 const char *CPlugin::GetName()
 {
+#ifdef _DEBUG
+	return PLUGIN_NAME_DEBUG;
+#else
 	return PLUGIN_NAME;
+#endif
 }
 
 const char *CPlugin::GetURL()
 {
 	return "https://www.verygames.net";
 }
+
+#ifdef _DEBUG
 
 CON_COMMAND_EXTERN(rank_debugprint, Command_DebugPrint, "");
 void Command_DebugPrint(const CCommandContext &context, const CCommand &args)
@@ -544,3 +552,5 @@ void Command_DebugAdd(const CCommandContext &context, const CCommand &args)
 	Debug("Saving in database");
 	pPlayer->SaveOnDatabase();
 }
+
+#endif

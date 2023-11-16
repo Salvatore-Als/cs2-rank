@@ -4,7 +4,7 @@
     $dbh = new PDO("mysql:host=" . MYSQL_HOST . ";dbname=" . MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD);
     $cache = null;
 
-    function getServers() {
+    function getReferences() {
         global $dbh;
         global $page;
         global $cache;
@@ -16,7 +16,7 @@
 
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $sth = $dbh->prepare('SELECT id, reference, custom_name FROM verygames_rank_servers');
+        $sth = $dbh->prepare('SELECT id, reference, custom_name FROM verygames_rank_references');
         $sth->execute();
 
         $rows = $sth->fetchAll();
@@ -25,6 +25,6 @@
     }
 
     header("Content-Type: application/json");
-    echo json_encode(['results' => getServers()]);
+    echo json_encode(['results' => getReferences()]);
     exit();
 ?>

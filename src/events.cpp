@@ -83,13 +83,13 @@ GAME_EVENT_F(bomb_planted)
     pPlanter->AddBombPlanted(1);
 
     // Need to wait the next frame, either planter not receive the message
-    new CTimer(0.0f, false, [pPlanterController]() {
+    new CTimer(0.0f, false, [pPlanterController]()
+               {
         char szTranslate[256];
 
         UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_PLANT_PLAYER"), g_CConfig->GetPointsWinBombPlantedPlayer());
         g_CChat->PrintToChat(pPlanterController, true, szTranslate);
-        return -1.0f; 
-    });
+        return -1.0f; });
 }
 
 GAME_EVENT_F(bomb_defused)
@@ -119,13 +119,13 @@ GAME_EVENT_F(bomb_defused)
     pDefuser->AddBombDefused(1);
 
     // Need to wait the next frame, either defuser not receive the message
-    new CTimer(0.0f, false, [pDefuserController]() {
+    new CTimer(0.0f, false, [pDefuserController]()
+               {
         char szTranslate[256];
 
         UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("BOMB_DEFUSED_PLAYER"), g_CConfig->GetPointsWinBombDefusedPlayer());
         g_CChat->PrintToChat(pDefuserController, true, szTranslate);
-        return -1.0f; 
-    });
+        return -1.0f; });
 }
 
 GAME_EVENT_F(bomb_exploded)
@@ -210,9 +210,9 @@ GAME_EVENT_F(player_death)
     if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer())
         return;
 
-    // TODO enable, b'cause I have nobody to test with me :(
-    // if (pVictim->IsFakeClient())
-    // return;
+    // TODO: disable on DEBUG
+    if (pVictim->IsFakeClient())
+        return;
 
     char szTranslate[256];
 
@@ -233,8 +233,7 @@ GAME_EVENT_F(player_death)
     else if (pVictimController->m_iTeamNum == CS_TEAM_T)
         pVictim->AddDeathT(1);
 
-    // Teamkill, TODO: try with a deathmatch type FFA, not taking account if it's enable
-    // OK
+    // Teamkill, TODO: disable during a FFA DM
     if (pVictimController->m_iTeamNum.Get() == pAttackerController->m_iTeamNum.Get())
     {
         pAttacker->RemovePoints(g_CConfig->GetPointsLooseTeamkill());

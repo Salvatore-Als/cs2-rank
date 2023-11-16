@@ -30,7 +30,7 @@ public:
     const char *GetMysqlPassword() { return g_pszMysqlPassword; }
     const char *GetMysqlUser() { return g_pszMysqlUser; }
 
-    const char *GetServerReference() { return g_pszServerReference; }
+    const char *GetRankReference() { return g_pszRankReference; }
 
     bool IsMinimumPlayerReached();
     
@@ -61,7 +61,7 @@ private:
     const char *g_pszMysqlPassword;
     int g_iMysqlPort;
 
-    const char *g_pszServerReference;
+    const char *g_pszRankReference;
     int g_iMinimumPlayers;
     int g_iMinimumPoints;
     int g_iMinimumSessionPoints;
