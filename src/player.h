@@ -287,14 +287,14 @@ private:
     void Set(int &variable, int value) { variable = value; }
     void Remove(int &variable, int value) { variable -= value; }
 
+    const CSteamID *m_SteamID;
+    CPlayerSlot m_slot;
+
     bool m_bIgnoringAnnouce;
     bool m_bAuthenticated;
     bool m_bConnected;
     bool m_bFakeClient;
     bool m_bDatabaseAuthenticated;
-
-    const CSteamID *m_SteamID;
-    CPlayerSlot m_slot;
 
     // _S convention for SESSION !!!
 
@@ -334,7 +334,7 @@ private:
     int m_iTeamKillCT_S;
 
     int m_iFloodTokens;
-	float m_flLastTalkTime;
+    float m_flLastTalkTime;
 };
 
 class CPlayerManager
