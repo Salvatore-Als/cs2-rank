@@ -245,7 +245,7 @@ std::string CMysql::EscapeString(const char *input)
 
 std::string CMysql::SafeEscapeString(const char *input)
 {
-	std::size_t length = std::strlen(input);
+	std::size_t length = strlen(input);
 	std::string escapedString;
 
 	for (std::size_t i = 0; i < length; ++i)
