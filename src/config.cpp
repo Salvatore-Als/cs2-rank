@@ -25,7 +25,7 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
 
     g_iMinimumPlayers = g_kvCore->GetInt("minimum_players", 5);
 
-    g_pszRankReference = g_kvCore->GetString("rank_references", "DEFAULT");
+    g_pszRankReference = g_kvCore->GetString("rank_reference", "DEFAULT");
 
     // Points configurations
 

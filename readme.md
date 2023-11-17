@@ -1,7 +1,14 @@
 # Rank Plugin for Metamod with MySQL Integration
 
-This project is not yet ready to be tested on a real server, it is still in development.
-There's not a lot of work left before releasing a BETA :)
+### ALPHA TEST
+
+I'm excited to share that our plugin is currently undergoing private alpha testing. However, to ensure a more focused and effective testing experience, I have not yet released a public alpha version.
+
+Fear not, a public release will be made available as soon as alpha testing is concluded, and the plugin reaches a satisfactory level of stability. I appreciate your understanding and patience during this period.
+
+If you're interested in participating in the private alpha testing and contributing to shaping the future of the plugin, feel free to reach out to me on via Discord `_kriax`. Your involvement is valuable and will help make this plugin an outstanding solution.
+
+**If you use the plugin after compiling it yourself I would consider you an alpha tester :)**
 
 ## Overview
 **Developed in partnership with [VeryGames](https://www.verygames.net).**
@@ -36,7 +43,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Colors
 - [x]  Cross server ranking
 - [ ]  Deathmatch FFA support
-- [ ]  Documentation
+- [ ]  Documentation (In progress)
 
 #### Commands
 - [x]  Antiflood system
@@ -88,6 +95,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x]  Bomb defused
 - [x]  Teamkill T
 - [x]  Teamkill CT
+- [ ] All others events
 
 #### Web page
 - [x]  Theme
