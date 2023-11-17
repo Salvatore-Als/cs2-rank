@@ -134,6 +134,8 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 
 	PLUGIN_SAVEVARS();
 
+	g_SMAPI->AddListener(this, this);
+
 	GET_V_IFACE_ANY(GetServerFactory, g_pGameclients, ISource2GameClients, SOURCE2GAMECLIENTS_INTERFACE_VERSION);
 	GET_V_IFACE_ANY(GetEngineFactory, g_pNetworkServerService, INetworkServerService, NETWORKSERVERSERVICE_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetEngineFactory, g_pEngine, IVEngineServer2, SOURCE2ENGINETOSERVER_INTERFACE_VERSION);
@@ -156,15 +158,6 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	if (!g_CConfig->Init(szConfigError, sizeof(szConfigError)))
 	{
 		snprintf(error, maxlen, "Unable to init the configuration: %s", szConfigError);
-		return false;
-	}
-
-	int ret;
-	g_pMysqlClient = (IMySQLClient *)g_SMAPI->MetaFactory(MYSQLMM_INTERFACE, &ret, NULL);
-
-	if (ret == META_IFACE_FAILED)
-	{
-		snprintf(error, maxlen, "Missing MYSQL plugin");
 		return false;
 	}
 
@@ -214,7 +207,6 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 
 	g_CChat = new CChat();
 	g_CPlayerManager = new CPlayerManager();
-	g_CMysql = new CMysql();
 
 	ConVar_Register(FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL);
 
@@ -401,6 +393,16 @@ void CPlugin::Hook_DispatchConCommand(ConCommandHandle cmdHandle, const CCommand
 
 void CPlugin::AllPluginsLoaded()
 {
+	int ret;
+	g_pMysqlClient = (IMySQLClient *)g_SMAPI->MetaFactory(MYSQLMM_INTERFACE, &ret, NULL);
+
+	if (ret == META_IFACE_FAILED)
+	{
+		Fatal("Missing MYSQL plugin");
+		this->ForceUnload();
+	}
+
+	g_CMysql = new CMysql();
 }
 
 bool CPlugin::Pause(char *error, size_t maxlen)
