@@ -29,6 +29,8 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 #### Beta Fix
 - [ ] Remove points lost when disconnecting or changing teams for CT
 - [ ] Add a config `enable_ffa` to disable the points lost during a teamkill (it's better than used a game mode detection)
+- [x] WEB: Fix date view
+- [x] WEB: Fix CT kills percentage  
 
 #### Security
 - [X]  For hibernation to false
