@@ -219,7 +219,7 @@ function generatePlayerRow(player) {
                         ${player.metadata?.kill?.t}% T    
                     </span>
                     <span class="inline-flex items-center rounded-md dark:bg-blue-700 bg-blue-50 px-2 py-1 text-xs font-medium dark:text-blue-50 text-blue-700 ring-1 ring-inset dark:ring-blue-700/10 ring-blue-700/10">
-                    ${player.metadata?.kill?.t}% CT 
+                        ${player.metadata?.kill?.ct}% CT 
                     </span>
                 </div>
                 <div class="flex gap-2">

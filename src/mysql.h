@@ -80,6 +80,13 @@ public:
   void GetRank(CRankPlayer *pPlayer, std::function<void(int)> callback);
 
 private:
+  const char *g_pszRankReference;
+
+  std::string EscapeRankReference();
+
+  std::string EscapeString(const char* input);
+  std::string SafeEscapeString(const char* input);
+
   void Connect();
   void CreateDatabaseIfNotExist();
 
