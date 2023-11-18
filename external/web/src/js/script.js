@@ -189,7 +189,7 @@ function generatePlayerRow(player) {
             ${player.metadata?.rank}
         </td>
         <td class="px-6 py-4 font-normal text-gray-900 dark:text-white">
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
                 <div class="relative h-10 w-10">
                     <img class="h-full w-full rounded-full object-cover object-center" name="steam-picture" loading="lazy" data-authid="${player.authid}" src="https://avatars.cloudflare.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg" />
                 </div>
@@ -199,7 +199,7 @@ function generatePlayerRow(player) {
                         ${player.name}
                     </a>
                     <span class="text-gray-400">
-                        ${new Date(player.lastconnect).toLocaleString()}
+                        ${new Date(player.lastconnect * 1000).toLocaleString()}
                     </span>
                 </div>
             </div>
@@ -211,7 +211,7 @@ function generatePlayerRow(player) {
         </td>
         <td class="px-6 py-4">
             <div class="flex flex-col gap-1">
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <span class="inline-flex items-center font-medium dark:text-gray-300 text-gray-700">
                         ${player.metadata?.kill?.total}
                     </span>
@@ -222,7 +222,7 @@ function generatePlayerRow(player) {
                         ${player.metadata?.kill?.ct}% CT 
                     </span>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <span class="inline-flex items-center rounded-md dark:bg-gray-700 bg-gray-50 px-2 py-1 text-xs font-medium dark:text-gray-50 text-gray-600 ring-1 ring-inset dark:ring-gray-500/10 ring-gray-500/10">
                         ${player.metadata?.kill?.headshot}% Headshot
                     </span>
@@ -232,7 +232,7 @@ function generatePlayerRow(player) {
                 </div>
             </div>
         </td>
-        <td class="px-6 py-4 flex gap-2">
+        <td class="px-6 py-4 flex flex-wrap gap-2">
             <span class="inline-flex items-center font-medium dark:text-gray-300 text-gray-700">
                 ${player.metadata?.killassist?.total}
             </span>
@@ -245,7 +245,7 @@ function generatePlayerRow(player) {
         </td>
         <td class="px-6 py-4">
             <div class="flex flex-col gap-1">
-                <div class="flex gap-1">
+                <div class="flex flex-wrap gap-1">
                     <span class="inline-flex items-center font-medium dark:text-gray-300 text-gray-700">
                         ${player.metadata?.death?.total}
                     </span>
@@ -256,7 +256,7 @@ function generatePlayerRow(player) {
                         ${player.metadata?.death?.ct}% CT
                     </span>
                 </div>
-                <div class="flex gap-1">
+                <div class="flex flex-wrap gap-1">
                     <span class="inline-flex items-center rounded-md dark:bg-gray-700 bg-gray-50 px-2 py-1 text-xs font-medium dark:text-gray-50 text-gray-600 ring-1 ring-inset dark:ring-gray-500/10 ring-gray-500/10">
                         ${player.metadata?.death?.suicide}% Suicide
                     </span>
@@ -264,16 +264,15 @@ function generatePlayerRow(player) {
             </div>
         </td>
         <td class="px-6 py-4">
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
                 <span class="inline-flex items-center rounded-md dark:bg-gray-700 bg-gray-50 px-2 py-1 text-xs font-medium dark:text-gray-50 text-gray-600 ring-1 ring-inset dark:ring-gray-500/10 ring-gray-500/10">
-                ${player.bomb_planted}% planted; 
+                ${player.bomb_planted}% planted
                 </span>
                 <span class="inline-flex items-center rounded-md dark:bg-gray-700 bg-gray-50 px-2 py-1 text-xs font-medium dark:text-gray-50 text-gray-600 ring-1 ring-inset dark:ring-gray-500/10 ring-gray-500/10">
-                ${player.bomb_exploded}% exploded; 
+                ${player.bomb_exploded}% exploded
                 </span>
                 <span class="inline-flex items-center rounded-md dark:bg-gray-700 bg-gray-50 px-2 py-1 text-xs font-medium dark:text-gray-50 text-gray-600 ring-1 ring-inset dark:ring-gray-500/10 ring-gray-500/10">
-                    <?php echo $player['bomb_defused']; ?> defused
-                    ${player.bomb_defused}% defused; 
+                    ${player.bomb_defused}% defused
                 </span>
             </div>
         </td>

@@ -17,7 +17,7 @@
                 <i id="theme-icon" onclick="changeTheme()"></i>
             </div>
         </div>
-        <div class="overflow-hidden rounded-lg shadow-md dark:bg-gray-800 dark:text-white">
+        <div class="overflow-auto rounded-lg shadow-md dark:bg-gray-800 dark:text-white">
             <table class="pt-5 w-full border-collapse dark:bg-gray-800 text-left text-sm text-gray-500 dark:text-white">
                 <thead class="bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
@@ -32,7 +32,7 @@
                         <th scope="col" class="px-6 py-4 font-medium text-gray-900 dark:text-white">Bomb</th>
                     </tr>
                 </thead>
-                <tbody id="players-table">
+                <tbody id="players-table" class="flex-1 sm:flex-none">
                     
                 </tbody>
             </table>
