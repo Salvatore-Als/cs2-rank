@@ -27,8 +27,10 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 # TODO List
 
 #### Beta Fix
-- [ ] Remove points lost when disconnecting or changing teams for CT
+- [ ] Remove points lost when disconnecting or changing teams for Spectator
 - [ ] Add a config `enable_ffa` to disable the points lost during a teamkill (it's better than used a game mode detection)
+- [ ] Fix escape string for player's name
+- [ ] Add a map reference for the rank with !maprank !mapsession !maptop
 - [x] WEB: Fix date view
 - [x] WEB: Fix CT kills percentage  
 
