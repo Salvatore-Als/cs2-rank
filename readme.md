@@ -68,9 +68,9 @@ https://github.com/Salvatore-Als/cs2-rank/tree/main/external/web
 - Command /top
 - Command /ranklink
 - Command /rankmaps
+https://github.com/Salvatore-Als/cs2-rank/tree/main/external/discord
 
 ## Require
 - CS2 Serveur (Linux or Window)
 - Remove server hibernation `sv_hibernate_when_empty 0`
 - mysql_mm plugins by Poggu : https://github.com/Poggicek/mysql_mm
-https://github.com/Salvatore-Als/cs2-rank/tree/main/external/discord
