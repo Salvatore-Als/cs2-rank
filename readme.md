@@ -56,7 +56,7 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - !resetmaprank
 - !stats
 - !statsmap
-- !statssessions
+- !statssession
 
 #### Web page
 - Dark / Light theme

@@ -187,7 +187,7 @@ CON_COMMAND_CHAT(statsmap, "Show your stats for the map")
 }
 
 // command to show the stats
-CON_COMMAND_CHAT(statssessions, "Show your stats")
+CON_COMMAND_CHAT(statssession, "Show your stats")
 {
     if (!player)
         return;
