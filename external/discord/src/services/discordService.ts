@@ -146,7 +146,6 @@ export default class DiscordService {
 
                 // There is no linked account
                 if (!search) {
-
                     const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
                     embeded
                         .setTitle(this._translationService.translate(ITranslateKey.Title_LinkAccount))
@@ -157,7 +156,6 @@ export default class DiscordService {
                     return;
                 }
             }
-
 
             let map: IMap = null;
             if (mapName) {
@@ -180,6 +178,8 @@ export default class DiscordService {
 
             const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
             const title: string = mapName ? this._translationService.translate(ITranslateKey.Sentence_MapRank, map.name, player.rank) : this._translationService.translate(ITranslateKey.Sentence_Rank, player.rank);
+
+            this._loggerService.debug(`[Discord Service] sendRank title : ${title}`);
 
             embeded
                 .setAuthor({ name: title })
@@ -211,7 +211,7 @@ export default class DiscordService {
 
             if (player.rank > 0) {
                 embeded
-                    .setAuthor({ name: this._translationService.translate(ITranslateKey.Sentence_Rank, player.rank) })
+                    .setAuthor({ name: title })
                     .setColor(IColor.Success);
             } else {
                 embeded
@@ -223,6 +223,7 @@ export default class DiscordService {
         } catch (error: any) {
             this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_ActionNotPossible));
             this._loggerService.error(error);
+            console.log(error);
         }
     }
 

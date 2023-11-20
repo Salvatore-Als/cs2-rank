@@ -4,10 +4,10 @@
 **Developed in partnership with [VeryGames](https://www.verygames.net).**
 
 ## Features
-### 1. `/rank <group> <player/steamid64>`
+### 1. `/rank <group> <player/steamid64> <map>`
 - This command displays your rank. The group is the rank reference (from the server).
 
-### 2. `/top <group>`
+### 2. `/top <group>  <map>`
 - This command displays the top. The group is the rank reference (from the server).
 
 ### 3. `/ranklink <steamid64>`

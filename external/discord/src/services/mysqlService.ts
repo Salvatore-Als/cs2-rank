@@ -143,10 +143,12 @@ export default class MysqlService {
         let results: MysqlCountResult[];
 
         if (mapId != null) {
+            this._loggerService.debug(`[Mysql Service] Get rank by mapId ${mapId}`);
             query = "SELECT COUNT(*) as count FROM verygames_rank_users WHERE points > ? AND reference = ? AND `map` = ?";
             results = await this._mysqlProvider.query<MysqlCountResult[]>(query, [points ?? 10, groupReference, mapId]);
         } else {
-            query = "SELECT COUNT(*) as count FROM verygames_rank_users WHERE points > ? AND reference = ? GROUP BY authid HAVING SUM(points) > ?";
+            this._loggerService.debug(`[Mysql Service] Get rank`);
+            query = "SELECT COUNT(*) as count FROM verygames_rank_users WHERE reference = ? GROUP BY authid HAVING SUM(points) > ?";
             results = await this._mysqlProvider.query<MysqlCountResult[]>(query, [groupReference, points ?? 10]);
         }
 
@@ -167,7 +169,7 @@ export default class MysqlService {
 
     private async getPointByName(name: string, groupReference: string): Promise<number> {
         const query: string = "SELECT points FROM verygames_rank_users WHERE name LIKE ? AND reference = ?";
-        const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, [name, groupReference]);
+        const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, [`%${name}%`, groupReference]);
 
         if (!players?.length) {
             return null;
