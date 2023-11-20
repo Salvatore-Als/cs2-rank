@@ -25,10 +25,19 @@ export enum ITranslateKey {
     CommandArg_DescriptionGroup = "CommandArg_DescriptionGroup",
     CommandArg_DescriptionPlayer = "CommandArg_DescriptionPlayer",
     CommandArg_DescriptionSteamid = "CommandArg_DescriptionSteamid",
+    Command_Map = "Command_Map",
+    Command_DescriptionMap = "Command_DescriptionMap",
     Title_LinkAccount = "Title_LinkAccount",
     Sentence_DiscordAlreadyLinked = "Sentence_DiscordAlreadyLinked",
     Sentence_SteamAlreadyLinked = "Sentence_SteamAlreadyLinked",
     Sentence_DiscordLinked = "Sentence_DiscordLinked",
     Sentence_RenameNeeded = "Sentence_RenameNeeded",
-    Sentence_LinkNeeded = "Sentence_LinkNeeded"
+    Sentence_LinkNeeded = "Sentence_LinkNeeded",
+    Sentence_NoMapsFound = "Sentence_NoMapsFound",
+    Stats_Map = "Stats_Map",
+    Title_Maps = "Title_Maps",
+    Sentence_MapNotFound = "Sentence_MapNotFound",
+    CommandArg_DescriptionMap = "CommandArg_DescriptionMap",
+    Title_MapTopPlayers = "Title_MapTopPlayers",
+    Sentence_MapRank = "Sentence_MapRank"
 }

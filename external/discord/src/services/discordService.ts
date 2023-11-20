@@ -13,6 +13,7 @@ import { ITranslateKey } from '../interface/ITranslate';
 import { ILinkedAccout } from '../interface/ILinkedAccount';
 import SteamService from './steamService';
 import { ISteamProfile } from '../interface/ISteamProfile';
+import { IMap } from '../interface/IMap';
 
 interface RequestLink {
     authid: string;
@@ -77,8 +78,12 @@ export default class DiscordService {
                             break;
                         case this._translationService.translate(ITranslateKey.Command_Top):
                             await this._sendTop(interaction);
+                            break;
                         case this._translationService.translate(ITranslateKey.Command_Link):
                             await this._sendLink(interaction);
+                            break;
+                        case this._translationService.translate(ITranslateKey.Command_Map):
+                            await this._sendMaps(interaction);
                             break;
                     }
 
@@ -90,10 +95,43 @@ export default class DiscordService {
         });
     }
 
+    private async _sendMaps(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
+        try {
+            const maps: IMap[] = await this._mysqlService.getMaps();
+            const chunks: Array<IMap[]> = _.chunk(maps, 15);
+
+            if (!maps?.length || !chunks?.length) {
+                this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_PlayerNotFound));
+                return;
+            }
+
+            const embeds: Discord.EmbedBuilder[] = [];
+
+            for (let chunk of chunks) {
+                let content: string = "";
+                chunk.map((map: IMap) => content = content + `\n` + this._translationService.translate(ITranslateKey.Stats_Map, map.name));
+
+                const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+                embeded
+                    .setTitle(this._translationService.translate(ITranslateKey.Title_Maps))
+                    .setColor(IColor.Success)
+                    .setDescription(content);
+
+                embeds.push(embeded);
+            }
+
+            await interaction.reply({ embeds: embeds, ephemeral: true });
+        } catch (error: any) {
+            this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_ActionNotPossible));
+            this._loggerService.error(error);
+        }
+    }
+
     private async _sendRank(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
         try {
             const userId: string = interaction.user.id;
             const group: string = interaction.options.getString('group', true);
+            const mapName: string = interaction.options.getString('map', false);
             let search: string = interaction.options.getString('player', false);
 
             let searchIsAuthid: boolean = false;
@@ -120,7 +158,18 @@ export default class DiscordService {
                 }
             }
 
-            const player: IPlayer = searchIsAuthid ? await this._mysqlService.getRankByAuthid(search, group) : await this._mysqlService.getRankByName(search, group);
+
+            let map: IMap = null;
+            if (mapName) {
+                map = await this._mysqlService.getMapByName(mapName);
+
+                if (map == null) {
+                    this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_MapNotFound));
+                    return;
+                }
+            }
+
+            const player: IPlayer = searchIsAuthid ? await this._mysqlService.getRankByAuthid(search, group, map?.id) : await this._mysqlService.getRankByName(search, group, map?.id);
 
             if (!player) {
                 this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_PlayerNotFound));
@@ -130,9 +179,10 @@ export default class DiscordService {
             player.metaData = await this.processMetaData(player);
 
             const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
+            const title: string = mapName ? this._translationService.translate(ITranslateKey.Sentence_MapRank, map.name, player.rank) : this._translationService.translate(ITranslateKey.Sentence_Rank, player.rank);
 
             embeded
-                .setAuthor({ name: this._translationService.translate(ITranslateKey.Sentence_Rank, player.rank) })
+                .setAuthor({ name: title })
                 .setDescription(this._translationService.translate(ITranslateKey.Sentence_Points, player.points))
                 .setTitle(player.metaData?.steamProfile?.name)
                 .setURL(`https://steamcommunity.com/profiles/${player.authid}`)
@@ -173,14 +223,25 @@ export default class DiscordService {
         } catch (error: any) {
             this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_ActionNotPossible));
             this._loggerService.error(error);
-            console.log(error);
         }
     }
 
     private async _sendTop(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
         try {
             const group: string = interaction.options.getString('group', true);
-            const players: ITopPlayer[] = await this._mysqlService.getTop(group);
+            const mapName: string = interaction.options.getString('map', false);
+
+            let map: IMap = null;
+            if (mapName) {
+                map = await this._mysqlService.getMapByName(mapName);
+
+                if (map == null) {
+                    this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_MapNotFound));
+                    return;
+                }
+            }
+
+            const players: ITopPlayer[] = await this._mysqlService.getTop(group, map?.id);
 
             let content: string = "";
 
@@ -190,9 +251,11 @@ export default class DiscordService {
                 index++;
             }
 
+            const title: string = mapName ? this._translationService.translate(ITranslateKey.Title_MapTopPlayers, map.name) : this._translationService.translate(ITranslateKey.Title_TopPlayers);
+
             const embeded: Discord.EmbedBuilder = new Discord.EmbedBuilder();
             embeded
-                .setTitle(this._translationService.translate(ITranslateKey.Title_TopPlayers))
+                .setTitle(title)
                 .setColor(IColor.Success)
                 .setDescription(content)
 

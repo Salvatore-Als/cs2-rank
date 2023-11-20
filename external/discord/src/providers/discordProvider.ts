@@ -60,7 +60,12 @@ export default class DiscordProvider {
             this._client.on('ready', async (client: Discord.Client<true>) => {
                 await this._rest.put(
                     Routes.applicationCommands(client.user.id), {
-                    body: [this.buildRankCommand(groupMapping).toJSON(), this.buildTopCommand(groupMapping).toJSON(), this.buildLinkCommand(groupMapping).toJSON()]
+                    body: [
+                        this.buildRankCommand(groupMapping).toJSON(),
+                        this.buildTopCommand(groupMapping).toJSON(),
+                        this.buildLinkCommand().toJSON(),
+                        this.buildMapCommand().toJSON()
+                    ]
                 });
 
                 this._loggerService.info("[Discord Provider] Running " + (new Date().getTime() - start) / 1000);
@@ -87,8 +92,12 @@ export default class DiscordProvider {
                 option
                     .setName('player')
                     .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionPlayer))
-                    .setRequired(false)
-            );
+                    .setRequired(false))
+            .addStringOption((option: SlashCommandStringOption) =>
+                option
+                    .setName('map')
+                    .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionMap))
+                    .setRequired(false));
 
         return command;
     }
@@ -102,22 +111,34 @@ export default class DiscordProvider {
                     .setName('group')
                     .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionGroup))
                     .setRequired(true)
-                    .addChoices(...groups)
-            );
+                    .addChoices(...groups))
+            .addStringOption((option: SlashCommandStringOption) =>
+                option
+                    .setName('map')
+                    .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionMap))
+                    .setRequired(false));
 
         return command;
     }
 
-    private buildLinkCommand(groups: { name: string, value: string }[]): SlashCommandBuilder {
+    private buildLinkCommand(): SlashCommandBuilder {
         const command: any = new SlashCommandBuilder()
             .setName(this._translationService.translate(ITranslateKey.Command_Link))
-            .setDescription(this._translationService.translate(ITranslateKey.Command_Link))
+            .setDescription(this._translationService.translate(ITranslateKey.Command_DescriptionLink))
             .addStringOption((option: SlashCommandStringOption) =>
                 option
                     .setName('steamid64')
                     .setDescription(this._translationService.translate(ITranslateKey.CommandArg_DescriptionSteamid))
                     .setRequired(true)
             );
+
+        return command;
+    }
+
+    private buildMapCommand(): SlashCommandBuilder {
+        const command: any = new SlashCommandBuilder()
+            .setName(this._translationService.translate(ITranslateKey.Command_Map))
+            .setDescription(this._translationService.translate(ITranslateKey.Command_DescriptionMap));
 
         return command;
     }

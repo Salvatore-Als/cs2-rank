@@ -4,8 +4,10 @@
     "Sentence_NoRank": "Unranked",
     "Sentence_ActionNotPossible": "I can't perform this action",
     "Sentence_Points": "**Points:** #VAR#",
+    "Sentence_MapRank": "#VAR# - 🏆 #VAR#",
     "Title_Error": "Ohh snap !",
     "Title_TopPlayers": "Top Players :",
+    "Title_MapTopPlayers": "#VAR# - Top Players :",
     "Stats_TopPlayer": "##VAR# - **#VAR#** with #VAR# points",
     "StatsTitle_Kills": "Kills: #VAR#",
     "StatsTitle_Assits": "Assists: #VAR#",
@@ -29,5 +31,12 @@
     "Command_DescriptionLink": "Link a Steam account",
     "CommandArg_DescriptionGroup": "Select a rank",
     "CommandArg_DescriptionPlayer": "Enter a steamid64 or a name",
-    "CommandArg_Steam": "Entrer un steamid64"
+    "CommandArg_Steam": "Enter a steamid64",
+    "Command_Map": "rankmaps",
+    "Command_DescriptionMap": "Display the availables maps for the rank",
+    "Sentence_NoMapsFound": "I can't found any maps.",
+    "Stats_Map": "• #VAR#",
+    "Title_Maps": "Maps used for the rank:",
+    "Sentence_MapNotFound": "I can't found this map.",
+    "CommandArg_DescriptionMap": "Enter a map"
 }

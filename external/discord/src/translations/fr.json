@@ -1,11 +1,13 @@
 {
     "Sentence_PlayerNotFound": "Je ne trouve pas ce joueur",
     "Sentence_Rank": "🏆 #VAR#",
+    "Sentence_MapRank": "#VAR# - 🏆 #VAR#",
     "Sentence_NoRank": "Non classé",
     "Sentence_ActionNotPossible": "Je ne peux pas effectuer cette action",
     "Sentence_Points": "**Points:** #VAR#",
     "Title_Error": "Oh merde !",
     "Title_TopPlayers": "Meilleurs joueurs :",
+    "Title_MapTopPlayers": "#VAR# - Meilleurs joueurs :",
     "Stats_TopPlayer": "##VAR# - **#VAR#** avec #VAR# points",
     "StatsTitle_Kills": "Kills : #VAR#",
     "StatsTitle_Assists": "Assists : #VAR#",
@@ -29,5 +31,12 @@
     "Command_DescriptionLink": "Lier un compte Steam",
     "CommandArg_DescriptionGroup": "Sélectionne un rang",
     "CommandArg_DescriptionPlayer": "Entre un steamid64 ou un nom",
-    "CommandArg_Steam": "Entre un steamid64"
+    "CommandArg_Steam": "Entre un steamid64",
+    "Command_Map": "rankmaps",
+    "Command_DescriptionMap": "Affiche les maps disponible pour le rank",
+    "Sentence_NoMapsFound": "Je ne trouve aucunes maps.",
+    "Stats_Map": "• #VAR#",
+    "Title_Maps": "Maps utilisées pour le rank:",
+    "Sentence_MapNotFound": "Je ne trouve pas cette map.",
+    "CommandArg_DescriptionMap": "Entrer une map à chercher"
 }
