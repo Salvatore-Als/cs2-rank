@@ -277,18 +277,18 @@ GAME_EVENT_F(player_death)
     CCSPlayerController *pAssisterController = (CCSPlayerController *)pEvent->GetPlayerController("assister");
     if (pAssisterController)
     {
-        CRankPlayer *pAssist = pAttackerController->GetRankPlayer();
+        CRankPlayer *pAssist = pAssisterController->GetRankPlayer();
         if (pAssist && pAssist->IsValidPlayer() && pAssisterController->m_iTeamNum != pVictimController->m_iTeamNum)
         {
             UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("KILL_ASSIST"), g_CConfig->GetPointsWinKillAssist());
-            g_CChat->PrintToChat(pAttackerController, true, szTranslate);
+            g_CChat->PrintToChat(pAssisterController, true, szTranslate);
 
-            pAttacker->m_Points.Add(g_CConfig->GetPointsWinKillAssist());
+            pAssist->m_Points.Add(g_CConfig->GetPointsWinKillAssist());
 
             if (pAssisterController->m_iTeamNum == CS_TEAM_T)
-                pAttacker->m_KillAssistCT.Add(1);
+                pAssist->m_KillAssistCT.Add(1);
             else if (pAssisterController->m_iTeamNum == CS_TEAM_CT)
-                pAttacker->m_KillAssistT.Add(1);
+                pAssist->m_KillAssistT.Add(1);
         }
     }
 
