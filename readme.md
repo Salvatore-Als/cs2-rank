@@ -27,9 +27,9 @@ This is a rank plugin designed to work with Metamod, incorporating a MySQL datab
 - [x] WEB: Fix date view
 - [x] WEB: Fix CT kills percentage  
 - [ ] WEB : Manage top per map
-- [ ] DISCORD : Manage rank per map
-- [ ] DISCORD : Manage top per map
-- [ ] DISCORD : Add /rankmaps to display the available map
+- [x] DISCORD : Manage rank per map
+- [x] DISCORD : Manage top per map
+- [x] DISCORD : Add /rankmaps to display the available map
 
 #### Feature
 - Rank
