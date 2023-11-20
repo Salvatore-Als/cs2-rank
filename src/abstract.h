@@ -46,6 +46,13 @@
 #define MODULE_EXT ".so"
 #endif
 
+enum RequestType
+{
+    Global = 0,
+    Map = 1,
+    Session = 2
+};
+
 void Debug(const char *, ...);
 void Fatal(const char *, ...);
 void Warn(const char *, ...);

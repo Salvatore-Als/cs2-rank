@@ -6,6 +6,75 @@
 
 extern CGlobalVars *g_pGlobals;
 
+class CRankPlayerStats
+{
+public:
+    CRankPlayerStats()
+    {
+    }
+
+    int Get(RequestType requestType)
+    {
+        switch (requestType)
+        {
+        case RequestType::Global:
+            return this->m_iGlobal;
+        case RequestType::Map:
+            return this->m_iMap;
+        case RequestType::Session:
+            return this->m_iSession;
+        }
+    }
+
+    void Set(RequestType requestType, int value)
+    {
+        switch (requestType)
+        {
+        case RequestType::Global:
+            this->m_iGlobal = value;
+            break;
+        case RequestType::Map:
+            this->m_iMap = value;
+            break;
+        case RequestType::Session:
+            this->m_iSession = value;
+            break;
+        }
+    }
+
+    void Reset(RequestType requestType)
+    {
+        switch (requestType)
+        {
+        case RequestType::Global:
+            this->m_iGlobal = 0;
+            break;
+        case RequestType::Map:
+            this->m_iMap = 0;
+            break;
+        }
+    }
+
+    void Add(int value)
+    {
+        this->m_iGlobal = this->m_iGlobal + value;
+        this->m_iMap = this->m_iMap + value;
+        this->m_iSession = this->m_iSession + value;
+    }
+
+    void Remove(int value)
+    {
+        this->m_iGlobal = this->m_iGlobal - value;
+        this->m_iMap = this->m_iMap - value;
+        this->m_iSession = this->m_iSession - value;
+    }
+
+private:
+    int m_iGlobal;
+    int m_iMap;
+    int m_iSession;
+};
+
 class CRankPlayer
 {
 public:
@@ -17,34 +86,35 @@ public:
         m_bDatabaseAuthenticated = false;
         m_bIgnoringAnnouce = false;
 
-        m_iPoints_S = 0;
-        m_iDeathSuicide_S = 0;
-        m_iDeathT_S = 0;
-        m_iDeathCT_S = 0;
-        m_iBombPlanted_S = 0;
-        m_iBombExploded_S = 0;
-        m_iBombDefused_S = 0;
-        m_iKillKnife_S = 0;
-        m_iKillHeadshot_S = 0;
-        m_iKillCT_S = 0;
-        m_iKillT_S = 0;
-        m_iKillAssistCT_S = 0;
-        m_iKillAssistT_S = 0;
-        m_iTeamKillT_S = 0;
-        m_iTeamKillCT_S = 0;
+        m_Points.Set(RequestType::Session, 0);
+        m_DeathSuicide.Set(RequestType::Session, 0);
+        m_DeathT.Set(RequestType::Session, 0);
+        m_DeathCT.Set(RequestType::Session, 0);
+        m_BombPlanted.Set(RequestType::Session, 0);
+        m_BombExploded.Set(RequestType::Session, 0);
+        m_BombDefused.Set(RequestType::Session, 0);
+        m_KillKnife.Set(RequestType::Session, 0);
+        m_KillHeadshot.Set(RequestType::Session, 0);
+        m_KillCT.Set(RequestType::Session, 0);
+        m_KillT.Set(RequestType::Session, 0);
+        m_KillAssistCT.Set(RequestType::Session, 0);
+        m_KillAssistT.Set(RequestType::Session, 0);
+        m_TeamKillT.Set(RequestType::Session, 0);
+        m_TeamKillCT.Set(RequestType::Session, 0);
     }
 
     CRankPlayer *Get() { return this; };
-    void Reset();
-    void InitStats(bool setAnnouce);
+    void Reset(RequestType requestType);
+    void InitStats(RequestType requestType, bool setAnnouce);
 
-    void PrintDebug(bool session);
+    void PrintDebug(RequestType requestType);
 
     bool IsFlooding();
 
     bool IsValidPlayer();
 
     void SaveOnDatabase();
+    void RemoveFromOtherMap();
 
     bool IsDatabaseAuthenticated() { return m_bDatabaseAuthenticated; }
     void SetDatabaseAuthenticated() { m_bDatabaseAuthenticated = true; }
@@ -67,226 +137,23 @@ public:
     bool IsIgnoringAnnouce() { return m_bIgnoringAnnouce; }
     void SetIgnoringAnnouce(bool value) { m_bIgnoringAnnouce = value; }
 
-    int GetPoints(bool session = false) const { return session ? m_iPoints_S : m_iPoints; }
-    void AddPoints(int value)
-    {
-        Add(m_iPoints, value);
-        Add(m_iPoints_S, value);
-    }
-    void RemovePoints(int value)
-    {
-        Remove(m_iPoints, value);
-        Remove(m_iPoints_S, value);
-    }
-    void SetPoints(int value, bool session = true)
-    {
-        Set(m_iPoints, value);
-
-        if (session)
-            Set(m_iPoints_S, value);
-    }
-
-    int GetDeathSuicide(bool session = false) const { return session ? m_iDeathSuicide_S : m_iDeathSuicide; }
-    void SetDeathSuicide(int value, bool session = true)
-    {
-        Set(m_iDeathSuicide, value);
-
-        if (session)
-            Set(m_iDeathSuicide_S, value);
-    }
-    void AddDeathSuicide(int value)
-    {
-        Add(m_iDeathSuicide, value);
-        Add(m_iDeathSuicide_S, value);
-    }
-
-    int GetDeathT(bool session = false) const { return session ? m_iDeathT_S : m_iDeathT; }
-    void SetDeathT(int value, bool session = true)
-    {
-        Set(m_iDeathT, value);
-
-        if (session)
-            Set(m_iDeathT_S, value);
-    }
-    void AddDeathT(int value)
-    {
-        Add(m_iDeathT, value);
-        Add(m_iDeathT_S, value);
-    }
-
-    int GetDeathCT(bool session = false) const { return session ? m_iDeathCT_S : m_iDeathCT; }
-    void SetDeathCT(int value, bool session = true)
-    {
-        Set(m_iDeathCT, value);
-
-        if (session)
-            Set(m_iDeathCT_S, value);
-    }
-    void AddDeathCT(int value)
-    {
-        Add(m_iDeathCT, value);
-        Add(m_iDeathCT_S, value);
-    }
-
-    int GetBombPlanted(bool session = false) const { return session ? m_iBombPlanted_S : m_iBombPlanted; }
-    void SetBombPlanted(int value, bool session = true)
-    {
-        Set(m_iBombPlanted, value);
-
-        if (session)
-            Set(m_iBombPlanted_S, value);
-    }
-    void AddBombPlanted(int value)
-    {
-        Add(m_iBombPlanted, value);
-        Add(m_iBombPlanted_S, value);
-    }
-
-    int GetBombExploded(bool session = false) const { return session ? m_iBombExploded_S : m_iBombExploded; }
-    void SetBombExploded(int value, bool session = true)
-    {
-        Set(m_iBombExploded, value);
-
-        if (session)
-            Set(m_iBombExploded_S, value);
-    }
-    void AddBombExploded(int value)
-    {
-        Add(m_iBombExploded, value);
-        Add(m_iBombExploded_S, value);
-    }
-
-    int GetBombDefused(bool session = false) const { return session ? m_iBombDefused_S : m_iBombDefused; }
-    void SetBombDefused(int value, bool session = true)
-    {
-        Set(m_iBombDefused, value);
-
-        if (session)
-            Set(m_iBombDefused_S, value);
-    }
-    void AddBombDefused(int value)
-    {
-        Add(m_iBombDefused, value);
-        Add(m_iBombDefused_S, value);
-    }
-
-    int GetKillKnife(bool session = false) const { return session ? m_iKillKnife_S : m_iKillKnife; }
-    void SetKillKnife(int value, bool session = true)
-    {
-        Set(m_iKillKnife, value);
-
-        if (session)
-            Set(m_iKillKnife_S, value);
-    }
-    void AddKillKnife(int value)
-    {
-        Add(m_iKillKnife, value);
-        Add(m_iKillKnife_S, value);
-    }
-
-    int GetKillHeadshot(bool session = false) const { return session ? m_iKillHeadshot_S : m_iKillHeadshot; }
-    void SetKillHeadshot(int value, bool session = true)
-    {
-        Set(m_iKillHeadshot, value);
-
-        if (session)
-            Set(m_iKillHeadshot_S, value);
-    }
-    void AddKillHeadshot(int value)
-    {
-        Add(m_iKillHeadshot, value);
-        Add(m_iKillHeadshot_S, value);
-    }
-
-    int GetKillCT(bool session = false) const { return session ? m_iKillCT_S : m_iKillCT; }
-    void SetKillCT(int value, bool session = true)
-    {
-        Set(m_iKillCT, value);
-
-        if (session)
-            Set(m_iKillCT_S, value);
-    }
-    void AddKillCT(int value)
-    {
-        Add(m_iKillCT, value);
-        Add(m_iKillCT_S, value);
-    }
-
-    int GetKillT(bool session = false) const { return session ? m_iKillT_S : m_iKillT; }
-    void SetKillT(int value, bool session = true)
-    {
-        Set(m_iKillT, value);
-
-        if (session)
-            Set(m_iKillT_S, value);
-    }
-    void AddKillT(int value)
-    {
-        Add(m_iKillT, value);
-        Add(m_iKillT_S, value);
-    }
-
-    int GetKillAssistCT(bool session = false) const { return session ? m_iKillAssistCT_S : m_iKillAssistCT; }
-    void SetKillAssistCT(int value, bool session = true)
-    {
-        Set(m_iKillAssistCT, value);
-
-        if (session)
-            Set(m_iKillAssistCT_S, value);
-    }
-    void AddKillAssistCT(int value)
-    {
-        Add(m_iKillAssistCT, value);
-        Add(m_iKillAssistCT_S, value);
-    }
-
-    int GetKillAssistT(bool session = false) const { return session ? m_iKillAssistT_S : m_iKillAssistT; }
-    void SetKillAssistT(int value, bool session = true)
-    {
-        Set(m_iKillAssistT, value);
-
-        if (session)
-            Set(m_iKillAssistT_S, value);
-    }
-    void AddKillAssistT(int value)
-    {
-        Add(m_iKillAssistT, value);
-        Add(m_iKillAssistT_S, value);
-    }
-
-    int GetTeamKillT(bool session = false) const { return session ? m_iTeamKillT_S : m_iTeamKillT; }
-    void SetTeamKillT(int value, bool session = true)
-    {
-        Set(m_iTeamKillT, value);
-
-        if (session)
-            Set(m_iTeamKillT_S, value);
-    }
-    void AddTeamKillT(int value)
-    {
-        Add(m_iTeamKillT, value);
-        Add(m_iTeamKillT_S, value);
-    }
-
-    int GetTeamKillCT(bool session = false) const { return session ? m_iTeamKillCT_S : m_iTeamKillCT; }
-    void SetTeamKillCT(int value, bool session = true)
-    {
-        Set(m_iTeamKillCT, value);
-
-        if (session)
-            Set(m_iTeamKillCT_S, value);
-    }
-    void AddTeamKillCT(int value)
-    {
-        Add(m_iTeamKillCT, value);
-        Add(m_iTeamKillCT_S, value);
-    }
+    CRankPlayerStats m_Points;
+    CRankPlayerStats m_DeathSuicide;
+    CRankPlayerStats m_DeathT;
+    CRankPlayerStats m_DeathCT;
+    CRankPlayerStats m_BombPlanted;
+    CRankPlayerStats m_BombExploded;
+    CRankPlayerStats m_BombDefused;
+    CRankPlayerStats m_KillKnife;
+    CRankPlayerStats m_KillHeadshot;
+    CRankPlayerStats m_KillCT;
+    CRankPlayerStats m_KillT;
+    CRankPlayerStats m_KillAssistCT;
+    CRankPlayerStats m_KillAssistT;
+    CRankPlayerStats m_TeamKillT;
+    CRankPlayerStats m_TeamKillCT;
 
 private:
-    void Add(int &variable, int value) { variable += value; }
-    void Set(int &variable, int value) { variable = value; }
-    void Remove(int &variable, int value) { variable -= value; }
-
     const CSteamID *m_SteamID;
     CPlayerSlot m_slot;
 
@@ -295,43 +162,6 @@ private:
     bool m_bConnected;
     bool m_bFakeClient;
     bool m_bDatabaseAuthenticated;
-
-    // _S convention for SESSION !!!
-
-    int m_iPoints;
-    int m_iPoints_S;
-
-    int m_iDeathSuicide;
-    int m_iDeathSuicide_S;
-    int m_iDeathT;
-    int m_iDeathT_S;
-    int m_iDeathCT;
-    int m_iDeathCT_S;
-
-    int m_iBombPlanted;
-    int m_iBombPlanted_S;
-    int m_iBombExploded;
-    int m_iBombExploded_S;
-    int m_iBombDefused;
-    int m_iBombDefused_S;
-
-    int m_iKillKnife;
-    int m_iKillKnife_S;
-    int m_iKillHeadshot;
-    int m_iKillHeadshot_S;
-    int m_iKillCT;
-    int m_iKillCT_S;
-    int m_iKillT;
-    int m_iKillT_S;
-    int m_iKillAssistCT;
-    int m_iKillAssistCT_S;
-    int m_iKillAssistT;
-    int m_iKillAssistT_S;
-
-    int m_iTeamKillT;
-    int m_iTeamKillT_S;
-    int m_iTeamKillCT;
-    int m_iTeamKillCT_S;
 
     int m_iFloodTokens;
     float m_flLastTalkTime;

@@ -5,6 +5,16 @@
 #include "player.h"
 #include <map>
 
+#define CREATE_MAPS_TABLE "CREATE TABLE IF NOT EXISTS `verygames_rank_maps` ( \
+  `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
+  `name` varchar(32) NOT NULL, \
+  UNIQUE INDEX `id` (`id`) USING BTREE) \
+  ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
+
+#define SELECT_MAP "SELECT `id` FROM `verygames_rank_maps` WHERE `name` = '%s'"
+
+#define INSERT_MAP "INSERT INTO `verygames_rank_maps` (`name`) VALUES ('%s');"
+
 #define CREATE_REFERENCES_TABLE "CREATE TABLE IF NOT EXISTS `verygames_rank_references` ( \
   `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
   `reference` varchar(32) NOT NULL, \
@@ -20,6 +30,7 @@
   `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
   `authid` BIGINT(64) NOT NULL DEFAULT '0', \
   `reference` varchar(32) NOT NULL, \
+  `map` int(11) NOT NULL, \
   `name` varchar(32) NOT NULL, \
   `ignore_annouce` INT(11) NOT NULL DEFAULT 0, \
   `points` int(11) NOT NULL DEFAULT 0, \
@@ -41,20 +52,31 @@
   UNIQUE INDEX `id` (`id`) USING BTREE) \
   ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
 
-#define INSERT_USER "INSERT INTO `verygames_rank_users` (`authid`, `name`, `reference`) VALUES ('%lli', '%s', '%s');"
+#define INSERT_USER "INSERT INTO `verygames_rank_users` (`authid`, `name`, `reference`, `map` ) VALUES ('%lli', '%s', '%s', '%i');"
 
 #define UPDATE_USER "UPDATE `verygames_rank_users` SET `name` = '%s', `ignore_annouce` = %d, \
 `points` = %d, `death_suicide` = %d, `death_t` = %d, `death_ct` = %d, `bomb_planted` = %d, \
 `bomb_exploded` = %d, `bomb_defused` = %d, `kill_knife` = %d, `kill_headshot` = %d, `kill_t` = %d, \
-`kill_ct` = %d, `teamkill_t` = %d, `teamkill_ct` = %d, `lastconnect` = %ld WHERE `authid` = '%lli' AND `reference` = '%s';"
+`kill_ct` = %d, `teamkill_t` = %d, `teamkill_ct` = %d, `lastconnect` = %ld WHERE `authid` = '%lli' AND `reference` = '%s' AND `map` = %i;"
 
-#define SELECT_USER "SELECT `ignore_annouce`, `points`, `death_suicide`, `death_t`, `death_ct`, `bomb_planted`, `bomb_exploded` \
+#define SELECT_USER_MAP "SELECT `ignore_annouce`, `points`, `death_suicide`, `death_t`, `death_ct`, `bomb_planted`, `bomb_exploded` \
 , `bomb_defused`, `kill_knife`, `kill_headshot`, `kill_t`, `kill_ct`, `teamkill_t` \
-, `teamkill_ct`, `killassist_t`, `killassist_ct` FROM `verygames_rank_users` WHERE `authid` = '%lli' AND `reference` = '%s'"
+, `teamkill_ct`, `killassist_t`, `killassist_ct` FROM `verygames_rank_users` WHERE `authid` = '%lli' AND `reference` = '%s' AND `map` = %i"
 
-#define TOP "SELECT `name`, `points` FROM verygames_rank_users WHERE points >= %i AND `reference` = '%s' ORDER BY points DESC LIMIT 15;"
+#define SELECT_USER_GLOBAL "SELECT SUM(points) AS total_points, SUM(death_suicide) AS total_death_suicide, \
+SUM(death_t) AS total_death_t, SUM(death_ct) AS total_death_ct, SUM(bomb_planted) AS total_bomb_planted, \
+SUM(bomb_exploded) AS total_bomb_exploded, SUM(bomb_defused) AS total_bomb_defused, SUM(kill_knife) AS total_kill_knife, \
+SUM(kill_headshot) AS total_kill_headshot, SUM(kill_t) AS total_kill_t, SUM(kill_ct) AS total_kill_ct, \
+SUM(teamkill_t) AS total_teamkill_t, SUM(teamkill_ct) AS total_teamkill_ct, SUM(killassist_t) AS total_killassist_t, \
+SUM(killassist_ct) AS total_killassist_ct FROM verygames_rank_users WHERE authid = '%lli' and `reference` = '%s' GROUP BY authid;"
 
-#define RANK "SELECT COUNT(*) FROM `verygames_rank_users` WHERE `points` > %i AND `reference` = '%s';"
+#define TOP "SELECT `name`, SUM(`points`) AS total_points FROM verygames_rank_users WHERE `reference` = '%s' GROUP BY authid HAVING total_points >= %i ORDER BY points DESC LIMIT 15;"
+#define RANK "SELECT COUNT(*) FROM `verygames_rank_users` WHERE `reference` = '%s' GROUP BY authid HAVING SUM(points) > %i;"
+
+#define TOP_MAP "SELECT `name`, `points` FROM verygames_rank_users WHERE points >= %i AND `reference` = '%s' AND `map` = %i ORDER BY points DESC LIMIT 15;"
+#define RANK_MAP "SELECT COUNT(*) FROM `verygames_rank_users` WHERE `points` > %i AND `reference` = '%s'  AND `map` = %i;"
+
+#define REMOVE_USER_FROM_OTHERMAPS "DELETE FROM `verygames_rank_users` WHERE `authid` = '%lli' AND `reference` = '%s' AND `map` != %i"
 
 extern IVEngineServer2 *g_pEngine;
 extern IMySQLClient *g_pMysqlClient;
@@ -75,25 +97,29 @@ public:
 
   void UpdateUser(CRankPlayer *pPlayer);
   void GetUser(CRankPlayer *pPlayer);
+  void RemoveFromOtherMap(CRankPlayer *pPlayer);
 
-  void GetTopPlayers(std::function<void(std::map<std::string, int>)> callback);
-  void GetRank(CRankPlayer *pPlayer, std::function<void(int)> callback);
+  void GetTopPlayers(bool global, std::function<void(std::map<std::string, int>)> callback);
+  void GetRank(bool global, CRankPlayer *pPlayer, std::function<void(int)> callback);
 
 private:
   const char *g_pszRankReference;
+  int g_iMapId;
 
-  std::string EscapeRankReference();
-
-  std::string EscapeString(const char* input);
-  std::string SafeEscapeString(const char* input);
+  std::string SafeEscapeString(const char *input);
 
   void Connect();
   void CreateDatabaseIfNotExist();
 
+  std::string EscapeRankReference();
+  std::string EscapeString(const char *input);
+
   void Query_GetRankReference(IMySQLQuery *cb);
-  void Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer);
+  void Query_GetUserMap(IMySQLQuery *cb, CRankPlayer *pPlayer);
+  void Query_GetUserGlobal(IMySQLQuery *cb, CRankPlayer *pPlayer);
   void Query_TopPlayers(IMySQLQuery *cb, std::function<void(std::map<std::string, int>)> callback);
   void Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback);
+  void Query_GetMapId(IMySQLQuery *cb);
 };
 
 extern CMysql *g_CMysql;

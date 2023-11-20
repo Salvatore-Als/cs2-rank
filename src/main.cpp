@@ -493,8 +493,9 @@ void Command_DebugPrint(const CCommandContext &context, const CCommand &args)
 		return;
 	}
 
-	pPlayer->PrintDebug(false);
-	pPlayer->PrintDebug(true);
+	pPlayer->PrintDebug(RequestType::Global);
+	pPlayer->PrintDebug(RequestType::Session);
+	pPlayer->PrintDebug(RequestType::Map);
 }
 
 CON_COMMAND_EXTERN(rank_debugadd, Command_DebugAdd, "");
@@ -532,24 +533,24 @@ void Command_DebugAdd(const CCommandContext &context, const CCommand &args)
 	}
 
 	Debug("Before SET");
-	pPlayer->PrintDebug(false);
+	pPlayer->PrintDebug(RequestType::Global);
 
-	pPlayer->AddPoints(10);
-	pPlayer->AddDeathSuicide(10);
-	pPlayer->AddDeathT(10);
-	pPlayer->AddDeathCT(10);
-	pPlayer->AddBombPlanted(10);
-	pPlayer->AddBombExploded(10);
-	pPlayer->AddBombDefused(10);
-	pPlayer->AddKillKnife(10);
-	pPlayer->AddKillHeadshot(10);
-	pPlayer->AddKillT(10);
-	pPlayer->AddKillCT(10);
-	pPlayer->AddTeamKillT(10);
-	pPlayer->AddTeamKillCT(10);
+	pPlayer->m_Points.Add(10);
+	pPlayer->m_DeathSuicide.Add(10);
+	pPlayer->m_DeathT.Add(10);
+	pPlayer->m_DeathCT.Add(10);
+	pPlayer->m_BombPlanted.Add(10);
+	pPlayer->m_BombExploded.Add(10);
+	pPlayer->m_BombDefused.Add(10);
+	pPlayer->m_KillKnife.Add(10);
+	pPlayer->m_KillHeadshot.Add(10);
+	pPlayer->m_KillT.Add(10);
+	pPlayer->m_KillCT.Add(10);
+	pPlayer->m_TeamKillT.Add(10);
+	pPlayer->m_TeamKillT.Add(10);
 
 	Debug("After SET");
-	pPlayer->PrintDebug(false);
+	pPlayer->PrintDebug(RequestType::Global);
 
 	Debug("Saving in database");
 	pPlayer->SaveOnDatabase();
