@@ -1,5 +1,7 @@
 # Rank Plugin for Metamod with MySQL Integration
 
+Documentation website is available here https://cs2rank.kriax.ovh
+
 If you would like to support me in my projects : 
 
 ## Overview
