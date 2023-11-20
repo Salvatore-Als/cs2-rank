@@ -27,6 +27,8 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
 
     g_pszRankReference = g_kvCore->GetString("rank_reference", "DEFAULT");
 
+    g_bIsFFAEnabled = g_kvCore->GetBool("enable_ffa", false);
+    
     // Points configurations
 
     g_kvPoints = new KeyValues("Points");

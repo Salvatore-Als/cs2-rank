@@ -30,36 +30,54 @@ void CRankPlayer::SaveOnDatabase()
     Debug("Save player %lli on database", this->GetSteamId64());
 }
 
-void CRankPlayer::InitStats(bool setAnnouce)
+void CRankPlayer::RemoveFromOtherMap()
 {
-    this->SetPoints(0);
+    // User is not authenticated from database
+    if (!this->IsDatabaseAuthenticated())
+        return;
 
-    this->SetDeathSuicide(0);
-    this->SetDeathT(0);
-    this->SetDeathCT(0);
+    g_CMysql->RemoveFromOtherMap(this->Get());
+    Debug("Remove player %lli from other map on database", this->GetSteamId64());
+}
 
-    this->SetBombPlanted(0);
-    this->SetBombExploded(0);
-    this->SetBombDefused(0);
-
-    this->SetKillKnife(0);
-    this->SetKillHeadshot(0);
-    this->SetKillCT(0);
-    this->SetKillT(0);
-    this->SetTeamKillT(0);
-    this->SetTeamKillCT(0);
-
-    this->SetKillAssistT(0);
-    this->SetKillAssistCT(0);
+void CRankPlayer::InitStats(RequestType requestType, bool setAnnouce)
+{
+    m_Points.Set(requestType, 0);
+    m_DeathSuicide.Set(requestType, 0);
+    m_DeathT.Set(requestType, 0);
+    m_DeathCT.Set(requestType, 0);
+    m_BombPlanted.Set(requestType, 0);
+    m_BombExploded.Set(requestType, 0);
+    m_BombDefused.Set(requestType, 0);
+    m_KillKnife.Set(requestType, 0);
+    m_KillHeadshot.Set(requestType, 0);
+    m_KillCT.Set(requestType, 0);
+    m_KillT.Set(requestType, 0);
+    m_KillAssistCT.Set(requestType, 0);
+    m_KillAssistT.Set(requestType, 0);
+    m_TeamKillT.Set(requestType, 0);
+    m_TeamKillCT.Set(requestType, 0);
 
     if (setAnnouce)
         this->SetIgnoringAnnouce(false);
 }
 
-void CRankPlayer::Reset()
+void CRankPlayer::Reset(RequestType requestType)
 {
-    this->InitStats(false);
-    this->SaveOnDatabase();
+    if (requestType == RequestType::Map)
+    {
+        this->InitStats(RequestType::Map, false);
+        this->InitStats(RequestType::Session, false);
+        this->SaveOnDatabase();
+    }
+    else if (requestType == RequestType::Global)
+    {
+        this->InitStats(RequestType::Global, false);
+        this->InitStats(RequestType::Map, false);
+        this->InitStats(RequestType::Session, false);
+        this->SaveOnDatabase();
+        this->RemoveFromOtherMap();
+    }
 }
 
 bool CRankPlayer::IsFlooding()
@@ -71,7 +89,7 @@ bool CRankPlayer::IsFlooding()
     {
         if (m_iFloodTokens >= 3)
         {
-            m_flLastTalkTime = newTime + 7.0;
+            m_flLastTalkTime = newTime + 5.0;
             return true;
         }
         else
@@ -88,21 +106,36 @@ bool CRankPlayer::IsFlooding()
     return false;
 }
 
-void CRankPlayer::PrintDebug(bool session)
+void CRankPlayer::PrintDebug(RequestType requestType)
 {
-    Debug("- %s : GetPoints %i", session ? "SESSION" : "GLOBAL", this->GetPoints(session));
-    Debug("- %s : GetDeathSuicide %i", session ? "SESSION" : "GLOBAL", this->GetDeathSuicide(session));
-    Debug("- %s : GetDeathT %i", session ? "SESSION" : "GLOBAL", this->GetDeathT(session));
-    Debug("- %s : GetDeathCT %i", session ? "SESSION" : "GLOBAL", this->GetDeathCT(session));
-    Debug("- %s : GetBombPlanted %i", session ? "SESSION" : "GLOBAL", this->GetBombPlanted(session));
-    Debug("- %s : GetBombExploded %i", session ? "SESSION" : "GLOBAL", this->GetBombExploded(session));
-    Debug("- %s : GetBombDefused %i", session ? "SESSION" : "GLOBAL", this->GetBombDefused(session));
-    Debug("- %s : GetKillKnife %i", session ? "SESSION" : "GLOBAL", this->GetKillKnife(session));
-    Debug("- %s : GetKillHeadshot %i", session ? "SESSION" : "GLOBAL", this->GetKillHeadshot(session));
-    Debug("- %s : GetKillT %i", session ? "SESSION" : "GLOBAL", this->GetKillT(session));
-    Debug("- %s : GetKillCT %i", session ? "SESSION" : "GLOBAL", this->GetKillCT(session));
-    Debug("- %s : GetTeamKillT %i", session ? "SESSION" : "GLOBAL", this->GetTeamKillT(session));
-    Debug("- %s : GetTeamKillCT %i", session ? "SESSION" : "GLOBAL", this->GetTeamKillCT(session));
+    const char *type = "UNK";
+
+    switch (requestType)
+    {
+    case RequestType::Global:
+        type = "GLOBAL";
+        break;
+    case RequestType::Session:
+        type = "SESSION";
+        break;
+    case RequestType::Map:
+        type = "MAP";
+        break;
+    }
+
+    Debug("- %s : Points %i", type, this->m_Points.Get(requestType));
+    Debug("- %s : DeathSuicide %i", type, this->m_DeathSuicide.Get(requestType));
+    Debug("- %s : DeathT %i", type, this->m_DeathT.Get(requestType));
+    Debug("- %s : DeathCT %i", type, this->m_DeathCT.Get(requestType));
+    Debug("- %s : BombPlanted %i", type, this->m_BombPlanted.Get(requestType));
+    Debug("- %s : BombExploded %i", type, this->m_BombExploded.Get(requestType));
+    Debug("- %s : BombDefused %i", type, this->m_BombDefused.Get(requestType));
+    Debug("- %s : KillKnife %i", type, this->m_KillKnife.Get(requestType));
+    Debug("- %s : KillHeadshot %i", type, this->m_KillHeadshot.Get(requestType));
+    Debug("- %s : KillT %i", type, this->m_KillT.Get(requestType));
+    Debug("- %s : KillCT %i", type, this->m_KillCT.Get(requestType));
+    Debug("- %s : TeamKillT %i", type, this->m_TeamKillT.Get(requestType));
+    Debug("- %s :GTeamKillCT %i", type, this->m_TeamKillCT.Get(requestType));
 }
 
 bool CPlayerManager::OnClientConnected(CPlayerSlot slot)
@@ -154,9 +187,9 @@ void CPlayerManager::TryAuthenticate()
 
         if (m_vecPlayers[i]->IsAuthenticated())
         {
-            if(!m_vecPlayers[i]->IsDatabaseAuthenticated())
+            if (!m_vecPlayers[i]->IsDatabaseAuthenticated())
                 g_CMysql->GetUser(m_vecPlayers[i]->Get());
-            
+
             continue;
         }
 
@@ -164,7 +197,7 @@ void CPlayerManager::TryAuthenticate()
         {
             m_vecPlayers[i]->SetAuthenticated();
             m_vecPlayers[i]->SetSteamId(g_pEngine->GetClientSteamID(i));
-            //g_CMysql->GetUser(m_vecPlayers[i]->Get());
+            // g_CMysql->GetUser(m_vecPlayers[i]->Get());
         }
     }
 }
@@ -193,7 +226,7 @@ void CPlayerManager::AddTeamPoint(int team, int point)
         if (!pPlayerT || !pPlayerT->IsValidPlayer())
             continue;
 
-        pPlayerT->AddPoints(point);
+        pPlayerT->m_Points.Add(point);
     }
 };
 
