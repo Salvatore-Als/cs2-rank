@@ -33,7 +33,8 @@ public:
     const char *GetRankReference() { return g_pszRankReference; }
 
     bool IsMinimumPlayerReached();
-    
+    bool IsFFaEnabled() { return g_bIsFFAEnabled; }
+
     int GetMinimumPoints() { return g_iMinimumPoints <= 0 ? 10 : g_iMinimumPoints; }
     int GetMinimumSessionPoints() { return g_iMinimumSessionPoints <= 0 ? 10 : g_iMinimumSessionPoints; }
     int GetMinimumPlayers() { return g_iMinimumPlayers <= 0 ? 5 : g_iMinimumPlayers; }
@@ -65,7 +66,9 @@ private:
     int g_iMinimumPlayers;
     int g_iMinimumPoints;
     int g_iMinimumSessionPoints;
-    
+
+    bool g_bIsFFAEnabled;
+
     const char *g_pszLanguage;
     std::vector<Phrase> g_vecPhrases;
 
