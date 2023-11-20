@@ -30,8 +30,8 @@ void CMysql::Connect()
 			Fatal("Failed to connect the mysql database, unloading");
 			g_CPlugin.ForceUnload();
 		} else {
-			Debug("Connected to database with server reference %s", this->EscapeRankReference().c_str());
 			this->CreateDatabaseIfNotExist();
+			this->m_bConnected = true;
 		} });
 }
 
@@ -50,9 +50,7 @@ void CMysql::CreateDatabaseIfNotExist()
 		return;
 
 	g_pConnection->Query(CREATE_USERS_TABLE, [](IMySQLQuery *cb) {});
-
 	g_pConnection->Query(CREATE_REFERENCES_TABLE, [](IMySQLQuery *cb) {});
-
 	g_pConnection->Query(CREATE_MAPS_TABLE, [](IMySQLQuery *cb) {});
 
 	Debug("Create Database request 1: %s", CREATE_USERS_TABLE);
@@ -67,7 +65,6 @@ void CMysql::CreateDatabaseIfNotExist()
 
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_MAP, this->EscapeString(g_pGlobals->mapname.ToCStr()).c_str());
 
-	Debug("Select map:  %s", szQuery);
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
 						 { this->Query_GetMapId(cb); });
 }
@@ -99,7 +96,8 @@ void CMysql::Query_GetMapId(IMySQLQuery *cb)
 
 	if (!results)
 	{
-		Fatal("Invalid results for Query_GetMapId");
+		Fatal("Unable to get the map id, unloading");
+		g_CPlugin.ForceUnload();
 		return;
 	}
 
@@ -130,19 +128,17 @@ void CMysql::GetUser(CRankPlayer *pPlayer)
 	uint64 steamId64 = pPlayer->GetSteamId64();
 
 	char szQuery[MAX_QUERY_SIZES];
+
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_USER_MAP, steamId64, this->EscapeRankReference().c_str(), this->g_iMapId);
-
-	Debug("GetUserMap Request : %s", szQuery);
-
 	g_pConnection->Query(szQuery, [pPlayer, this](IMySQLQuery *cb)
 						 { this->Query_GetUserMap(cb, pPlayer); });
 
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_USER_GLOBAL, steamId64, this->EscapeRankReference().c_str(), this->g_iMapId);
-
-	Debug("GetUserGlobal Request : %s", szQuery);
-
 	g_pConnection->Query(szQuery, [pPlayer, this](IMySQLQuery *cb)
 						 { this->Query_GetUserGlobal(cb, pPlayer); });
+
+	Debug("GetUserMap Request : %s", szQuery);
+	Debug("GetUserGlobal Request : %s", szQuery);
 }
 
 void CMysql::Query_GetUserMap(IMySQLQuery *cb, CRankPlayer *pPlayer)
@@ -168,15 +164,13 @@ void CMysql::Query_GetUserMap(IMySQLQuery *cb, CRankPlayer *pPlayer)
 		Debug("InsertUser request : %s", szQuery);
 
 		g_pConnection->Query(szQuery, [pPlayer](IMySQLQuery *cb)
-							 { 
-								Debug("AUTH CALLBACK"); 
-								pPlayer->SetDatabaseAuthenticated(); });
+							 { pPlayer->SetDatabaseAuthenticated(); });
 	}
 	else
 	{
 		pPlayer->SetDatabaseAuthenticated();
 
-		Debug("Connected points %i", results->GetInt(1));
+		Debug("User map points %i", results->GetInt(1));
 
 		pPlayer->SetIgnoringAnnouce(results->GetInt(0) == 1 ? true : false);
 
@@ -210,6 +204,8 @@ void CMysql::Query_GetUserGlobal(IMySQLQuery *cb, CRankPlayer *pPlayer)
 
 	if (results->FetchRow())
 	{
+		Debug("User global points %i", results->GetInt(0));
+
 		pPlayer->m_Points.Set(RequestType::Global, results->GetInt(0));
 		pPlayer->m_DeathSuicide.Set(RequestType::Global, results->GetInt(1));
 		pPlayer->m_DeathT.Set(RequestType::Global, results->GetInt(2));
@@ -243,13 +239,13 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 	char szQuery[MAX_QUERY_SIZES];
 	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER,
 			   this->EscapeString(name).c_str(), pPlayer->IsIgnoringAnnouce(),
-			   pPlayer->m_Points.Get(RequestType::Global), pPlayer->m_DeathSuicide.Get(RequestType::Global),
-			   pPlayer->m_DeathT.Get(RequestType::Global), pPlayer->m_DeathCT.Get(RequestType::Global),
-			   pPlayer->m_BombPlanted.Get(RequestType::Global), pPlayer->m_BombExploded.Get(RequestType::Global),
-			   pPlayer->m_BombDefused.Get(RequestType::Global), pPlayer->m_KillKnife.Get(RequestType::Global),
-			   pPlayer->m_KillHeadshot.Get(RequestType::Global), pPlayer->m_KillT.Get(RequestType::Global),
-			   pPlayer->m_KillCT.Get(RequestType::Global), pPlayer->m_TeamKillT.Get(RequestType::Global),
-			   pPlayer->m_TeamKillCT.Get(RequestType::Global),
+			   pPlayer->m_Points.Get(RequestType::Map), pPlayer->m_DeathSuicide.Get(RequestType::Map),
+			   pPlayer->m_DeathT.Get(RequestType::Map), pPlayer->m_DeathCT.Get(RequestType::Map),
+			   pPlayer->m_BombPlanted.Get(RequestType::Map), pPlayer->m_BombExploded.Get(RequestType::Map),
+			   pPlayer->m_BombDefused.Get(RequestType::Map), pPlayer->m_KillKnife.Get(RequestType::Map),
+			   pPlayer->m_KillHeadshot.Get(RequestType::Map), pPlayer->m_KillT.Get(RequestType::Map),
+			   pPlayer->m_KillCT.Get(RequestType::Map), pPlayer->m_TeamKillT.Get(RequestType::Map),
+			   pPlayer->m_TeamKillCT.Get(RequestType::Map),
 			   std::time(0), steamId64, this->EscapeRankReference().c_str(), this->g_iMapId);
 
 	Debug("UpdateUser Request : %s", szQuery);
@@ -284,9 +280,9 @@ void CMysql::GetTopPlayers(bool global, std::function<void(std::map<std::string,
 	char szQuery[MAX_QUERY_SIZES];
 
 	if (global)
-		V_snprintf(szQuery, sizeof(szQuery), TOP, this->EscapeRankReference().c_str(), g_CConfig->GetMinimumPoints());
+		V_snprintf(szQuery, sizeof(szQuery), TOP, g_CConfig->GetMinimumPoints(), this->EscapeRankReference().c_str());
 	else
-		V_snprintf(szQuery, sizeof(szQuery), TOP_MAP, g_CConfig->GetMinimumPoints(), this->EscapeRankReference().c_str());
+		V_snprintf(szQuery, sizeof(szQuery), TOP_MAP, g_CConfig->GetMinimumPoints(), this->EscapeRankReference().c_str(), this->g_iMapId);
 
 	g_pConnection->Query(szQuery, [callback, this](IMySQLQuery *cb)
 						 { this->Query_TopPlayers(cb, callback); });
@@ -351,8 +347,8 @@ std::string CMysql::EscapeRankReference()
 
 std::string CMysql::EscapeString(const char *input)
 {
-	// return g_pConnection->Escape(input); // TODO: re-enable it after mysqm_mm escape function fix
-	return this->SafeEscapeString(input);
+	return g_pConnection->Escape(input);
+	// return this->SafeEscapeString(input);
 }
 
 std::string CMysql::SafeEscapeString(const char *input)

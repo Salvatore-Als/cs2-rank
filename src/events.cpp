@@ -207,7 +207,7 @@ GAME_EVENT_F(player_death)
     CRankPlayer *pAttacker = pAttackerController->GetRankPlayer();
 
     // Disable if invalid player
-    if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer() || !pVictim->IsFakeClient())
+    if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer() || pVictim->IsFakeClient())
         return;
 
     char szTranslate[256];
@@ -219,22 +219,21 @@ GAME_EVENT_F(player_death)
         // We need this, because the suicide can occurs by moving on SPECTATOR or disconnecting
 
         int deathTeam = pAttackerController->m_iTeamNum;
-        new CTimer(0.5f, false, [pAttackerController, deathTeam]()
+        new CTimer(0.2f, false, [pAttackerController, deathTeam]()
                    {
-                    // Invalid controller, disconnected
+                    g_CChat->PrintToChat(pAttackerController, true, "Timer");
+
                     if(!pAttackerController)
-                        return 0.5f;
+                        return -0.5f;
 
                     CRankPlayer *pAttacker = pAttackerController->GetRankPlayer();
                     
-                    // Invalid attacker, disconnected but should never append
                     if(!pAttacker)
-                        return 0.5f;
+                        return -0.5f;
 
-                    // Attacker move on SPECTATOR team or OBSERVER
                     if(pAttackerController->m_iTeamNum != CS_TEAM_T && pAttackerController->m_iTeamNum != CS_TEAM_CT)
-                        return 0.5f;
-            
+                        return -0.5f;
+
             pAttacker->m_Points.Remove(g_CConfig->GetPointsLooseSuicide());
             pAttacker->m_DeathSuicide.Add(1);
 
@@ -242,7 +241,7 @@ GAME_EVENT_F(player_death)
             UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("DEATH_SUICIDE"), g_CConfig->GetPointsLooseSuicide());
             g_CChat->PrintToChat(pAttackerController, true, szTranslate);
         
-        return 0.5f; });
+        return -0.5f; });
 
         return;
     }

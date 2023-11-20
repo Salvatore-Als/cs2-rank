@@ -85,7 +85,9 @@ public:
         m_bConnected = false;
         m_bDatabaseAuthenticated = false;
         m_bIgnoringAnnouce = false;
-
+        m_flLastTalkTime = 0;
+        m_iFloodTokens = 0;
+    
         m_Points.Set(RequestType::Session, 0);
         m_DeathSuicide.Set(RequestType::Session, 0);
         m_DeathT.Set(RequestType::Session, 0);

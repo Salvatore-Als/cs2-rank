@@ -273,7 +273,10 @@ void CPlugin::Hook_StartupServer(const GameSessionConfiguration_t &config, ISour
 	g_pGlobals = GetServerGlobals();
 
 	if (g_pGlobals == nullptr)
-		Fatal("Failed to lookup g_pGlobals\n");
+	{
+		Fatal("Failed to lookup g_pGlobals, unloading");
+		this->ForceUnload();
+	}
 
 	g_pEntitySystem = g_gGameResourceServiceServe->GetGameEntitySystem();
 
@@ -283,6 +286,9 @@ void CPlugin::Hook_StartupServer(const GameSessionConfiguration_t &config, ISour
 	g_bHasTicked = false;
 
 	RegisterEventListeners();
+
+	if (g_CMysql != nullptr && g_CMysql->IsConnected())
+		g_CMysql->CreateDatabaseIfNotExist();
 }
 
 void CPlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)

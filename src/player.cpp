@@ -74,6 +74,7 @@ void CRankPlayer::Reset(RequestType requestType)
     {
         this->InitStats(RequestType::Global, false);
         this->InitStats(RequestType::Map, false);
+        this->InitStats(RequestType::Session, false);
         this->SaveOnDatabase();
         this->RemoveFromOtherMap();
     }
@@ -88,7 +89,7 @@ bool CRankPlayer::IsFlooding()
     {
         if (m_iFloodTokens >= 3)
         {
-            m_flLastTalkTime = newTime + 7.0;
+            m_flLastTalkTime = newTime + 5.0;
             return true;
         }
         else

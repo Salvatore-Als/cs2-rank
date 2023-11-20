@@ -9,7 +9,7 @@
   `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
   `name` varchar(32) NOT NULL, \
   UNIQUE INDEX `id` (`id`) USING BTREE) \
-  ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
 
 #define SELECT_MAP "SELECT `id` FROM `verygames_rank_maps` WHERE `name` = '%s'"
 
@@ -20,7 +20,7 @@
   `reference` varchar(32) NOT NULL, \
   `custom_name` varchar(64), \
   UNIQUE INDEX `id` (`id`) USING BTREE) \
-  ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
 
 #define SELECT_REFERENCE "SELECT `id` FROM `verygames_rank_references` WHERE `reference` = '%s'"
 
@@ -50,7 +50,7 @@
   `killassist_t` int(11) NOT NULL DEFAULT 0, \
   `killassist_ct` int(11) NOT NULL DEFAULT 0, \
   UNIQUE INDEX `id` (`id`) USING BTREE) \
-  ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;"
+  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
 
 #define INSERT_USER "INSERT INTO `verygames_rank_users` (`authid`, `name`, `reference`, `map` ) VALUES ('%lli', '%s', '%s', '%i');"
 
@@ -70,11 +70,11 @@ SUM(kill_headshot) AS total_kill_headshot, SUM(kill_t) AS total_kill_t, SUM(kill
 SUM(teamkill_t) AS total_teamkill_t, SUM(teamkill_ct) AS total_teamkill_ct, SUM(killassist_t) AS total_killassist_t, \
 SUM(killassist_ct) AS total_killassist_ct FROM verygames_rank_users WHERE authid = '%lli' and `reference` = '%s' GROUP BY authid;"
 
-#define TOP "SELECT `name`, SUM(`points`) AS total_points FROM verygames_rank_users WHERE `reference` = '%s' GROUP BY authid HAVING total_points >= %i ORDER BY points DESC LIMIT 15;"
+#define TOP "SELECT `name`, `points` FROM verygames_rank_users WHERE points >= %i AND `reference` = '%s' ORDER BY points DESC LIMIT 15;"
 #define RANK "SELECT COUNT(*) FROM `verygames_rank_users` WHERE `reference` = '%s' GROUP BY authid HAVING SUM(points) > %i;"
 
 #define TOP_MAP "SELECT `name`, `points` FROM verygames_rank_users WHERE points >= %i AND `reference` = '%s' AND `map` = %i ORDER BY points DESC LIMIT 15;"
-#define RANK_MAP "SELECT COUNT(*) FROM `verygames_rank_users` WHERE `points` > %i AND `reference` = '%s'  AND `map` = %i;"
+#define RANK_MAP "SELECT COUNT(*) FROM `verygames_rank_users` WHERE `points` > %i AND `reference` = '%s' AND `map` = %i;"
 
 #define REMOVE_USER_FROM_OTHERMAPS "DELETE FROM `verygames_rank_users` WHERE `authid` = '%lli' AND `reference` = '%s' AND `map` != %i"
 
@@ -95,6 +95,10 @@ public:
 public:
   void Destroy();
 
+  void CreateDatabaseIfNotExist();
+
+  bool IsConnected() { return m_bConnected; };
+
   void UpdateUser(CRankPlayer *pPlayer);
   void GetUser(CRankPlayer *pPlayer);
   void RemoveFromOtherMap(CRankPlayer *pPlayer);
@@ -105,11 +109,11 @@ public:
 private:
   const char *g_pszRankReference;
   int g_iMapId;
+  bool m_bConnected;
 
   std::string SafeEscapeString(const char *input);
 
   void Connect();
-  void CreateDatabaseIfNotExist();
 
   std::string EscapeRankReference();
   std::string EscapeString(const char *input);
