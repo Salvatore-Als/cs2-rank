@@ -133,7 +133,7 @@ void CMysql::GetUser(CRankPlayer *pPlayer)
 	g_pConnection->Query(szQuery, [pPlayer, this](IMySQLQuery *cb)
 						 { this->Query_GetUserMap(cb, pPlayer); });
 
-	V_snprintf(szQuery, sizeof(szQuery), SELECT_USER_GLOBAL, steamId64, this->EscapeRankReference().c_str(), this->g_iMapId);
+	V_snprintf(szQuery, sizeof(szQuery), SELECT_USER_GLOBAL, steamId64, this->EscapeRankReference().c_str());
 	g_pConnection->Query(szQuery, [pPlayer, this](IMySQLQuery *cb)
 						 { this->Query_GetUserGlobal(cb, pPlayer); });
 
@@ -313,7 +313,7 @@ void CMysql::GetRank(bool global, CRankPlayer *pPlayer, std::function<void(int)>
 	if (global)
 		V_snprintf(szQuery, sizeof(szQuery), RANK, this->EscapeRankReference().c_str(), pPlayer->m_Points.Get(RequestType::Global));
 	else
-		V_snprintf(szQuery, sizeof(szQuery), RANK_MAP, pPlayer->m_Points.Get(RequestType::Map), this->EscapeRankReference().c_str());
+		V_snprintf(szQuery, sizeof(szQuery), RANK_MAP, pPlayer->m_Points.Get(RequestType::Map), this->EscapeRankReference().c_str(), this->g_iMapId);
 
 	Debug(szQuery);
 
