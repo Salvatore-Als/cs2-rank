@@ -1,5 +1,8 @@
 # Rank Plugin for Metamod with MySQL Integration
 
+# PRIVATE ALPHA
+This plugin is on a **private alpha** test, a public release will be made after this test :)
+
 Documentation website is available here https://cs2rank.kriax.ovh
 
 **If you would like to support me in this project**
