@@ -2,7 +2,9 @@
 
 Documentation website is available here https://cs2rank.kriax.ovh
 
-If you would like to support me in my projects : 
+**If you would like to support me in this project**
+
+[![Texte alternatif](https://github.com/Salvatore-Als/cs2-rank/assets/58212852/809a130a-1c3a-4b37-aaf5-f72c88fc75e0)](https://www.paypal.com/donate/?hosted_button_id=UA272TAJVBT2U)
 
 ## Overview
 **Developed in partnership with [VeryGames](https://www.verygames.net).**
