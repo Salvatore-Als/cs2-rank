@@ -221,8 +221,6 @@ GAME_EVENT_F(player_death)
         int deathTeam = pAttackerController->m_iTeamNum;
         new CTimer(0.2f, false, [pAttackerController, deathTeam]()
                    {
-                    g_CChat->PrintToChat(pAttackerController, true, "Timer");
-
                     if(!pAttackerController)
                         return -0.5f;
 
