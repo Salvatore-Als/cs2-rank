@@ -26,7 +26,6 @@ The bot is written with Nodejs and Typescript.
 
 ```env
 DISCORD_TOKEN = "" // Your Discord token
-DISCORD_CLINETID = "" // Your bot client id
 
 LOCALE = "default" // Locale used for date format and translation (fr / en / etc)
 
