@@ -50,7 +50,7 @@ with open(os.path.join(builder.buildPath, 'pdblog.txt'), 'wt') as fp:
 
 
 gamedata_folder = builder.AddFolder(os.path.join('addons', MMSPlugin.plugin_name, 'gamedata'))
-builder.AddCopy(os.path.join('gamedata', 'vgrank.games.txt'), gamedata_folder)
+builder.AddCopy(os.path.join('gamedata', 'cs2rank.games.txt'), gamedata_folder)
 
 config_folder = builder.AddFolder(os.path.join('addons', MMSPlugin.plugin_name, 'configs'))
 builder.AddCopy(os.path.join('configs', 'points.cfg'), config_folder)

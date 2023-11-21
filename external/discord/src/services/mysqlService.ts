@@ -37,7 +37,7 @@ export default class MysqlService {
             return null;
         }
 
-        const query: string = "SELECT *, CAST(authid AS CHAR) AS authid FROM verygames_rank_users WHERE authid = ? AND reference = ? ORDER BY points DESC";
+        const query: string = "SELECT *, CAST(authid AS CHAR) AS authid FROM cs2_rank_users WHERE authid = ? AND reference = ? ORDER BY points DESC";
         const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, [authid, groupReference]);
 
         let player: IPlayer = players[0];
@@ -61,7 +61,7 @@ export default class MysqlService {
             return null;
         }
 
-        const query: string = "SELECT *, CAST(authid AS CHAR) AS authid FROM verygames_rank_users WHERE name LIKE ? AND reference = ? ORDER BY points DESC";
+        const query: string = "SELECT *, CAST(authid AS CHAR) AS authid FROM cs2_rank_users WHERE name LIKE ? AND reference = ? ORDER BY points DESC";
         const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, [`%${name}%`, groupReference]);
 
         let player: IPlayer = players[0];
@@ -81,10 +81,10 @@ export default class MysqlService {
         let result: ITopPlayer[] = null;
 
         if (mapId != null) {
-            query = "SELECT CAST(authid AS CHAR) AS authid, name, points FROM verygames_rank_users WHERE points >= ? AND reference = ? AND `map` = ? ORDER BY points DESC";
+            query = "SELECT CAST(authid AS CHAR) AS authid, name, points FROM cs2_rank_users WHERE points >= ? AND reference = ? AND `map` = ? ORDER BY points DESC";
             result = await this._mysqlProvider.query<ITopPlayer[]>(query, [Number(process.env.MINIMUM_POINTS), groupReference, mapId]);
         } else {
-            query = "SELECT CAST(authid AS CHAR) AS authid, name, points FROM verygames_rank_users WHERE points >= ? AND reference = ? ORDER BY points DESC";
+            query = "SELECT CAST(authid AS CHAR) AS authid, name, points FROM cs2_rank_users WHERE points >= ? AND reference = ? ORDER BY points DESC";
             result = await this._mysqlProvider.query<ITopPlayer[]>(query, [Number(process.env.MINIMUM_POINTS), groupReference]);
         }
 
@@ -92,31 +92,31 @@ export default class MysqlService {
     }
 
     async getGroups(): Promise<IGroup[]> {
-        const query: string = 'SELECT id, reference, custom_name FROM verygames_rank_references';
+        const query: string = 'SELECT id, reference, custom_name FROM cs2_rank_references';
         const result: IGroup[] = await this._mysqlProvider.query<IGroup[]>(query);
         return result;
     }
 
     public async getLinkedAccounts(): Promise<ILinkedAccout[]> {
-        const query: string = "SELECT * FROM verygames_rank_accounts";
+        const query: string = "SELECT * FROM cs2_rank_accounts";
         const result: ILinkedAccout[] = await this._mysqlProvider.query<ILinkedAccout[]>(query);
         return result;
     }
 
     public async getMaps(): Promise<IMap[]> {
-        const query: string = "SELECT * FROM verygames_rank_maps";
+        const query: string = "SELECT * FROM cs2_rank_maps";
         const result: IMap[] = await this._mysqlProvider.query<IMap[]>(query);
         return result;
     }
 
     public async createLinkedAccount(authid: string, discordId: string): Promise<void> {
-        const query: string = "INSERT INTO verygames_rank_accounts (authid, discordid) VALUES (?, ?)";
+        const query: string = "INSERT INTO cs2_rank_accounts (authid, discordid) VALUES (?, ?)";
         const result: void = await this._mysqlProvider.query<void>(query, [authid, discordId]);
         return result;
     }
 
     public async getMapByName(name: string): Promise<IMap> {
-        const query: string = "SELECT * FROM verygames_rank_maps WHERE name LIKE ?";
+        const query: string = "SELECT * FROM cs2_rank_maps WHERE name LIKE ?";
         const maps: IMap[] = await this._mysqlProvider.query<IMap[]>(query, [`%${name}%`]);
 
         if (!maps?.length) {
@@ -128,7 +128,7 @@ export default class MysqlService {
 
     private async createDiscordTable(): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            const query: string = "CREATE TABLE verygames_rank_accounts (id INT AUTO_INCREMENT PRIMARY KEY, authid VARCHAR(255) UNIQUE, discordid VARCHAR(255) UNIQUE)";
+            const query: string = "CREATE TABLE cs2_rank_accounts (id INT AUTO_INCREMENT PRIMARY KEY, authid VARCHAR(255) UNIQUE, discordid VARCHAR(255) UNIQUE)";
             this._mysqlProvider.query<IGroup[]>(query)
                 .then(() => {
                     resolve();
@@ -144,11 +144,11 @@ export default class MysqlService {
 
         if (mapId != null) {
             this._loggerService.debug(`[Mysql Service] Get rank by mapId ${mapId}`);
-            query = "SELECT COUNT(*) as count FROM verygames_rank_users WHERE points > ? AND reference = ? AND `map` = ?";
+            query = "SELECT COUNT(*) as count FROM cs2_rank_users WHERE points > ? AND reference = ? AND `map` = ?";
             results = await this._mysqlProvider.query<MysqlCountResult[]>(query, [points ?? 10, groupReference, mapId]);
         } else {
             this._loggerService.debug(`[Mysql Service] Get rank`);
-            query = "SELECT COUNT(*) as count FROM verygames_rank_users WHERE reference = ? GROUP BY authid HAVING SUM(points) > ?";
+            query = "SELECT COUNT(*) as count FROM cs2_rank_users WHERE reference = ? GROUP BY authid HAVING SUM(points) > ?";
             results = await this._mysqlProvider.query<MysqlCountResult[]>(query, [groupReference, points ?? 10]);
         }
 
@@ -157,7 +157,7 @@ export default class MysqlService {
     }
 
     private async getPointByAuthId(authid: string, groupReference: string): Promise<number> {
-        const query: string = "SELECT points FROM verygames_rank_users WHERE authid = ? AND reference = ?";
+        const query: string = "SELECT points FROM cs2_rank_users WHERE authid = ? AND reference = ?";
         const result: IPlayer = await this._mysqlProvider.query<IPlayer>(query, [authid, groupReference]);
 
         if (!result) {
@@ -168,7 +168,7 @@ export default class MysqlService {
     }
 
     private async getPointByName(name: string, groupReference: string): Promise<number> {
-        const query: string = "SELECT points FROM verygames_rank_users WHERE name LIKE ? AND reference = ?";
+        const query: string = "SELECT points FROM cs2_rank_users WHERE name LIKE ? AND reference = ?";
         const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, [`%${name}%`, groupReference]);
 
         if (!players?.length) {

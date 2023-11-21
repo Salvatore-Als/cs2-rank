@@ -9,16 +9,16 @@
 #include "networksystem/inetworkserializer.h"
 #include <iserver.h>
 
-#define DEBUG_PREFIX "VG Rank - "
-#define PREFIX " {RED}[VG Rank] "
-#define PLUGIN_NAME "VeryGames Rank"
-#define PLUGIN_NAME_DEBUG "DEBUG - VeryGames Rank"
+#define DEBUG_PREFIX "CS2 Rank - "
+#define PREFIX " {RED}[CS2 Rank] "
+#define PLUGIN_NAME "CS2 Rank"
+#define PLUGIN_NAME_DEBUG "DEBUG - CS2 Rank"
 #define PLUGIN_DESCRIPTION "Rank system"
 
-#define GAMEDATA_PATH "addons/vgrank/gamedata/vgrank.games.txt"
-#define POINTS_CONFIG_PATH "addons/vgrank/configs/points.cfg"
-#define PHRASES_CONFIG_PATH "addons/vgrank/configs/phrases.cfg"
-#define CORE_CONFIG_PATH "addons/vgrank/configs/core.cfg"
+#define GAMEDATA_PATH "addons/cs2rank/gamedata/cs2rank.games.txt"
+#define POINTS_CONFIG_PATH "addons/cs2rank/configs/points.cfg"
+#define PHRASES_CONFIG_PATH "addons/cs2rank/configs/phrases.cfg"
+#define CORE_CONFIG_PATH "addons/cs2rank/configs/core.cfg"
 
 #define MAX_QUERY_SIZES 8064
 

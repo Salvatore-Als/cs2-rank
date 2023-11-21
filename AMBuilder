@@ -1,7 +1,7 @@
 # vim: set sts=2 ts=8 sw=2 tw=99 et ft=python: 
 import os
 
-MMSPlugin.plugin_name = 'vgrank'
+MMSPlugin.plugin_name = 'cs2rank'
 
 # Here only one sdk should be available to generate only one executable in the end,
 # as multi-sdk loading isn't supported out of the box by metamod, and would require specifying the full path in the vdf

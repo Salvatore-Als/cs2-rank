@@ -16,7 +16,7 @@
 
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $sth = $dbh->prepare('SELECT id, reference, custom_name FROM verygames_rank_references');
+        $sth = $dbh->prepare('SELECT id, reference, custom_name FROM cs2_rank_references');
         $sth->execute();
 
         $rows = $sth->fetchAll();

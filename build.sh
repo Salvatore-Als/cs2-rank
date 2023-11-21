@@ -4,6 +4,6 @@ echo "export MMSOURCE112=/home/metamod/metamod-source" >> ~/.bashrc
 
 rm -R build
 mkdir build && cd build
-CC=clang CXX=clang++ python3 ../configure.py -s cs2 --targets=x86_64 --plugin-name=vgrank --plugin-alias=vgrank
+CC=clang CXX=clang++ python3 ../configure.py -s cs2 --targets=x86_64 --plugin-name=cs2rank --plugin-alias=cs2rank
 ambuild
 

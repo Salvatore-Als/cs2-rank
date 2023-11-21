@@ -7,7 +7,7 @@ if not exist build mkdir build
 cd build
 @echo on
 
-python ../configure.py --sdks cs2 --targets=x86_64 --plugin-name=vgrank --plugin-alias=vgrank 
+python ../configure.py --sdks cs2 --targets=x86_64 --plugin-name=cs2rank --plugin-alias=cs2rank --enable-debug
 
 ambuild
 exit

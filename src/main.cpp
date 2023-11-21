@@ -428,7 +428,7 @@ const char *CPlugin::GetLicense()
 
 const char *CPlugin::GetVersion()
 {
-	return "a1.0";
+	return "b2.0";
 }
 
 const char *CPlugin::GetDate()

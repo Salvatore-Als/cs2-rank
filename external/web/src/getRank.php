@@ -26,7 +26,7 @@
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
         
-        $sth = $dbh->prepare('SELECT * FROM verygames_rank_users WHERE points >= :minPoints AND reference = :reference ORDER BY points DESC LIMIT :offset, :limit');
+        $sth = $dbh->prepare('SELECT * FROM cs2_rank_users WHERE points >= :minPoints AND reference = :reference ORDER BY points DESC LIMIT :offset, :limit');
         $sth->bindValue(':reference', $reference, PDO::PARAM_STR);
         $sth->bindValue(':minPoints', MINIMUM_POINTS, PDO::PARAM_INT);
         $sth->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -100,7 +100,7 @@
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
             
-        $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM verygames_rank_users WHERE reference = :reference');
+        $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM cs2_rank_users WHERE reference = :reference');
         $sth->bindValue(':reference', $reference, PDO::PARAM_INT);
         $sth->bindValue(':itemsPerPage', PLAYERS_PER_PAGE, PDO::PARAM_INT);
         $sth->execute();
