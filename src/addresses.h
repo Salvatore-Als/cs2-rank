@@ -4,6 +4,10 @@
 #include "utils/module.h"
 #include "gameconfig.h"
 
+#include "tier0/memdbgon.h"
+
+//extern CGameConfig *g_CGameConfig;
+
 class CBasePlayerController;
 class CCSPlayerController;
 class CEntityInstance;

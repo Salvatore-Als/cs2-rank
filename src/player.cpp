@@ -2,6 +2,21 @@
 #include "player.h"
 #include "entity/ccsplayercontroller.h"
 #include "mysql.h"
+#include "config.h"
+
+int SafeValue(int value)
+{
+    if (g_CConfig->IsNegativePointsAllowed())
+        return value;
+
+    if (value < 0)
+    {
+        Debug("Value is %i, returning 0", value);
+        return 0;
+    }
+
+    return value;
+}
 
 bool CRankPlayer::IsValidPlayer()
 {

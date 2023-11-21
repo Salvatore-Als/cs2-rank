@@ -6,6 +6,8 @@
 
 extern CGlobalVars *g_pGlobals;
 
+int SafeValue(int value);
+
 class CRankPlayerStats
 {
 public:
@@ -23,6 +25,8 @@ public:
             return this->m_iMap;
         case RequestType::Session:
             return this->m_iSession;
+        default:
+            return this->m_iGlobal;
         }
     }
 
@@ -31,13 +35,13 @@ public:
         switch (requestType)
         {
         case RequestType::Global:
-            this->m_iGlobal = value;
+            this->m_iGlobal = SafeValue(value);
             break;
         case RequestType::Map:
-            this->m_iMap = value;
+            this->m_iMap = SafeValue(value);
             break;
         case RequestType::Session:
-            this->m_iSession = value;
+            this->m_iSession = SafeValue(value);
             break;
         }
     }
@@ -64,9 +68,9 @@ public:
 
     void Remove(int value)
     {
-        this->m_iGlobal = this->m_iGlobal - value;
-        this->m_iMap = this->m_iMap - value;
-        this->m_iSession = this->m_iSession - value;
+        this->m_iGlobal = SafeValue(this->m_iGlobal - value);
+        this->m_iMap = SafeValue(this->m_iMap - value);
+        this->m_iSession = SafeValue(this->m_iSession - value);
     }
 
 private:
@@ -87,7 +91,7 @@ public:
         m_bIgnoringAnnouce = false;
         m_flLastTalkTime = 0;
         m_iFloodTokens = 0;
-    
+
         m_Points.Set(RequestType::Session, 0);
         m_DeathSuicide.Set(RequestType::Session, 0);
         m_DeathT.Set(RequestType::Session, 0);

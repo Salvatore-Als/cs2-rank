@@ -272,7 +272,7 @@ class MMSPluginConfig(object):
 
     elif cxx.like('msvc'):
       if builder.options.debug == '1':
-        cxx.cflags += ['/MTd']
+        cxx.cflags += ['/MDd']
         cxx.linkflags += ['/NODEFAULTLIB:libcmt']
       else:
         cxx.cflags += ['/MT']
@@ -314,7 +314,7 @@ class MMSPluginConfig(object):
 
     # Debugging
     if builder.options.debug == '1':
-      cxx.defines += ['DEBUG', '_DEBUG', '_ITERATOR_DEBUG_LEVEL=0']
+      cxx.defines += ['DEBUG', '_DEBUG', '_ITERATOR_DEBUG_LEVEL=0', '_HAS_ITERATOR_DEBUGGINGL=0']
       if cxx.behavior == 'gcc':
         cxx.cflags += ['-g3']
       elif cxx.behavior == 'msvc':

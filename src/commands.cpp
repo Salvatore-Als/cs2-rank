@@ -139,6 +139,9 @@ CON_COMMAND_CHAT(topsession, "Display the top players for the current session")
 // command to reset rank
 CON_COMMAND_CHAT(resetrank, "Reset your global rank")
 {
+    if (!g_CConfig->IsRankAllowed())
+        return;
+
     if (!player)
         return;
 
@@ -158,6 +161,9 @@ CON_COMMAND_CHAT(resetrank, "Reset your global rank")
 // command to reset rank
 CON_COMMAND_CHAT(resetmaprank, "Reset your map rank")
 {
+    if (!g_CConfig->IsRankAllowed())
+        return;
+
     if (!player)
         return;
 

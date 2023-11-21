@@ -30,7 +30,6 @@ void CMysql::Connect()
 			Fatal("Failed to connect the mysql database, unloading");
 			g_CPlugin.ForceUnload();
 		} else {
-			//Debug("test escape string %s", g_pConnection->Escape("test").c_str());
 			this->CreateDatabaseIfNotExist();
 			this->m_bConnected = true;
 		} });
@@ -64,9 +63,8 @@ void CMysql::CreateDatabaseIfNotExist()
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
 						 { this->Query_GetRankReference(cb); });
 
-	
 	Debug("Select Reference : %s", szQuery);
-	
+
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_MAP, g_pConnection->Escape(g_pGlobals->mapname.ToCStr()).c_str());
 
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
@@ -235,11 +233,17 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 	if (!g_pConnection)
 		return;
 
+	if (!pPlayer)
+		return;
+
 	pPlayer->PrintDebug(RequestType::Global);
 	pPlayer->PrintDebug(RequestType::Map);
 	pPlayer->PrintDebug(RequestType::Session);
 
 	const char *name = g_pEngine->GetClientConVarValue(pPlayer->GetPlayerSlot(), "name");
+
+	Debug("name %s escape %s", name, g_pConnection->Escape(name).c_str());
+
 	uint64 steamId64 = pPlayer->GetSteamId64();
 
 	char szQuery[MAX_QUERY_SIZES];

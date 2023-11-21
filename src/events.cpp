@@ -158,11 +158,10 @@ GAME_EVENT_F(bomb_exploded)
     g_CChat->PrintToChat(pPlanterController, true, szTranslate);
 }
 
+#ifdef _DEBUG
+
 GAME_EVENT_F(player_spawn)
 {
-    if (!g_CConfig->IsMinimumPlayerReached())
-        return;
-
     CCSPlayerController *pController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
     if (!pController)
@@ -191,6 +190,8 @@ GAME_EVENT_F(player_spawn)
 
 		return -1.0f; });
 }
+
+#endif
 
 GAME_EVENT_F(player_death)
 {
