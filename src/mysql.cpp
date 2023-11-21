@@ -30,6 +30,7 @@ void CMysql::Connect()
 			Fatal("Failed to connect the mysql database, unloading");
 			g_CPlugin.ForceUnload();
 		} else {
+			//Debug("test escape string %s", g_pConnection->Escape("test"));
 			this->CreateDatabaseIfNotExist();
 			this->m_bConnected = true;
 		} });
@@ -63,10 +64,15 @@ void CMysql::CreateDatabaseIfNotExist()
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
 						 { this->Query_GetRankReference(cb); });
 
+	
+	Debug("Select Reference : %s", szQuery);
+	
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_MAP, this->EscapeString(g_pGlobals->mapname.ToCStr()).c_str());
 
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
 						 { this->Query_GetMapId(cb); });
+
+	Debug("Select Map Request : %s", szQuery);
 }
 
 void CMysql::Query_GetRankReference(IMySQLQuery *cb)
@@ -347,8 +353,8 @@ std::string CMysql::EscapeRankReference()
 
 std::string CMysql::EscapeString(const char *input)
 {
-	return g_pConnection->Escape(input);
-	// return this->SafeEscapeString(input);
+	//return g_pConnection->Escape(input);
+	return this->SafeEscapeString(input);
 }
 
 std::string CMysql::SafeEscapeString(const char *input)
