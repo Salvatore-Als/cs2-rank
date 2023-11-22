@@ -107,13 +107,12 @@ public:
   void GetRank(bool global, CRankPlayer *pPlayer, std::function<void(int)> callback);
 
 private:
-  const char *g_pszRankReference;
   int g_iMapId;
   bool m_bConnected;
 
   void Connect();
 
-  std::string EscapeRankReference();
+  std::string Escape(const char *value);
 
   void Query_GetRankReference(IMySQLQuery *cb);
   void Query_GetUserMap(IMySQLQuery *cb, CRankPlayer *pPlayer);
@@ -121,6 +120,8 @@ private:
   void Query_TopPlayers(IMySQLQuery *cb, std::function<void(std::map<std::string, int>)> callback);
   void Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback);
   void Query_GetMapId(IMySQLQuery *cb);
+  void Query_CreateMapsTable();
+  void Query_CreateReferencesTable();
 };
 
 extern CMysql *g_CMysql;

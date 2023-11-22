@@ -158,11 +158,10 @@ GAME_EVENT_F(bomb_exploded)
     g_CChat->PrintToChat(pPlanterController, true, szTranslate);
 }
 
+#ifdef _DEBUG
+
 GAME_EVENT_F(player_spawn)
 {
-    if (!g_CConfig->IsMinimumPlayerReached())
-        return;
-
     CCSPlayerController *pController = (CCSPlayerController *)pEvent->GetPlayerController("userid");
 
     if (!pController)
@@ -184,13 +183,15 @@ GAME_EVENT_F(player_spawn)
         
         CRankPlayer *pPlayer = pController->GetRankPlayer();
 
-        if(!pPlayer->IsFakeClient())
+        if(!pPlayer || !pPlayer->IsFakeClient())
             return -1.0f;
 
         pPawn->m_MoveType = MOVETYPE_NONE;
 
 		return -1.0f; });
 }
+
+#endif
 
 GAME_EVENT_F(player_death)
 {
@@ -207,8 +208,31 @@ GAME_EVENT_F(player_death)
     CRankPlayer *pAttacker = pAttackerController->GetRankPlayer();
 
     // Disable if invalid player
-    if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer() || pVictim->IsFakeClient())
+    if (!pVictim || !pAttacker)
         return;
+
+    if (!g_CConfig->IsBotEnabled()) // Bot is not enabled, checking if victim or attacker is invalid
+    {
+        Debug("Bot is not enabled");
+        // Bot, return b'cause not allowed
+        if (pVictim->IsFakeClient() || pAttacker->IsFakeClient())
+        {
+            Debug("Victim or attacker is a bot, return");
+            return;
+        }
+    }
+    // Bot is enabled
+    else
+    {
+        Debug("Bot is enabled");
+
+        // Attacker is not a fake client, and this one is not valid
+        if (!pAttacker->IsFakeClient() && !pAttacker->IsValidPlayer())
+        {
+            Debug("Attacked is not a bot and is not valid");
+            return;
+        }
+    }
 
     char szTranslate[256];
 
@@ -222,15 +246,15 @@ GAME_EVENT_F(player_death)
         new CTimer(0.2f, false, [pAttackerController, deathTeam]()
                    {
                     if(!pAttackerController)
-                        return -0.5f;
+                        return -0.2f;
 
                     CRankPlayer *pAttacker = pAttackerController->GetRankPlayer();
                     
                     if(!pAttacker)
-                        return -0.5f;
+                        return -0.2f;
 
                     if(pAttackerController->m_iTeamNum != CS_TEAM_T && pAttackerController->m_iTeamNum != CS_TEAM_CT)
-                        return -0.5f;
+                        return -0.2f;
 
             pAttacker->m_Points.Remove(g_CConfig->GetPointsLooseSuicide());
             pAttacker->m_DeathSuicide.Add(1);
@@ -239,7 +263,7 @@ GAME_EVENT_F(player_death)
             UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("DEATH_SUICIDE"), g_CConfig->GetPointsLooseSuicide());
             g_CChat->PrintToChat(pAttackerController, true, szTranslate);
         
-        return -0.5f; });
+        return -0.2f; });
 
         return;
     }

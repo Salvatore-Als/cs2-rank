@@ -4,6 +4,8 @@
 #include "utils/module.h"
 #include "gameconfig.h"
 
+//extern CGameConfig *g_CGameConfig;
+
 class CBasePlayerController;
 class CCSPlayerController;
 class CEntityInstance;

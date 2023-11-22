@@ -5,7 +5,9 @@
 #include "tier0/memdbgon.h"
 #include "plat.h"
 #include "entity/cbaseentity.h"
+#include "interfaces/cschemasystem.h"
 
+//extern CSchemaSystem *g_pSchemaSystem2;
 CGlobalVars *GetServerGlobals();
 
 using SchemaKeyValueMap_t = CUtlMap<uint32_t, SchemaKey>;

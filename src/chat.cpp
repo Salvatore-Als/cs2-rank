@@ -42,8 +42,9 @@ void CChat::PrintToChatAll(const char *msg, ...)
 
 void CChat::PrintToChat(CPlayerSlot slot, bool canBeIgnore, const char *msg, ...)
 {
-	CEntityIndex index = (CEntityIndex)(slot.Get() + 1);
-	CCSPlayerController *pController = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity(index);
+	//CEntityIndex index = (CEntityIndex)(slot.Get() + 1);
+	//CCSPlayerController *pController = (CCSPlayerController *)g_pEntitySystem->GetBaseEntity(index);
+	CCSPlayerController *pController = CCSPlayerController::FromSlot(slot);
 
 	if (!pController)
 		return;
@@ -125,7 +126,8 @@ void CChat::PrintToChatTeam(int teamIndex, bool canBeIgnore, const char *msg)
 {
 	for (int i = 0; i < 64; i++)
 	{
-		CBaseEntity2 *player = (CBaseEntity2 *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(i + 1));
+		//CBaseEntity2 *player = (CBaseEntity2 *)g_pEntitySystem->GetBaseEntity((CEntityIndex)(i + 1));
+		CCSPlayerController *player = CCSPlayerController::FromSlot(i);
 		if (!player)
 			continue;
 

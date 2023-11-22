@@ -21,6 +21,7 @@
 #include "ctimer.h"
 #include "basecommands.h"
 #include "config.h"
+#include "interfaces/cschemasystem.h"
 
 #define VPROF_ENABLED
 #include "tier0/vprof.h"
@@ -44,17 +45,17 @@ size_t UTIL_Format(char *buffer, size_t maxlength, const char *fmt, ...)
 
 void Debug(const char *msg, ...)
 {
-#ifdef _DEBUG
-	va_list args;
-	va_start(args, msg);
+	#ifdef _DEBUG
+		va_list args;
+		va_start(args, msg);
 
-	char buf[1024] = {};
-	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
+		char buf[8064] = {};
+		V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 255, 255), DEBUG_PREFIX "%s\n", buf);
+		ConColorMsg(Color(255, 0, 255, 255), DEBUG_PREFIX "%s\n\n", buf);
 
-	va_end(args);
-#endif
+		va_end(args);
+	#endif
 }
 
 void Fatal(const char *msg, ...)
@@ -62,10 +63,10 @@ void Fatal(const char *msg, ...)
 	va_list args;
 	va_start(args, msg);
 
-	char buf[1024] = {};
+	char buf[8064] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 0, 255), DEBUG_PREFIX "%s\n", buf);
+	ConColorMsg(Color(255, 0, 0, 255), DEBUG_PREFIX "%s\n\n", buf);
 
 	va_end(args);
 }
@@ -75,10 +76,10 @@ void Warn(const char *msg, ...)
 	va_list args;
 	va_start(args, msg);
 
-	char buf[1024] = {};
+	char buf[8064] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 165, 0, 255), DEBUG_PREFIX "%s\n", buf);
+	ConColorMsg(Color(255, 165, 0, 255), DEBUG_PREFIX "%s\n\n", buf);
 
 	va_end(args);
 }
@@ -100,6 +101,7 @@ ISource2GameClients *g_pGameclients = nullptr;
 IVEngineServer2 *g_pEngine = nullptr;
 ICvar *icvar = nullptr;
 IGameEventManager2 *g_pGameEventManager = nullptr;
+CSchemaSystem *g_pSchemaSystem2 = nullptr;
 
 IMySQLClient *g_pMysqlClient;
 IMySQLConnection *g_pConnection;
@@ -113,7 +115,6 @@ CConfig *g_CConfig = nullptr;
 CEntitySystem *g_pEntitySystem = nullptr;
 CGameResourceService *g_gGameResourceServiceServe = nullptr;
 CGameConfig *g_CGameConfig;
-CSchemaSystem *g_pSchemaSystem2 = nullptr;
 
 float g_flUniversalTime;
 float g_flLastTickedTime;
@@ -126,6 +127,12 @@ CGlobalVars *GetServerGlobals()
 {
 	return g_pEngine->GetServerGlobals();
 }
+
+/*CEntitySystem *GetEntitySystem()
+{
+	static int offset = g_CGameConfig->GetOffset("GameEntitySystem");
+	return *reinterpret_cast<CGameEntitySystem **>((uintptr_t)(g_pGameResourceServiceServer) + offset);
+}*/
 
 PLUGIN_EXPOSE(CPlugin, g_CPlugin);
 bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
@@ -143,6 +150,8 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	GET_V_IFACE_ANY(GetFileSystemFactory, g_pFullFileSystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
 	GET_V_IFACE_ANY(GetServerFactory, g_pSource2GameClients, IServerGameClients, SOURCE2GAMECLIENTS_INTERFACE_VERSION);
 	GET_V_IFACE_ANY(GetServerFactory, g_pSource2Server, ISource2Server, SOURCE2SERVER_INTERFACE_VERSION);
+	GET_V_IFACE_CURRENT(GetEngineFactory, g_pGameResourceServiceServer, IGameResourceServiceServer, GAMERESOURCESERVICESERVER_INTERFACE_VERSION);
+	//GET_V_IFACE_CURRENT(GetEngineFactory, g_pSchemaSystem2, CSchemaSystem, SCHEMASYSTEM_INTERFACE_VERSION);
 
 	g_pCVar = icvar;
 
@@ -203,6 +212,7 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 		return false;
 	}
 
+	//g_pEntitySystem = GetEntitySystem();
 	g_pEntitySystem = g_gGameResourceServiceServe->GetGameEntitySystem();
 
 	g_CChat = new CChat();
@@ -278,8 +288,9 @@ void CPlugin::Hook_StartupServer(const GameSessionConfiguration_t &config, ISour
 		this->ForceUnload();
 	}
 
+	//g_pEntitySystem = GetEntitySystem();
 	g_pEntitySystem = g_gGameResourceServiceServe->GetGameEntitySystem();
-
+	
 	if (g_bHasTicked)
 		RemoveMapTimers();
 
@@ -287,7 +298,15 @@ void CPlugin::Hook_StartupServer(const GameSessionConfiguration_t &config, ISour
 
 	RegisterEventListeners();
 
-	if (g_CMysql != nullptr && g_CMysql->IsConnected())
+	/*if (g_CMysql != nullptr && g_CMysql->IsConnected())
+	{
+		g_CMysql->Destroy();
+		delete g_CMysql;
+	}
+
+	g_CMysql = new CMysql();*/
+
+	if(g_CMysql && g_CMysql->IsConnected())
 		g_CMysql->CreateDatabaseIfNotExist();
 }
 
@@ -295,35 +314,38 @@ void CPlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
 {
 	VPROF_ENTER_SCOPE(__FUNCTION__);
 
-	if (simulating && g_bHasTicked)
-		g_flUniversalTime += g_pGlobals->curtime - g_flLastTickedTime;
-	else
-		g_flUniversalTime += g_pGlobals->interval_per_tick;
-
-	g_flLastTickedTime = g_pGlobals->curtime;
-	g_bHasTicked = true;
-
-	for (int i = g_timers.Tail(); i != g_timers.InvalidIndex();)
+	if (g_pGlobals)
 	{
-		auto timer = g_timers[i];
+		if (simulating && g_bHasTicked)
+			g_flUniversalTime += g_pGlobals->curtime - g_flLastTickedTime;
+		else
+			g_flUniversalTime += g_pGlobals->interval_per_tick;
 
-		int prevIndex = i;
-		i = g_timers.Previous(i);
+		g_flLastTickedTime = g_pGlobals->curtime;
+		g_bHasTicked = true;
 
-		if (timer->m_flLastExecute == -1)
-			timer->m_flLastExecute = g_flUniversalTime;
-
-		// Timer execute
-		if (timer->m_flLastExecute + timer->m_flInterval <= g_flUniversalTime)
+		for (int i = g_timers.Tail(); i != g_timers.InvalidIndex();)
 		{
-			if (!timer->Execute())
-			{
-				delete timer;
-				g_timers.Remove(prevIndex);
-			}
-			else
-			{
+			auto timer = g_timers[i];
+
+			int prevIndex = i;
+			i = g_timers.Previous(i);
+
+			if (timer->m_flLastExecute == -1)
 				timer->m_flLastExecute = g_flUniversalTime;
+
+			// Timer execute
+			if (timer->m_flLastExecute + timer->m_flInterval <= g_flUniversalTime)
+			{
+				if (!timer->Execute())
+				{
+					delete timer;
+					g_timers.Remove(prevIndex);
+				}
+				else
+				{
+					timer->m_flLastExecute = g_flUniversalTime;
+				}
 			}
 		}
 	}
@@ -428,7 +450,7 @@ const char *CPlugin::GetLicense()
 
 const char *CPlugin::GetVersion()
 {
-	return "b2.0";
+	return "b2.0.1";
 }
 
 const char *CPlugin::GetDate()
@@ -554,6 +576,64 @@ void Command_DebugAdd(const CCommandContext &context, const CCommand &args)
 	pPlayer->m_KillCT.Add(10);
 	pPlayer->m_TeamKillT.Add(10);
 	pPlayer->m_TeamKillT.Add(10);
+
+	Debug("After SET");
+	pPlayer->PrintDebug(RequestType::Global);
+
+	Debug("Saving in database");
+	pPlayer->SaveOnDatabase();
+}
+
+CON_COMMAND_EXTERN(rank_debugremove, Command_DebugRemove, "");
+void Command_DebugRemove(const CCommandContext &context, const CCommand &args)
+{
+	Debug("Rank Debug");
+
+	CPlayerSlot slot = context.GetPlayerSlot();
+
+	if (slot.Get() < 0)
+	{
+		Debug("Invalid player slot", slot.Get());
+		return;
+	}
+
+	Debug("Should add a value for each data and update the player");
+
+	CRankPlayer *pPlayer = g_CPlayerManager->GetPlayer(slot);
+	if (!pPlayer)
+	{
+		Debug("Player is invalid");
+		return;
+	}
+
+	if (!pPlayer->IsAuthenticated())
+	{
+		Debug("Player is not authenticated on steam");
+		return;
+	}
+
+	if (!pPlayer->IsDatabaseAuthenticated())
+	{
+		Debug("Player is not authenticated on database");
+		return;
+	}
+
+	Debug("Before SET");
+	pPlayer->PrintDebug(RequestType::Global);
+
+	pPlayer->m_Points.Remove(7);
+	pPlayer->m_DeathSuicide.Remove(7);
+	pPlayer->m_DeathT.Remove(7);
+	pPlayer->m_DeathCT.Remove(7);
+	pPlayer->m_BombPlanted.Remove(7);
+	pPlayer->m_BombExploded.Remove(7);
+	pPlayer->m_BombDefused.Remove(7);
+	pPlayer->m_KillKnife.Remove(7);
+	pPlayer->m_KillHeadshot.Remove(7);
+	pPlayer->m_KillT.Remove(7);
+	pPlayer->m_KillCT.Remove(7);
+	pPlayer->m_TeamKillT.Remove(7);
+	pPlayer->m_TeamKillT.Remove(7);
 
 	Debug("After SET");
 	pPlayer->PrintDebug(RequestType::Global);
