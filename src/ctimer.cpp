@@ -18,6 +18,7 @@
  */
 
 #include "ctimer.h"
+#include "tier0/memdbgon.h"
 
 CUtlLinkedList<CTimerBase *> g_timers;
 

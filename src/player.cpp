@@ -3,6 +3,7 @@
 #include "entity/ccsplayercontroller.h"
 #include "mysql.h"
 #include "config.h"
+#include "tier0/memdbgon.h"
 
 int SafeValue(int value)
 {
@@ -182,7 +183,7 @@ void CPlayerManager::OnLateLoad()
     for (int i = 0; i < g_pGlobals->maxClients; i++)
     {
         CCSPlayerController *pController = CCSPlayerController::FromSlot(i);
-
+    
         if (!pController || !pController->IsController() || !pController->IsConnected())
             continue;
 
@@ -202,7 +203,7 @@ void CPlayerManager::TryAuthenticate()
 
         if (m_vecPlayers[i]->IsAuthenticated())
         {
-            if (!m_vecPlayers[i]->IsDatabaseAuthenticated())
+            if (!m_vecPlayers[i]->IsDatabaseAuthenticated() && !m_vecPlayers[i]->IsDatabaseTryingAuthenticated() && g_CMysql->IsConnected())
                 g_CMysql->GetUser(m_vecPlayers[i]->Get());
 
             continue;

@@ -2,6 +2,7 @@
 #include "abstract.h"
 #include "player.h"
 #include "entity/ccsplayercontroller.h"
+#include "tier0/memdbgon.h"
 
 bool CConfig::Init(char *conf_error, int conf_error_size)
 {

@@ -88,6 +88,7 @@ public:
         m_SteamID = nullptr;
         m_bConnected = false;
         m_bDatabaseAuthenticated = false;
+        m_bDatabaseTryingAuthenticated = false;
         m_bIgnoringAnnouce = false;
         m_flLastTalkTime = 0;
         m_iFloodTokens = 0;
@@ -121,6 +122,9 @@ public:
 
     void SaveOnDatabase();
     void RemoveFromOtherMap();
+
+    bool IsDatabaseTryingAuthenticated() { return m_bDatabaseTryingAuthenticated; }
+    void SetDatabaseTryingAuthenticated() { m_bDatabaseTryingAuthenticated = true; }
 
     bool IsDatabaseAuthenticated() { return m_bDatabaseAuthenticated; }
     void SetDatabaseAuthenticated() { m_bDatabaseAuthenticated = true; }
@@ -168,6 +172,7 @@ private:
     bool m_bConnected;
     bool m_bFakeClient;
     bool m_bDatabaseAuthenticated;
+    bool m_bDatabaseTryingAuthenticated;
 
     int m_iFloodTokens;
     float m_flLastTalkTime;

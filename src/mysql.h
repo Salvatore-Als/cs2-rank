@@ -113,6 +113,7 @@ private:
 
   void Connect();
 
+  std::string Escape(const char *value);
   std::string EscapeRankReference();
 
   void Query_GetRankReference(IMySQLQuery *cb);
@@ -121,6 +122,8 @@ private:
   void Query_TopPlayers(IMySQLQuery *cb, std::function<void(std::map<std::string, int>)> callback);
   void Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback);
   void Query_GetMapId(IMySQLQuery *cb);
+  void Query_CreateMapsTable();
+  void Query_CreateReferencesTable();
 };
 
 extern CMysql *g_CMysql;

@@ -22,6 +22,7 @@
 #include "basecommands.h"
 #include "config.h"
 #include "interfaces/cschemasystem.h"
+#include "tier0/memdbgon.h"
 
 #define VPROF_ENABLED
 #include "tier0/vprof.h"
@@ -45,17 +46,17 @@ size_t UTIL_Format(char *buffer, size_t maxlength, const char *fmt, ...)
 
 void Debug(const char *msg, ...)
 {
-#ifdef _DEBUG
+	// #ifdef _DEBUG
 	va_list args;
 	va_start(args, msg);
 
-	char buf[1024] = {};
+	char buf[8064] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 255, 255), DEBUG_PREFIX "%s\n", buf);
+	ConColorMsg(Color(255, 0, 255, 255), DEBUG_PREFIX "%s\n\n", buf);
 
 	va_end(args);
-#endif
+	// #endif
 }
 
 void Fatal(const char *msg, ...)
@@ -63,10 +64,10 @@ void Fatal(const char *msg, ...)
 	va_list args;
 	va_start(args, msg);
 
-	char buf[1024] = {};
+	char buf[8064] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 0, 255), DEBUG_PREFIX "%s\n", buf);
+	ConColorMsg(Color(255, 0, 0, 255), DEBUG_PREFIX "%s\n\n", buf);
 
 	va_end(args);
 }
@@ -76,10 +77,10 @@ void Warn(const char *msg, ...)
 	va_list args;
 	va_start(args, msg);
 
-	char buf[1024] = {};
+	char buf[8064] = {};
 	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 165, 0, 255), DEBUG_PREFIX "%s\n", buf);
+	ConColorMsg(Color(255, 165, 0, 255), DEBUG_PREFIX "%s\n\n", buf);
 
 	va_end(args);
 }
@@ -128,11 +129,11 @@ CGlobalVars *GetServerGlobals()
 	return g_pEngine->GetServerGlobals();
 }
 
-CEntitySystem *GetEntitySystem()
+/*CEntitySystem *GetEntitySystem()
 {
 	static int offset = g_CGameConfig->GetOffset("GameEntitySystem");
 	return *reinterpret_cast<CGameEntitySystem **>((uintptr_t)(g_pGameResourceServiceServer) + offset);
-}
+}*/
 
 PLUGIN_EXPOSE(CPlugin, g_CPlugin);
 bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
@@ -151,7 +152,7 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 	GET_V_IFACE_ANY(GetServerFactory, g_pSource2GameClients, IServerGameClients, SOURCE2GAMECLIENTS_INTERFACE_VERSION);
 	GET_V_IFACE_ANY(GetServerFactory, g_pSource2Server, ISource2Server, SOURCE2SERVER_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetEngineFactory, g_pGameResourceServiceServer, IGameResourceServiceServer, GAMERESOURCESERVICESERVER_INTERFACE_VERSION);
-	GET_V_IFACE_CURRENT(GetEngineFactory, g_pSchemaSystem2, CSchemaSystem, SCHEMASYSTEM_INTERFACE_VERSION);
+	//GET_V_IFACE_CURRENT(GetEngineFactory, g_pSchemaSystem2, CSchemaSystem, SCHEMASYSTEM_INTERFACE_VERSION);
 
 	g_pCVar = icvar;
 
@@ -212,7 +213,8 @@ bool CPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool 
 		return false;
 	}
 
-	g_pEntitySystem = GetEntitySystem();
+	//g_pEntitySystem = GetEntitySystem();
+	g_pEntitySystem = g_gGameResourceServiceServe->GetGameEntitySystem();
 
 	g_CChat = new CChat();
 	g_CPlayerManager = new CPlayerManager();
@@ -287,8 +289,9 @@ void CPlugin::Hook_StartupServer(const GameSessionConfiguration_t &config, ISour
 		this->ForceUnload();
 	}
 
-	g_pEntitySystem = GetEntitySystem();
-
+	//g_pEntitySystem = GetEntitySystem();
+	g_pEntitySystem = g_gGameResourceServiceServe->GetGameEntitySystem();
+	
 	if (g_bHasTicked)
 		RemoveMapTimers();
 
@@ -297,7 +300,13 @@ void CPlugin::Hook_StartupServer(const GameSessionConfiguration_t &config, ISour
 	RegisterEventListeners();
 
 	if (g_CMysql != nullptr && g_CMysql->IsConnected())
-		g_CMysql->CreateDatabaseIfNotExist();
+	{
+		g_CMysql->Destroy();
+		delete g_CMysql;
+	}
+
+	g_CMysql = new CMysql();
+	// g_CMysql->CreateDatabaseIfNotExist();
 }
 
 void CPlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
@@ -420,7 +429,7 @@ void CPlugin::AllPluginsLoaded()
 		this->ForceUnload();
 	}
 
-	g_CMysql = new CMysql();
+	// g_CMysql = new CMysql();
 }
 
 bool CPlugin::Pause(char *error, size_t maxlen)
