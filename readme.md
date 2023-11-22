@@ -25,6 +25,16 @@ https://cs2rank.kriax.ovh/#/plugin
 - Remove server hibernation `sv_hibernate_when_empty 0`
 - mysql_mm plugins by Poggu : https://github.com/Poggicek/mysql_mm
 
+###### My server is crashing during the boot:
+The plugin is unloaded when there is a problem (MySQL, schema, etc.). To generate a crash report, you can utilize this plugin: https://github.com/komashchenko/AcceleratorLocal
+
+###### Here are the steps to troubleshoot:
+
+- Verify if mysql_mm is installed and functioning on your server by entering `meta list`.
+- Ensure that your MySQL configuration in your plugin is accurate.
+
+If the issue persists and results in a crash, please create an issue with the plugin list and include the server logs.
+
 ## Web page
 https://cs2rank.kriax.ovh/#/web
 
