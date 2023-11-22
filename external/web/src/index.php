@@ -9,11 +9,11 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900">
     <section class="m-5 flex flex-col gap-4">
-        <div class="flex">
-
-            <select id="references-select" onChange="reloadPlayers()" class="max-w-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></select>
-            <select id="maps-select" onChange="reloadPlayers()" class="max-w-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></select>
-
+        <div class="flex gap-4">
+            <div class="flex gap-2 flex-wrap w-full">
+                <select id="references-select" onChange="reloadPlayers()" class="max-w-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></select>
+                <select id="maps-select" onChange="reloadPlayers()" class="max-w-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></select>
+            </div>
             <div class="cursor-pointer ml-auto text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
                 <i id="theme-icon" onclick="changeTheme()"></i>
             </div>

@@ -620,10 +620,6 @@ video {
   cursor: pointer;
 }
 
-.flex-row {
-  flex-direction: row;
-}
-
 .flex-col {
   flex-direction: column;
 }
@@ -654,10 +650,6 @@ video {
 
 .overflow-auto {
   overflow: auto;
-}
-
-.overflow-hidden {
-  overflow: hidden;
 }
 
 .rounded-full {
@@ -1020,17 +1012,7 @@ video {
 }
 
 @media (min-width: 640px) {
-  .sm\:table-row {
-    display: table-row;
-  }
-
   .sm\:flex-none {
     flex: none;
-  }
-}
-
-@media (min-width: 768px) {
-  .md\:table-row {
-    display: table-row;
   }
 }
