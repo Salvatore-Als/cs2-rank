@@ -4,6 +4,7 @@
     $dbh = new PDO("mysql:host=" . MYSQL_HOST . ";dbname=" . MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD);
     $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $reference = isset($_GET['reference']) ? strval($_GET['reference']) : null;
+    $map = (isset($_GET['map']) && is_numeric($_GET['map']) && ($_GET['map'] > 0)) ? intval($_GET['map']) : null;
 
     if(!isset($reference) || empty($reference)) {
         echo "Empty reference";
@@ -17,6 +18,7 @@
         global $page;
         global $cache;
         global $reference;
+        global $map;
 
         if(in_array($page, $cache, true)) {
             return $cache[$page];
@@ -26,12 +28,23 @@
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
         
-        $sth = $dbh->prepare('SELECT * FROM cs2_rank_users WHERE points >= :minPoints AND reference = :reference ORDER BY points DESC LIMIT :offset, :limit');
-        $sth->bindValue(':reference', $reference, PDO::PARAM_STR);
-        $sth->bindValue(':minPoints', MINIMUM_POINTS, PDO::PARAM_INT);
-        $sth->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $sth->bindValue(':limit', PLAYERS_PER_PAGE, PDO::PARAM_INT);
-        $sth->execute();
+        if(!empty($map)) {
+            $sth = $dbh->prepare('SELECT * FROM cs2_rank_users WHERE points >= :minPoints AND reference = :reference AND map = :map ORDER BY points DESC LIMIT :offset, :limit');
+            $sth->bindValue(':reference', $reference, PDO::PARAM_STR);
+            $sth->bindValue(':map', $map, PDO::PARAM_INT);
+            $sth->bindValue(':minPoints', MINIMUM_POINTS, PDO::PARAM_INT);
+            $sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $sth->bindValue(':limit', PLAYERS_PER_PAGE, PDO::PARAM_INT);
+            $sth->execute();
+        } 
+        else {
+            $sth = $dbh->prepare('SELECT * FROM cs2_rank_users WHERE points >= :minPoints AND reference = :reference ORDER BY points DESC LIMIT :offset, :limit');
+            $sth->bindValue(':reference', $reference, PDO::PARAM_STR);
+            $sth->bindValue(':minPoints', MINIMUM_POINTS, PDO::PARAM_INT);
+            $sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $sth->bindValue(':limit', PLAYERS_PER_PAGE, PDO::PARAM_INT);
+            $sth->execute();
+        }
 
         $rows = $sth->fetchAll();
         $players = [];
@@ -95,15 +108,25 @@
         global $dbh;
         global $page;
         global $reference;
+        global $map;
 
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
             
-        $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM cs2_rank_users WHERE reference = :reference');
-        $sth->bindValue(':reference', $reference, PDO::PARAM_INT);
-        $sth->bindValue(':itemsPerPage', PLAYERS_PER_PAGE, PDO::PARAM_INT);
-        $sth->execute();
+        if(!empty($map)) {
+            $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM cs2_rank_users WHERE reference = :reference AND map = :map');
+            $sth->bindValue(':map', $map, PDO::PARAM_INT);
+            $sth->bindValue(':reference', $reference, PDO::PARAM_INT);
+            $sth->bindValue(':itemsPerPage', PLAYERS_PER_PAGE, PDO::PARAM_INT);
+            $sth->execute();
+        } 
+        else {
+            $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM cs2_rank_users WHERE reference = :reference');
+            $sth->bindValue(':reference', $reference, PDO::PARAM_INT);
+            $sth->bindValue(':itemsPerPage', PLAYERS_PER_PAGE, PDO::PARAM_INT);
+            $sth->execute();
+        }
 
         $result = $sth->fetch(PDO::FETCH_ASSOC);
         return $result['result'];
@@ -118,6 +141,6 @@
     }
 
     header("Content-Type: application/json");
-    echo json_encode(['currentPage' => $page, 'totalPage' => getTotalPage(), 'reference' => $reference, 'results' => getPlayers()]);
+    echo json_encode(['currentPage' => $page, 'totalPage' => getTotalPage(), 'reference' => $reference, 'map' => $map, 'results' => getPlayers()]);
     exit();
 ?>

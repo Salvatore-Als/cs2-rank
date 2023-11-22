@@ -3,8 +3,12 @@ const localStorageKey = 'cs2ranktheme';
 
 let currentPage = 1;
 let totalPage = 0;
+
 let reference = null;
 let references = [];
+
+let map = null;
+let maps = [];
 
 if (localStorage[localStorageKey] == 'dark') {
     document.documentElement.classList.add('dark');
@@ -52,12 +56,14 @@ function lazyProfileImage() {
 
 function reloadPlayers() {
     const referencesSelect = document.getElementById('references-select');
+    const mapsSelect = document.getElementById('maps-select');
 
-    if (!referencesSelect) {
+    if (!referencesSelect || !mapsSelect) {
         return;
     }
 
     reference = references[referencesSelect.selectedIndex];
+    map = (mapsSelect.selectedIndex > 0) ? maps[mapsSelect.selectedIndex - 1] : -1;
 
     currentPage = 1;
     getPlayers();
@@ -94,6 +100,47 @@ function getReferences() {
                 referencesSelect.add(newOption);
             }
 
+            getMaps();
+        }
+    });
+}
+
+function getMaps() {
+    const mapsSelect = document.getElementById('maps-select');
+
+    if (!mapsSelect) {
+        return;
+    }
+
+    mapsSelect.innerHTML = "";
+
+    $.ajax({
+        url: 'getMaps.php',
+        method: 'GET',
+        success: function (response) {
+            mapsSelect.innerHTML = "";
+
+            const result = JSON.parse(JSON.stringify(response));
+            maps = result?.results;
+
+            if (!maps?.length) {
+                return;
+            }
+
+            map = maps[0];
+
+            const newOption = document.createElement("option");
+            newOption.text = 'All';
+            newOption.value = -1;
+            mapsSelect.add(newOption);
+
+            for (let map of maps) {
+                const newOption = document.createElement("option");
+                newOption.text = map.name;
+                newOption.value = map.id;
+                mapsSelect.add(newOption);
+            }
+
             getPlayers();
         }
     });
@@ -117,7 +164,8 @@ function getPlayers() {
         method: 'GET',
         data: {
             page: currentPage,
-            reference: reference?.reference
+            reference: reference?.reference,
+            map: map?.id
         },
         success: function (response) {
             playersTable.innerHTML = "";
