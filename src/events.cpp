@@ -208,13 +208,31 @@ GAME_EVENT_F(player_death)
     CRankPlayer *pAttacker = pAttackerController->GetRankPlayer();
 
     // Disable if invalid player
-    if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer())
+    if (!pVictim || !pAttacker)
         return;
 
-#ifndef _DEBUG
-    if (pVictim->IsFakeClient())
-        return;
-#endif
+    if (!g_CConfig->IsBotEnabled()) // Bot is not enabled, checking if victim or attacker is invalid
+    {
+        Debug("Bot is not enabled");
+        // Bot, return b'cause not allowed
+        if (pVictim->IsFakeClient() || pAttacker->IsFakeClient())
+        {
+            Debug("Victim or attacker is a bot, return");
+            return;
+        }
+    }
+    // Bot is enabled
+    else
+    {
+        Debug("Bot is enabled");
+
+        // Attacker is not a fake client, and this one is not valid
+        if (!pAttacker->IsFakeClient() && !pAttacker->IsValidPlayer())
+        {
+            Debug("Attacked is not a bot and is not valid");
+            return;
+        }
+    }
 
     char szTranslate[256];
 

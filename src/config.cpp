@@ -30,6 +30,7 @@ bool CConfig::Init(char *conf_error, int conf_error_size)
     g_bIsFFAEnabled = g_kvCore->GetBool("enable_ffa", false);
     g_bIsNegativePointsAllowed = g_kvCore->GetBool("allow_negative_points", false);
     g_bIsResetRankAllowed = g_kvCore->GetBool("allow_reset_rank", true);
+    g_bIsBotEnabled = g_kvCore->GetBool("enable_bot", true);
 
     // Points configurations
 
