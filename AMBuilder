@@ -66,7 +66,8 @@ for sdk_name in MMSPlugin.sdks:
       'src/player.cpp',
       'src/basecommands.cpp',
       'src/ctimer.cpp',
-      'src/config.cpp'
+      'src/config.cpp',
+      'src/commands.cpp'
     ]
 
     if sdk_name in ['dota', 'cs2']:

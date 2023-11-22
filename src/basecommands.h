@@ -16,6 +16,7 @@ public:
 	CChatCommand(const char *cmd, FnChatCommandCallback_t callback, const char *description) : m_pfnCallback(callback), m_szName(cmd), m_szDescription(description)
 	{
 		g_Commands.Insert(hash_32_fnv1a_const(cmd), this);
+		Debug("Register command %s", cmd);
 	}
 
 	const char *GetName() const { return m_szName; }

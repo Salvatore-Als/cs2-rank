@@ -298,14 +298,16 @@ void CPlugin::Hook_StartupServer(const GameSessionConfiguration_t &config, ISour
 
 	RegisterEventListeners();
 
-	if (g_CMysql != nullptr && g_CMysql->IsConnected())
+	/*if (g_CMysql != nullptr && g_CMysql->IsConnected())
 	{
 		g_CMysql->Destroy();
 		delete g_CMysql;
 	}
 
-	g_CMysql = new CMysql();
-	// g_CMysql->CreateDatabaseIfNotExist();
+	g_CMysql = new CMysql();*/
+
+	if(g_CMysql && g_CMysql->IsConnected())
+		g_CMysql->CreateDatabaseIfNotExist();
 }
 
 void CPlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
@@ -428,7 +430,7 @@ void CPlugin::AllPluginsLoaded()
 		this->ForceUnload();
 	}
 
-	// g_CMysql = new CMysql();
+	g_CMysql = new CMysql();
 }
 
 bool CPlugin::Pause(char *error, size_t maxlen)
