@@ -36,6 +36,7 @@ public:
     bool IsFFaEnabled() { return g_bIsFFAEnabled; }
     bool IsNegativePointsAllowed() { return g_bIsNegativePointsAllowed; }
     bool IsRankAllowed() { return g_bIsResetRankAllowed; }
+    bool IsBotEnabled() { return g_bIsBotEnabled; }
 
     int GetMinimumPoints() { return g_iMinimumPoints <= 0 ? 10 : g_iMinimumPoints; }
     int GetMinimumSessionPoints() { return g_iMinimumSessionPoints <= 0 ? 10 : g_iMinimumSessionPoints; }
@@ -72,7 +73,8 @@ private:
     bool g_bIsFFAEnabled;
     bool g_bIsNegativePointsAllowed;
     bool g_bIsResetRankAllowed;
-
+    bool g_bIsBotEnabled;
+    
     const char *g_pszLanguage;
     std::vector<Phrase> g_vecPhrases;
 

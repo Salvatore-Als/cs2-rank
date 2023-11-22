@@ -183,7 +183,7 @@ GAME_EVENT_F(player_spawn)
         
         CRankPlayer *pPlayer = pController->GetRankPlayer();
 
-        if(!pPlayer->IsFakeClient())
+        if(!pPlayer || !pPlayer->IsFakeClient())
             return -1.0f;
 
         pPawn->m_MoveType = MOVETYPE_NONE;
@@ -208,7 +208,10 @@ GAME_EVENT_F(player_death)
     CRankPlayer *pAttacker = pAttackerController->GetRankPlayer();
 
     // Disable if invalid player
-    if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer() || pVictim->IsFakeClient())
+    if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer())
+        return;
+
+    if (pVictim->IsFakeClient() && !g_CConfig->IsBotEnabled())
         return;
 
     char szTranslate[256];
