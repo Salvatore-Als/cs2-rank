@@ -1,7 +1,6 @@
 #include "abstract.h"
 #include "utils/module.h"
 #include "addresses.h"
-#include "tier0/memdbgon.h"
 
 #define RESOLVE_SIG(gameConfig, name, variable) variable = (decltype(variable))gameConfig->ResolveSignature(name)
 

@@ -5,7 +5,6 @@
 #include <string>
 #include "addresses.h"
 #include "config.h"
-#include "tier0/memdbgon.h"
 
 std::string CChat::Colorizer(std::string str)
 {

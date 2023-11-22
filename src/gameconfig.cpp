@@ -1,7 +1,6 @@
 #include "gameconfig.h"
 #include "addresses.h"
 #include "abstract.h"
-#include "tier0/memdbgon.h"
 
 CGameConfig::CGameConfig()
 {

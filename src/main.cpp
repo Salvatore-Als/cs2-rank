@@ -22,7 +22,6 @@
 #include "basecommands.h"
 #include "config.h"
 #include "interfaces/cschemasystem.h"
-#include "tier0/memdbgon.h"
 
 #define VPROF_ENABLED
 #include "tier0/vprof.h"
@@ -46,17 +45,17 @@ size_t UTIL_Format(char *buffer, size_t maxlength, const char *fmt, ...)
 
 void Debug(const char *msg, ...)
 {
-	// #ifdef _DEBUG
-	va_list args;
-	va_start(args, msg);
+	#ifdef _DEBUG
+		va_list args;
+		va_start(args, msg);
 
-	char buf[8064] = {};
-	V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
+		char buf[8064] = {};
+		V_vsnprintf(buf, sizeof(buf) - 1, msg, args);
 
-	ConColorMsg(Color(255, 0, 255, 255), DEBUG_PREFIX "%s\n\n", buf);
+		ConColorMsg(Color(255, 0, 255, 255), DEBUG_PREFIX "%s\n\n", buf);
 
-	va_end(args);
-	// #endif
+		va_end(args);
+	#endif
 }
 
 void Fatal(const char *msg, ...)

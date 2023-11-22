@@ -3,6 +3,7 @@
 #include "abstract.h"
 #include "mysql.h"
 #include "steam/steamclientpublic.h"
+#include "utlvector.h"
 
 extern CGlobalVars *g_pGlobals;
 

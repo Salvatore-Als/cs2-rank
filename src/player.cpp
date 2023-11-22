@@ -3,7 +3,6 @@
 #include "entity/ccsplayercontroller.h"
 #include "mysql.h"
 #include "config.h"
-#include "tier0/memdbgon.h"
 
 int SafeValue(int value)
 {
@@ -162,6 +161,7 @@ bool CPlayerManager::OnClientConnected(CPlayerSlot slot)
     pPlayer->SetConnected();
     m_vecPlayers[slot.Get()] = pPlayer;
 
+    Debug("Client connected %i %p", slot.Get(), m_vecPlayers[slot.Get()]);
     return true;
 }
 
