@@ -211,8 +211,10 @@ GAME_EVENT_F(player_death)
     if (!pVictim || !pAttacker || !pAttacker->IsValidPlayer())
         return;
 
-    if (pVictim->IsFakeClient() && !g_CConfig->IsBotEnabled())
+#ifndef _DEBUG
+    if (pVictim->IsFakeClient())
         return;
+#endif
 
     char szTranslate[256];
 
@@ -226,15 +228,15 @@ GAME_EVENT_F(player_death)
         new CTimer(0.2f, false, [pAttackerController, deathTeam]()
                    {
                     if(!pAttackerController)
-                        return -0.5f;
+                        return -0.2f;
 
                     CRankPlayer *pAttacker = pAttackerController->GetRankPlayer();
                     
                     if(!pAttacker)
-                        return -0.5f;
+                        return -0.2f;
 
                     if(pAttackerController->m_iTeamNum != CS_TEAM_T && pAttackerController->m_iTeamNum != CS_TEAM_CT)
-                        return -0.5f;
+                        return -0.2f;
 
             pAttacker->m_Points.Remove(g_CConfig->GetPointsLooseSuicide());
             pAttacker->m_DeathSuicide.Add(1);
@@ -243,7 +245,7 @@ GAME_EVENT_F(player_death)
             UTIL_Format(szTranslate, sizeof(szTranslate), g_CConfig->Translate("DEATH_SUICIDE"), g_CConfig->GetPointsLooseSuicide());
             g_CChat->PrintToChat(pAttackerController, true, szTranslate);
         
-        return -0.5f; });
+        return -0.2f; });
 
         return;
     }

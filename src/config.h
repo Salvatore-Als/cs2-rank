@@ -36,7 +36,6 @@ public:
     bool IsFFaEnabled() { return g_bIsFFAEnabled; }
     bool IsNegativePointsAllowed() { return g_bIsNegativePointsAllowed; }
     bool IsRankAllowed() { return g_bIsResetRankAllowed; }
-    bool IsBotEnabled() { return g_bIsBotEnabled; }
 
     int GetMinimumPoints() { return g_iMinimumPoints <= 0 ? 10 : g_iMinimumPoints; }
     int GetMinimumSessionPoints() { return g_iMinimumSessionPoints <= 0 ? 10 : g_iMinimumSessionPoints; }
