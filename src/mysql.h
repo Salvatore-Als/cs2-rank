@@ -21,7 +21,7 @@
 
 #define CREATE_MAPS_TABLE "CREATE TABLE IF NOT EXISTS `cs2_rank_maps` ( \
   `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
-  `name` varchar(32) NOT NULL, \
+  `name` varchar(32) NOT NULL UNIQUE, \
   UNIQUE INDEX `id` (`id`) USING BTREE) \
   ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
 
@@ -33,7 +33,7 @@
 
 #define CREATE_REFERENCES_TABLE "CREATE TABLE IF NOT EXISTS `cs2_rank_references` ( \
   `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
-  `reference` varchar(32) NOT NULL, \
+  `reference` varchar(32) NOT NULL UNIQUE, \
   `custom_name` varchar(64), \
   UNIQUE INDEX `id` (`id`) USING BTREE) \
   ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
@@ -46,7 +46,7 @@
 
 #define CREATE_USERS_TABLE "CREATE TABLE IF NOT EXISTS `cs2_rank_users` ( \
   `id` BIGINT(64) NOT NULL AUTO_INCREMENT, \
-  `authid` BIGINT(64) NOT NULL DEFAULT '0', \
+  `authid` BIGINT(64) NOT NULL DEFAULT '0' UNIQUE, \
   `name` varchar(32) NOT NULL, \
   `ignore_annouce` INT(11) NOT NULL DEFAULT 0, \
   `lastconnect` int(11) NOT NULL DEFAULT 0, \
