@@ -37,6 +37,7 @@ export default class MysqlService {
             return null;
         }
 
+        // TODO: move to new db schema
         const query: string = "SELECT *, CAST(authid AS CHAR) AS authid FROM cs2_rank_users WHERE authid = ? AND reference = ? ORDER BY points DESC";
         const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, [authid, groupReference]);
 
@@ -61,6 +62,7 @@ export default class MysqlService {
             return null;
         }
 
+        // TODO: move to new db schema
         const query: string = "SELECT *, CAST(authid AS CHAR) AS authid FROM cs2_rank_users WHERE name LIKE ? AND reference = ? ORDER BY points DESC";
         const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, [`%${name}%`, groupReference]);
 
@@ -80,6 +82,7 @@ export default class MysqlService {
         let query: string;
         let result: ITopPlayer[] = null;
 
+        // TODO: move to new db schema
         if (mapId != null) {
             query = "SELECT CAST(authid AS CHAR) AS authid, name, points FROM cs2_rank_users WHERE points >= ? AND reference = ? AND `map` = ? ORDER BY points DESC";
             result = await this._mysqlProvider.query<ITopPlayer[]>(query, [Number(process.env.MINIMUM_POINTS), groupReference, mapId]);
@@ -142,6 +145,7 @@ export default class MysqlService {
         let query: string;
         let results: MysqlCountResult[];
 
+        // TODO: move to new db schema
         if (mapId != null) {
             this._loggerService.debug(`[Mysql Service] Get rank by mapId ${mapId}`);
             query = "SELECT COUNT(*) as count FROM cs2_rank_users WHERE points > ? AND reference = ? AND `map` = ?";
@@ -157,7 +161,7 @@ export default class MysqlService {
     }
 
     private async getPointByAuthId(authid: string, groupReference: string): Promise<number> {
-        const query: string = "SELECT points FROM cs2_rank_users WHERE authid = ? AND reference = ?";
+        const query: string = "SELECT cr.points FROM cs2_rank_stats cr JOIN cs2_rank_users cu ON cr.user_id = cu.id WHERE cu.authid = ? AND cr.reference = ?;";
         const result: IPlayer = await this._mysqlProvider.query<IPlayer>(query, [authid, groupReference]);
 
         if (!result) {
@@ -168,7 +172,7 @@ export default class MysqlService {
     }
 
     private async getPointByName(name: string, groupReference: string): Promise<number> {
-        const query: string = "SELECT points FROM cs2_rank_users WHERE name LIKE ? AND reference = ?";
+        const query: string = "SELECT cr.points FROM cs2_rank_stats cr JOIN cs2_rank_users cu ON cr.user_id = cu.id WHERE cu.name LIKE ? AND cr.reference = ?;";
         const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, [`%${name}%`, groupReference]);
 
         if (!players?.length) {
