@@ -8,6 +8,16 @@
 This version change change the database structure.
 Before installing version b2.1.0 if you are using an earlier beta version, you must launch the tools nodejs which is located in /external/beta-migration/, it's not mandatory but without this proces you will lose all your rank.
 
+## TODO
+- [x] Rework database schema
+- [x] Fix kill assist
+- [x] Fix mysql top query on plugin
+- [ ] Fix mysql top query on discord bot
+- [ ] Fix mysql top query on web interface 
+- [ ] Fix user steamid on web interface
+- [ ] Move discord bot to new database schema
+- [ ] Move web interface to new database schema
+
 ## Overview
 CS2 Rank is an open source ranking plugin for Counter-Strike 2, relying on in-game events to award or deduct points. Player statistics are recorded in a MYSQL database.
 
