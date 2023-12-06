@@ -28,8 +28,16 @@
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
         
-        if(!empty($map)) {
-            $sth = $dbh->prepare('SELECT * FROM cs2_rank_users WHERE points >= :minPoints AND reference = :reference AND map = :map ORDER BY points DESC LIMIT :offset, :limit');
+        if(!empty($map)) { // rank per map
+            //$sth = $dbh->prepare('SELECT * FROM cs2_rank_users WHERE points >= :minPoints AND reference = :reference AND map = :map ORDER BY points DESC LIMIT :offset, :limit');
+            $sth = $dbh->prepare('
+                SELECT cu.name, CAST(cu.authid AS CHAR) AS authid, cr.* 
+                FROM cs2_rank_stats cr 
+                JOIN cs2_rank_users cu ON cr.user_id = cu.id
+                WHERE points >= :minPoints AND `reference` = :reference AND `map` = :map 
+                ORDER BY points 
+                DESC LIMIT :offset, :limit
+            ');
             $sth->bindValue(':reference', $reference, PDO::PARAM_STR);
             $sth->bindValue(':map', $map, PDO::PARAM_INT);
             $sth->bindValue(':minPoints', MINIMUM_POINTS, PDO::PARAM_INT);
@@ -37,17 +45,25 @@
             $sth->bindValue(':limit', PLAYERS_PER_PAGE, PDO::PARAM_INT);
             $sth->execute();
         } 
-        else {
-            //$sth = $dbh->prepare('SELECT * FROM cs2_rank_users WHERE points >= :minPoints AND reference = :reference ORDER BY points DESC LIMIT :offset, :limit');
-
-            $sth = $dbh->prepare('SELECT authid, MIN(name) AS name, MAX(lastconnect) AS lastconnect,'.
-                'SUM(points) AS points, SUM(death_suicide) AS death_suicide,'.
-                'SUM(death_t) AS death_t, SUM(death_ct) AS death_ct, SUM(bomb_planted) AS bomb_planted,'.
-                'SUM(bomb_exploded) AS bomb_exploded, SUM(bomb_defused) AS bomb_defused, SUM(kill_knife) AS kill_knife, '.
-                'SUM(kill_headshot) AS kill_headshot, SUM(kill_t) AS kill_t, SUM(kill_ct) AS kill_ct, '.
-                'SUM(teamkill_t) AS teamkill_t, SUM(teamkill_ct) AS teamkill_ct, SUM(killassist_t) AS killassist_t, '.
-                'SUM(killassist_ct) AS killassist_ct FROM cs2_rank_users WHERE reference = :reference '.
-                'GROUP BY authid HAVING SUM(points) > :minPoints ORDER BY points DESC LIMIT :offset, :limit;');
+        else { // rank global
+            $sth = $dbh->prepare('
+                SELECT CAST(cu.authid AS CHAR) AS authid, MIN(cu.name) as name,
+                    SUM(cr.points) AS points, SUM(cr.death_suicide) AS death_suicide,
+                    SUM(cr.death_t) AS death_t, SUM(cr.death_ct) AS death_ct, 
+                    SUM(cr.bomb_planted) AS bomb_planted, SUM(cr.bomb_exploded) AS bomb_exploded,
+                    SUM(cr.bomb_defused) AS bomb_defused, SUM(cr.kill_knife) AS kill_knife,
+                    SUM(cr.kill_headshot) AS kill_headshot, SUM(cr.kill_t) AS kill_t, 
+                    SUM(cr.kill_ct) AS kill_ct, SUM(cr.teamkill_t) AS teamkill_t, 
+                    SUM(cr.teamkill_ct) AS teamkill_ct, SUM(cr.killassist_t) AS killassist_t, 
+                    SUM(cr.killassist_ct) AS killassist_ct
+                FROM cs2_rank_users cu
+                LEFT JOIN cs2_rank_stats cr ON cu.id = cr.user_id
+                WHERE cr.reference = :reference 
+                GROUP BY cu.authid
+                HAVING SUM(cr.points) > :minPoints
+                ORDER BY points DESC
+                LIMIT :offset, :limit;
+            ');
 
             $sth->bindValue(':reference', $reference, PDO::PARAM_STR);
             $sth->bindValue(':minPoints', MINIMUM_POINTS, PDO::PARAM_INT);
@@ -124,15 +140,15 @@
 
         $offset = ($page - 1) * PLAYERS_PER_PAGE;
             
-        if(!empty($map)) {
-            $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM cs2_rank_users WHERE reference = :reference AND map = :map');
+        if(!empty($map)) { // total page per map
+            $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM cs2_rank_stats WHERE reference = :reference AND map = :map');
             $sth->bindValue(':map', $map, PDO::PARAM_INT);
             $sth->bindValue(':reference', $reference, PDO::PARAM_INT);
             $sth->bindValue(':itemsPerPage', PLAYERS_PER_PAGE, PDO::PARAM_INT);
             $sth->execute();
         } 
-        else {
-            $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM cs2_rank_users WHERE reference = :reference');
+        else { // global total page
+            $sth = $dbh->prepare('SELECT CEIL(COUNT(*) / :itemsPerPage) as result FROM cs2_rank_stats WHERE reference = :reference GROUP BY user_id');
             $sth->bindValue(':reference', $reference, PDO::PARAM_INT);
             $sth->bindValue(':itemsPerPage', PLAYERS_PER_PAGE, PDO::PARAM_INT);
             $sth->execute();
