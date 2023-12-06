@@ -244,7 +244,7 @@ function generatePlayerRow(player) {
 
                 <div class="text-sm flex flex-col">
                     <a href="https://steamcommunity.com/profiles/${player.authid}" class="font-medium dark:text-gray-300 text-gray-700">
-                        ${player.name}
+                        ${player.name} ${player.authid}
                     </a>
                     <span class="text-gray-400">
                         ${new Date(player.lastconnect * 1000).toLocaleString()}

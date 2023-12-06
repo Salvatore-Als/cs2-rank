@@ -450,7 +450,7 @@ const char *CPlugin::GetLicense()
 
 const char *CPlugin::GetVersion()
 {
-	return "b2.0.1";
+	return PLUGIN_VERSION;
 }
 
 const char *CPlugin::GetDate()
@@ -475,11 +475,7 @@ const char *CPlugin::GetDescription()
 
 const char *CPlugin::GetName()
 {
-#ifdef _DEBUG
-	return PLUGIN_NAME_DEBUG;
-#else
 	return PLUGIN_NAME;
-#endif
 }
 
 const char *CPlugin::GetURL()
