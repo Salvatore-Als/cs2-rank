@@ -62,51 +62,59 @@ void CMysql::CreateDatabaseIfNotExist()
 	g_pConnection->Query(CREATE_USERS_TABLE, [](IMySQLQuery *cb)
 						 { Debug("CREATE_USERS_TABLE CALLBACK"); });
 
+	Debug("CreateUserTable request : %s", CREATE_USERS_TABLE);
+
 	g_pConnection->Query(CREATE_STATS_TABLE, [](IMySQLQuery *cb)
 						 { Debug("CREATE_STATS_TABLE CALLBACK"); });
 
-	g_pConnection->Query(CREATE_REFERENCES_TABLE, [this](IMySQLQuery *cb) {});
-	this->Query_CreateReferencesTable();
+	Debug("CreateStatsTable request : %s", CREATE_STATS_TABLE);
 
-	g_pConnection->Query(CREATE_MAPS_TABLE, [this](IMySQLQuery *cb) {});
-	this->Query_CreateMapsTable();
+	g_pConnection->Query(CREATE_REFERENCES_TABLE, [this](IMySQLQuery *cb)
+						 { Debug("CREATE_REFERENCES_TABLE CALLBACk"); this->Query_CreateReference(); });
 
-	g_pConnection->Query(CREATE_CONFIG_TABLE, [this](IMySQLQuery *cb) {});
+	Debug("CrateReferencesTable request : %s", CREATE_REFERENCES_TABLE);
+
+	g_pConnection->Query(CREATE_MAPS_TABLE, [this](IMySQLQuery *cb)
+						 { Debug("CREATE_MAPS_TABLE CALLBACk"); this->Query_CreateMap(); });
+
+	g_pConnection->Query(CREATE_CONFIG_TABLE, [this](IMySQLQuery *cb)
+						 { Debug("CREATE_CONFIG_TABLE CALLBACk"); });
+
 	this->Query_UpdateConfigTable();
 }
 
-void CMysql::Query_UpdateConfigTable() 
+void CMysql::Query_UpdateConfigTable()
 {
 	char szQuery[MAX_QUERY_SIZES];
 	V_snprintf(szQuery, sizeof(szQuery), UPDATE_CONFIG_TABLE, PLUGIN_VERSION);
 
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
-						 { this->Query_GetMapId(cb); });
+						 { Debug("UPDATE_CONFIG_TABLE CALLBACK"); });
 
 	Debug("Update config query : %s", szQuery);
 }
 
-void CMysql::Query_CreateMapsTable()
+void CMysql::Query_CreateMap()
 {
-	std::string	mapName = this->Escape(g_pGlobals->mapname.ToCStr());
+	std::string mapName = this->Escape(g_pGlobals->mapname.ToCStr());
 
 	char szQuery[MAX_QUERY_SIZES];
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_MAP, mapName.c_str());
 
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
-						 { this->Query_GetMapId(cb); });
+						 { Debug("SELECT_MAP CALLBACK"); this->Query_GetMapId(cb); });
 
 	Debug("Select Map Request : %s", szQuery);
 }
 
-void CMysql::Query_CreateReferencesTable()
+void CMysql::Query_CreateReference()
 {
 	std::string rankReference = this->Escape(g_CConfig->GetRankReference());
 
 	char szQuery[MAX_QUERY_SIZES];
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_REFERENCE, rankReference.c_str());
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
-						 { this->Query_GetRankReference(cb); });
+						 { Debug("SELECT_REFERENCE CALLBACK"); this->Query_GetRankReference(cb); });
 
 	Debug("Select Reference : %s", szQuery);
 }
@@ -131,7 +139,8 @@ void CMysql::Query_GetRankReference(IMySQLQuery *cb)
 
 	Debug("InsertReference request : %s", szQuery);
 
-	g_pConnection->Query(szQuery, [](IMySQLQuery *cb) {});
+	g_pConnection->Query(szQuery, [](IMySQLQuery *cb)
+						 { Debug("INSERT_REFERENCE CALLBACK"); });
 }
 
 void CMysql::Query_GetMapId(IMySQLQuery *cb)
@@ -148,6 +157,8 @@ void CMysql::Query_GetMapId(IMySQLQuery *cb)
 	if (results->FetchRow())
 	{
 		this->g_iMapId = results->GetInt(0);
+		Debug("Found map with id %i", this->g_iMapId);
+
 		return;
 	}
 
@@ -159,7 +170,7 @@ void CMysql::Query_GetMapId(IMySQLQuery *cb)
 	Debug("InsertReference request : %s", szQuery);
 
 	g_pConnection->Query(szQuery, [this](IMySQLQuery *cb)
-						 { this->g_iMapId = cb->GetInsertId(); });
+						 { Debug("INSERT_MAP CALLBACK"); this->g_iMapId = cb->GetInsertId(); });
 }
 
 void CMysql::GetUser(CRankPlayer *pPlayer)
@@ -175,11 +186,12 @@ void CMysql::GetUser(CRankPlayer *pPlayer)
 
 	uint64 steamId64 = pPlayer->GetSteamId64();
 
+	Debug("Trying to get user %lli", steamId64);
 	char szQuery[MAX_QUERY_SIZES];
 
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_USER, steamId64);
 	g_pConnection->Query(szQuery, [pPlayer, this](IMySQLQuery *cb)
-						 { this->Query_GetUser(cb, pPlayer); });
+						 {  Debug("SELECT_USER CALLBACK"); this->Query_GetUser(cb, pPlayer); });
 }
 
 void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
@@ -194,8 +206,10 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 
 	if (results->FetchRow())
 	{
+		Debug("Found user on database with id %i", results->GetInt(0));
+
 		pPlayer->SetDatabaseId(results->GetInt(0));
-		pPlayer->SetIgnoringAnnouce(results->GetInt(0) == true);
+		pPlayer->SetIgnoringAnnouce(results->GetInt(0) == 1);
 
 		this->GetUserStats(pPlayer);
 		return;
@@ -205,29 +219,42 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 	const char *name = pController->GetPlayerName();
 	std::string escapedName = this->Escape(name);
 
+	uint64 steamId64 = pPlayer->GetSteamId64();
+
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), INSERT_USER, escapedName.c_str());
+	V_snprintf(szQuery, sizeof(szQuery), INSERT_USER, steamId64, escapedName.c_str());
 
 	Debug("InsertUser request : %s", szQuery);
 
 	g_pConnection->Query(szQuery, [this, pPlayer](IMySQLQuery *cb)
-						 { pPlayer->SetDatabaseId(cb->GetInsertId()); this->GetUserStats(pPlayer); });
+						 { 
+							Debug("INSERT_USER CALLBACK"); 
+							Debug("Inserted user with id %i", cb->GetInsertId());
+						 	pPlayer->SetDatabaseId(cb->GetInsertId()); 
+						 	this->GetUserStats(pPlayer); });
 }
 
-void CMysql::GetUserStats(CRankPlayer *pPlayer) {
+void CMysql::GetUserStats(CRankPlayer *pPlayer)
+{
+	if(this->g_iMapId == NULL || this->g_iMapId < 1)
+	{
+		Fatal("Invalid Map ID on GetUserStats");
+		return;
+	}
+
 	std::string rankReference = this->Escape(g_CConfig->GetRankReference());
 
 	char szQuery[MAX_QUERY_SIZES];
 
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_STATS_MAP, pPlayer->GetDatabaseId(), rankReference.c_str(), this->g_iMapId);
-	g_pConnection->Query(szQuery, [pPlayer, this](IMySQLQuery *cb)
-						 { this->Query_GetUserStatsMap(cb, pPlayer); });
+	g_pConnection->Query(szQuery, [this, pPlayer](IMySQLQuery *cb)
+						 {  Debug("SELECT_STATS_MAP CALLBACK"); this->Query_GetUserStatsMap(cb, pPlayer); });
 
 	Debug("GetUserMap Request : %s", szQuery);
 
 	V_snprintf(szQuery, sizeof(szQuery), SELECT_STATS_GLOBAL, pPlayer->GetDatabaseId(), rankReference.c_str());
-	g_pConnection->Query(szQuery, [pPlayer, this](IMySQLQuery *cb)
-						 { this->Query_GetUserStatsGlobal(cb, pPlayer); });
+	g_pConnection->Query(szQuery, [this, pPlayer](IMySQLQuery *cb)
+						 {  Debug("SELECT_STATS_GLOBAL CALLBACK"); this->Query_GetUserStatsGlobal(cb, pPlayer); });
 
 	Debug("GetUserGlobal Request : %s", szQuery);
 }
@@ -252,7 +279,7 @@ void CMysql::Query_GetUserStatsMap(IMySQLQuery *cb, CRankPlayer *pPlayer)
 		Debug("InsertUser request : %s", szQuery);
 
 		g_pConnection->Query(szQuery, [pPlayer](IMySQLQuery *cb)
-							 { pPlayer->SetDatabaseAuthenticated(); });
+							 {  Debug("INSERT_STATS CALLBACK"); pPlayer->SetDatabaseAuthenticated(); });
 	}
 	else
 	{
@@ -278,13 +305,13 @@ void CMysql::Query_GetUserStatsMap(IMySQLQuery *cb, CRankPlayer *pPlayer)
 	}
 }
 
-void CMysql::Query_GetUserGlobal(IMySQLQuery *cb, CRankPlayer *pPlayer)
+void CMysql::Query_GetUserStatsGlobal(IMySQLQuery *cb, CRankPlayer *pPlayer)
 {
 	IMySQLResult *results = cb->GetResultSet();
 
 	if (!results)
 	{
-		Fatal("Invalid results for Query_GetUserGlobal");
+		Fatal("Invalid results for Query_GetUserStatsGlobal");
 		return;
 	}
 
@@ -312,6 +339,12 @@ void CMysql::Query_GetUserGlobal(IMySQLQuery *cb, CRankPlayer *pPlayer)
 
 void CMysql::UpdateUser(CRankPlayer *pPlayer)
 {
+	if(this->g_iMapId == NULL || this->g_iMapId < 1)
+	{
+		Fatal("Invalid Map ID on UpdateUser");
+		return;
+	}
+
 	Debug("Update player");
 
 	if (!g_pConnection)
@@ -324,10 +357,23 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 	pPlayer->PrintDebug(RequestType::Map);
 	pPlayer->PrintDebug(RequestType::Session);
 
-	std::string rankReference = this->Escape(g_CConfig->GetRankReference());
+	CCSPlayerController *pController = CCSPlayerController::FromSlot(pPlayer->GetPlayerSlot());
+	const char *name = pController->GetPlayerName();
+	std::string escapedName = this->Escape(name);
+
+	uint64 steamId64 = pPlayer->GetSteamId64();
 
 	char szQuery[MAX_QUERY_SIZES];
-	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER,
+	V_snprintf(szQuery, sizeof(szQuery), UPDATE_USER, escapedName.c_str(), pPlayer->IsIgnoringAnnouce(), std::time(0), steamId64);
+
+	Debug("UpdateUser Request : %s", szQuery);
+
+	g_pConnection->Query(szQuery, [](IMySQLQuery *cb)
+						 { Debug("UPDATE_USER CALLBACK"); });
+
+	std::string rankReference = this->Escape(g_CConfig->GetRankReference());
+
+	V_snprintf(szQuery, sizeof(szQuery), UPDATE_STATS,
 			   pPlayer->m_Points.Get(RequestType::Map), pPlayer->m_DeathSuicide.Get(RequestType::Map),
 			   pPlayer->m_DeathT.Get(RequestType::Map), pPlayer->m_DeathCT.Get(RequestType::Map),
 			   pPlayer->m_BombPlanted.Get(RequestType::Map), pPlayer->m_BombExploded.Get(RequestType::Map),
@@ -335,17 +381,25 @@ void CMysql::UpdateUser(CRankPlayer *pPlayer)
 			   pPlayer->m_KillHeadshot.Get(RequestType::Map), pPlayer->m_KillT.Get(RequestType::Map),
 			   pPlayer->m_KillCT.Get(RequestType::Map), pPlayer->m_TeamKillT.Get(RequestType::Map),
 			   pPlayer->m_TeamKillCT.Get(RequestType::Map),
+			   pPlayer->m_KillAssistCT.Get(RequestType::Map), pPlayer->m_KillAssistT.Get(RequestType::Map),
 			   pPlayer->GetDatabaseId(), rankReference.c_str(), this->g_iMapId);
 
 	Debug("UpdateUser Request : %s", szQuery);
 
-	g_pConnection->Query(szQuery, [](IMySQLQuery *cb) {});
+	g_pConnection->Query(szQuery, [](IMySQLQuery *cb)
+						 { Debug("UPDATE_USER CALLBACK"); });
 }
 
 void CMysql::RemoveFromOtherMap(CRankPlayer *pPlayer)
 {
 	if (!g_pConnection)
 		return;
+
+	if(this->g_iMapId == NULL || this->g_iMapId < 1)
+	{
+		Fatal("Invalid Map ID on RemoveFromOtherMap");
+		return;
+	}
 
 	// pPlayer->PrintDebug(false);
 	// pPlayer->PrintDebug(true);
@@ -357,7 +411,8 @@ void CMysql::RemoveFromOtherMap(CRankPlayer *pPlayer)
 
 	Debug("UpdateUser Request : %s", szQuery);
 
-	g_pConnection->Query(szQuery, [](IMySQLQuery *cb) {});
+	g_pConnection->Query(szQuery, [](IMySQLQuery *cb)
+						 { Debug("REMOVE_USER_FROM_OTHERMAPS CALLBACK"); });
 }
 
 void CMysql::GetTopPlayers(bool global, std::function<void(std::map<std::string, int>)> callback)
@@ -365,17 +420,24 @@ void CMysql::GetTopPlayers(bool global, std::function<void(std::map<std::string,
 	if (!g_pConnection)
 		return;
 
-	char szQuery[MAX_QUERY_SIZES];
+	if((this->g_iMapId == NULL || this->g_iMapId < 1) && !global)
+	{
+		Fatal("Invalid Map ID on nt global GetTopPlayers");
+		return;
+	}
 
 	std::string rankReference = this->Escape(g_CConfig->GetRankReference());
 
+	char szQuery[MAX_QUERY_SIZES];
 	if (global)
 		V_snprintf(szQuery, sizeof(szQuery), TOP_GLOBAL, rankReference.c_str(), g_CConfig->GetMinimumPoints());
 	else
 		V_snprintf(szQuery, sizeof(szQuery), TOP_MAP, g_CConfig->GetMinimumPoints(), rankReference.c_str(), this->g_iMapId);
 
-	g_pConnection->Query(szQuery, [callback, this](IMySQLQuery *cb)
-						 { this->Query_TopPlayers(cb, callback); });
+	Debug("GetTopPlayers Request : %s", szQuery);
+
+	g_pConnection->Query(szQuery, [this, callback](IMySQLQuery *cb)
+						 {  Debug("TOP_GLOBAL OR TOP_MAP CALLBACK"); this->Query_TopPlayers(cb, callback); });
 }
 
 void CMysql::Query_TopPlayers(IMySQLQuery *cb, std::function<void(std::map<std::string, int>)> callback)
@@ -398,6 +460,12 @@ void CMysql::GetRank(bool global, CRankPlayer *pPlayer, std::function<void(int)>
 	if (!g_pConnection)
 		return;
 
+	if(this->g_iMapId == NULL || this->g_iMapId < 1)
+	{
+		Fatal("Invalid Map ID on GetRank");
+		return;
+	}
+
 	char szQuery[MAX_QUERY_SIZES];
 
 	std::string rankReference = this->Escape(g_CConfig->GetRankReference());
@@ -407,10 +475,10 @@ void CMysql::GetRank(bool global, CRankPlayer *pPlayer, std::function<void(int)>
 	else
 		V_snprintf(szQuery, sizeof(szQuery), RANK_MAP, pPlayer->m_Points.Get(RequestType::Map), rankReference.c_str(), this->g_iMapId);
 
-	Debug(szQuery);
+	Debug("RANK Request : %s", szQuery);
 
-	g_pConnection->Query(szQuery, [callback, this](IMySQLQuery *cb)
-						 { this->Query_Rank(cb, callback); });
+	g_pConnection->Query(szQuery, [this, callback](IMySQLQuery *cb)
+						 {  Debug("RANK_GLOBAL OR RANK_MAP CALLBACK"); this->Query_Rank(cb, callback); });
 }
 
 void CMysql::Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback)
@@ -434,9 +502,9 @@ void CMysql::Query_Rank(IMySQLQuery *cb, std::function<void(int)> callback)
 
 std::string CMysql::Escape(const char *value)
 {
-	//return g_pConnection->Escape(value);
-	
-	std::size_t length = strlen(value);
+	return g_pConnection->Escape(value);
+
+	/*std::size_t length = strlen(value);
 	std::string escapedString;
 
 	for (std::size_t i = 0; i < length; ++i)
@@ -478,5 +546,5 @@ std::string CMysql::Escape(const char *value)
 		}
 	}
 
-	return escapedString;
+	return escapedString;*/
 }

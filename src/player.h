@@ -117,7 +117,7 @@ public:
     void InitStats(RequestType requestType, bool setAnnouce);
 
     int GetDatabaseId() { return this->m_iDatabaseId; }
-    int SetDatabaseId(int value) { this->m_iDatabaseId = value; }
+    void SetDatabaseId(int value) { this->m_iDatabaseId = value; }
     
     void PrintDebug(RequestType requestType);
 

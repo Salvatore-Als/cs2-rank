@@ -143,7 +143,10 @@ CON_COMMAND_CHAT(resetrank, "Reset your global rank")
         return;
 
     if (!player)
+    {
+        Debug("Invalid player for resetrank command");
         return;
+    }
 
     int slot = player->GetPlayerSlot();
     CRankPlayer *pPlayer = g_CPlayerManager->GetPlayer(slot);
@@ -356,7 +359,7 @@ void Print_Stats(CPlayerSlot slot, RequestType requestType)
     UTIL_Format(szBuffer, sizeof(szBuffer), g_CConfig->Translate("STAT_POINTS"), pPlayer->m_Points.Get(requestType));
     g_CChat->PrintToChat(slot, false, szBuffer);
 
-    int totalKill = pPlayer->m_KillAssistCT.Get(requestType) + pPlayer->m_KillAssistT.Get(requestType);
+    int totalKill = pPlayer->m_KillT.Get(requestType) + pPlayer->m_KillCT.Get(requestType);
     double percentKillT = CalcPercent(pPlayer->m_KillT.Get(requestType), totalKill);
     double percentKillCT = CalcPercent(pPlayer->m_KillCT.Get(requestType), totalKill);
 
