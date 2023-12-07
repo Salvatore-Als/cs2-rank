@@ -130,9 +130,11 @@ export default class DiscordService {
     private async _sendRank(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
         try {
             const userId: string = interaction.user.id;
-            const group: string = interaction.options.getString('group', true);
-            const mapName: string = interaction.options.getString('map', false);
-            let search: string = interaction.options.getString('player', false);
+            const group: string = interaction.options.getString('group', true)?.toString();
+            const mapName: string = interaction.options.getString('map', false)?.toString();
+            let search: string = interaction.options.getString('player', false)?.toString();
+
+            this._loggerService.debug({ group, mapName, search });
 
             let searchIsAuthid: boolean = false;
 
@@ -167,7 +169,7 @@ export default class DiscordService {
                 }
             }
 
-            const player: IPlayer = searchIsAuthid ? await this._mysqlService.getRankByAuthid(search, group, map?.id) : await this._mysqlService.getRankByName(search, group, map?.id);
+            const player: IPlayer = searchIsAuthid ? await this._mysqlService.getRankBy("authid", search, group, map?.id) : await this._mysqlService.getRankBy("name", search, group, map?.id);
 
             if (!player) {
                 this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_PlayerNotFound));
@@ -223,14 +225,13 @@ export default class DiscordService {
         } catch (error: any) {
             this._sendError(interaction, this._translationService.translate(ITranslateKey.Sentence_ActionNotPossible));
             this._loggerService.error(error);
-            console.log(error);
         }
     }
 
     private async _sendTop(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>): Promise<void> {
         try {
-            const group: string = interaction.options.getString('group', true);
-            const mapName: string = interaction.options.getString('map', false);
+            const group: string = interaction.options.getString('group', true)?.toString();
+            const mapName: string = interaction.options.getString('map', false)?.toString();
 
             let map: IMap = null;
             if (mapName) {
@@ -362,9 +363,9 @@ export default class DiscordService {
     }
 
     private async processMetaData(player: IPlayer): Promise<IPlayerMetaData> {
-        const totalKill: number = player.kill_ct + player.kill_t;
-        const totalDeath: number = player.death_ct + player.death_t;
-        const tototalKillAssit: number = player.killassist_ct + player.killassist_ct;
+        const totalKill: number = Number(player.kill_ct) + Number(player.kill_t);
+        const totalDeath: number = Number(player.death_ct) + Number(player.death_t);
+        const tototalKillAssit: number = Number(player.killassist_ct) + Number(player.killassist_ct);
 
         const minimumPoints: number = Number(process.env.MINIMUM_POINTS);
 

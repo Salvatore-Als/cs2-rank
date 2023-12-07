@@ -11,7 +11,7 @@
     "StatsTitle_Assits": "Assists: #VAR#",
     "StatsTitle_Deaths": "Nāves: #VAR#",
     "StatsTitle_Bomb": "Bumbas",
-    "Stats_Kills": "• #VAR#% CT \n•• #VAR#% T \n• #VAR#% Šāvieni galvās \n• #VAR#% Ar nazi",
+    "Stats_Kills": "• #VAR#% CT \n• #VAR#% T \n• #VAR#% Šāvieni galvās \n• #VAR#% Ar nazi",
     "Stats_Assits": "• #VAR#% CT \n• #VAR#% T",
     "Stats_Deaths": "• #VAR#% CT \n• #VAR#% T \n• #VAR#% Pašnāvības",
     "Stats_Bomb": "• #VAR# Uzstādītas \n• #VAR# Uzspridzinātas \n• #VAR# Atmīnētas",
