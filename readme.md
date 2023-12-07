@@ -6,7 +6,9 @@
 
 ## b2.0.1 => b2.1.0
 This version change change the database structure.
-Before installing version b2.1.0 if you are using an earlier beta version, you must launch the tools nodejs which is located in /external/beta-migration/, it's not mandatory but without this proces you will lose all your rank.
+Before installing version `b2.1.0` if you are using an earlier beta version, you must import the sql file in https://github.com/Salvatore-Als/cs2-rank/tree/main/external/sql/migration-b201-b210.sql, it's not mandatory but without this proces you will lose all your rank.
+
+Be sure to backup your Database before.
 
 ## TODO
 - [x] Rework database schema
@@ -17,7 +19,7 @@ Before installing version b2.1.0 if you are using an earlier beta version, you m
 - [X] Fix user steamid on web interface
 - [x] Move discord bot to new database schema
 - [X] Move web interface to new database schema
-- [ ] b2.0.1 => b2.1.0 migration tools
+- [x] b2.0.1 => b2.1.0 migration sql file
 - [ ] Fix mm_mysql from Poggu plugin that not trigger the query callback
 
 ## Overview
