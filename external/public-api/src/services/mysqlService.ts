@@ -4,7 +4,6 @@ import { IPlayer } from "../interface/IPlayer";
 import { ITopPlayer } from "../interface/ITop";
 import { IGroup } from "../interface/IGroup";
 import MysqlProvider from "../providers/mysqlProvider";
-import { ILinkedAccout } from "../interface/ILinkedAccount";
 import { IMap } from "../interface/IMap";
 
 interface MysqlCountResult {
@@ -40,11 +39,10 @@ export default class MysqlService {
             throw new Error("[Discord Service] Missing MINIMUM_POINTS variable on your environment file");
         }
 
-        await this.createDiscordTable();
-        this._loggerService.info("[Mysql Service] Running ");
+        this._loggerService.info("[Mysql Service] Running");
     }
 
-    async getRankBy(by: 'authid' | 'name', value: string, groupReference: string, mapId?: number): Promise<IPlayer> {
+    async getPlayer(by: 'authid' | 'name', value: string, groupReference: string, mapId?: number): Promise<IPlayer> {
         this._loggerService.debug(`Rank by ${by}`);
 
         let points: number = null;
@@ -56,12 +54,12 @@ export default class MysqlService {
                 points = await this.getPointByAuthId(value, groupReference, mapId);
 
                 if (mapId != null) {
-                    query = `SELECT cr.*, CAST(cu.authid AS CHAR) AS authid 
-                             FROM cs2_rank_stats cr JOIN cs2_rank_users cu 
+                    query = `SELECT cr.*, cu.* FROM cs2_rank_stats cr JOIN cs2_rank_users cu 
                              ON cr.user_id = cu.id WHERE cu.authid = ? AND cr.reference = ? AND cr.map = ?;`
-                    safeValue = [value, groupReference, mapId];
+                    safeValue = [value, groupReference, mapId.toString()];
                 } else {
-                    query = `SELECT CAST(cu.authid AS CHAR) AS authid,
+                    query = `SELECT cu.authid AS authid, MAX(cu.name) AS name, MAX(cu.lastconnect) AS lastconnect, MAX(cu.ignore_annouce) as ignore_annouce,
+                             MAX(cr.user_id) as user_id,
                              ${RANK_SUM}
                              FROM cs2_rank_stats cr JOIN cs2_rank_users cu 
                              ON cr.user_id = cu.id WHERE cu.authid = ? AND cr.reference = ? GROUP BY cu.authid;`
@@ -72,11 +70,12 @@ export default class MysqlService {
                 points = await this.getPointByName(value, groupReference, mapId);
 
                 if (mapId != null) {
-                    query = `SELECT cr.*, CAST(cu.authid AS CHAR) AS authid FROM cs2_rank_stats cr JOIN cs2_rank_users cu 
+                    query = `SELECT cr.*, cu.* FROM cs2_rank_stats cr JOIN cs2_rank_users cu 
                              ON cr.user_id = cu.id WHERE cu.name LIKE ? AND cr.reference = ? AND cr.map = ?;`;
-                    safeValue = [`%${value}%`, groupReference, mapId];
+                    safeValue = [`%${value}%`, groupReference, mapId.toString()];
                 } else {
-                    query = `SELECT CAST(cu.authid AS CHAR) AS authid,
+                    query = `SELECT cu.authid AS authid, MAX(cu.name) AS name, MAX(cu.lastconnect) AS lastconnect, MAX(cu.ignore_annouce) as ignore_annouce,
+                             MAX(cr.user_id) as user_id,
                              ${RANK_SUM}
                              FROM cs2_rank_stats cr JOIN cs2_rank_users cu 
                              ON cr.user_id = cu.id WHERE cu.name LIKE ? AND cr.reference = ? GROUP BY cu.authid;`
@@ -87,10 +86,6 @@ export default class MysqlService {
                 throw new Error(`Unsupported getRankBy ${by}`);
         }
 
-        if (points == null) {
-            return null;
-        }
-
         const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, safeValue);
         let player: IPlayer = players[0];
 
@@ -98,29 +93,71 @@ export default class MysqlService {
             return null;
         }
 
-        const minimumPoints: number = Number(process.env.MINIMUM_POINTS);
-        player.rank = points < minimumPoints ? -1 : await this.getRank(points, groupReference, mapId);
+        ["id", "reference", "map"].map((key: string) => delete player[key]);
+
+        if (points != null) {
+            const minimumPoints: number = Number(process.env.MINIMUM_POINTS);
+            player.rank = points < minimumPoints ? -1 : await this.getRank(points, groupReference, mapId);
+        }
 
         return player;
     }
 
-    async getTop(groupReference: string, mapId?: number): Promise<ITopPlayer[]> {
+    async getTop(groupReference: string, offset: number, limit: number, mapId?: number): Promise<ITopPlayer[]> {
         let query: string;
-        let result: ITopPlayer[] = null;
+        let results: ITopPlayer[] = [];
 
         if (mapId != null) {
-            query = `SELECT cu.name as name, CAST(cu.authid as CHAR) as authid, cr.points FROM cs2_rank_stats cr JOIN cs2_rank_users cu ON cr.user_id = cu.id WHERE points >= ? AND reference = ? AND map = ?
-                    ORDER BY points DESC LIMIT 15;`;
-            result = await this._mysqlProvider.query<ITopPlayer[]>(query, [Number(process.env.MINIMUM_POINTS), groupReference, mapId]);
+            query = `SELECT cu.name, CAST(cu.authid AS CHAR) AS authid, cr.* 
+                     FROM cs2_rank_stats cr 
+                     JOIN cs2_rank_users cu ON cr.user_id = cu.id
+                     WHERE points >= ? AND reference = ? AND map = ?
+                     ORDER BY points DESC
+                     LIMIT ? OFFSET ?;`;
+            results = await this._mysqlProvider.query<ITopPlayer[]>(query, [Number(process.env.MINIMUM_POINTS), groupReference, mapId.toString(), limit.toString(), offset.toString()]);
         } else {
-            query = `SELECT cu.name as name, CAST(cu.authid as CHAR) as authid, SUM(cr.points) AS total_points FROM cs2_rank_stats cr JOIN cs2_rank_users cu ON cr.user_id = cu.id 
-                    WHERE cr.reference = ? GROUP BY cr.user_id HAVING SUM(cr.points) >= ? ORDER BY SUM(cr.points) DESC LIMIT 15;`;
+            query = `SELECT cu.authid AS authid, MAX(cu.name) AS name, MAX(cu.lastconnect) AS lastconnect, MAX(cu.ignore_annouce) as ignore_annouce,
+                    ${RANK_SUM}
+                    FROM cs2_rank_users cu
+                    LEFT JOIN cs2_rank_stats cr ON cu.id = cr.user_id
+                    WHERE cr.reference = ? 
+                    GROUP BY cu.authid
+                    HAVING SUM(cr.points) > ?
+                    ORDER BY points DESC
+                    LIMIT ? OFFSET ?;`;
 
-            result = await this._mysqlProvider.query<ITopPlayer[]>(query, [groupReference, Number(process.env.MINIMUM_POINTS)]);
-            result.map((value: ITopPlayer & { total_points: number }) => value.points = value.total_points);
+            results = await this._mysqlProvider.query<ITopPlayer[]>(query, [groupReference, Number(process.env.MINIMUM_POINTS), limit.toString(), offset.toString()]);
         }
 
-        return result;
+        results.map((result: ITopPlayer) => ["id", "reference", "map"].map((key: string) => delete result[key]));
+        return results;
+    }
+
+    async getPlayers(groupReference: string, offset: number, limit: number, mapId?: number): Promise<ITopPlayer[]> {
+        let query: string;
+        let results: ITopPlayer[] = [];
+
+        if (mapId != null) {
+            query = `SELECT cu.name, CAST(cu.authid AS CHAR) AS authid, cr.* 
+                     FROM cs2_rank_stats cr 
+                     JOIN cs2_rank_users cu ON cr.user_id = cu.id
+                     WHERE reference = ? AND map = ?
+                     LIMIT ? OFFSET ?;`;
+            results = await this._mysqlProvider.query<ITopPlayer[]>(query, [groupReference, mapId.toString(), limit.toString(), offset.toString()]);
+        } else {
+            query = `SELECT cu.authid AS authid, MAX(cu.name) AS name, MAX(cu.lastconnect) AS lastconnect, MAX(cu.ignore_annouce) as ignore_annouce,
+                    ${RANK_SUM}
+                    FROM cs2_rank_users cu
+                    LEFT JOIN cs2_rank_stats cr ON cu.id = cr.user_id
+                    WHERE cr.reference = ? 
+                    GROUP BY cu.authid
+                    LIMIT ? OFFSET ?;`;
+
+            results = await this._mysqlProvider.query<ITopPlayer[]>(query, [groupReference, limit.toString(), offset.toString()]);
+        }
+
+        results.map((result: ITopPlayer) => ["id", "reference", "map"].map((key: string) => delete result[key]));
+        return results;
     }
 
     async getGroups(): Promise<IGroup[]> {
@@ -129,21 +166,9 @@ export default class MysqlService {
         return result;
     }
 
-    public async getLinkedAccounts(): Promise<ILinkedAccout[]> {
-        const query: string = "SELECT * FROM cs2_rank_accounts";
-        const result: ILinkedAccout[] = await this._mysqlProvider.query<ILinkedAccout[]>(query);
-        return result;
-    }
-
     public async getMaps(): Promise<IMap[]> {
         const query: string = "SELECT * FROM cs2_rank_maps";
         const result: IMap[] = await this._mysqlProvider.query<IMap[]>(query);
-        return result;
-    }
-
-    public async createLinkedAccount(authid: string, discordId: string): Promise<void> {
-        const query: string = "INSERT INTO cs2_rank_accounts (authid, discordid) VALUES (?, ?)";
-        const result: void = await this._mysqlProvider.query<void>(query, [authid, discordId]);
         return result;
     }
 
@@ -158,16 +183,15 @@ export default class MysqlService {
         return maps[0];
     }
 
-    private async createDiscordTable(): Promise<void> {
-        return new Promise(async (resolve, reject) => {
-            const query: string = "CREATE TABLE cs2_rank_accounts (id INT AUTO_INCREMENT PRIMARY KEY, authid VARCHAR(255) UNIQUE, discordid VARCHAR(255) UNIQUE)";
-            this._mysqlProvider.query<IGroup[]>(query)
-                .then(() => {
-                    resolve();
-                }).catch((error: any) => {
-                    error.code == 'ER_TABLE_EXISTS_ERROR' ? resolve() : reject(error);
-                });
-        });
+    public async getGroupByName(name: string): Promise<IGroup> {
+        const query: string = "SELECT * FROM cs2_rank_references WHERE reference LIKE ?";
+        const groups: IGroup[] = await this._mysqlProvider.query<IGroup[]>(query, [`%${name}%`]);
+
+        if (!groups?.length) {
+            return null;
+        }
+
+        return groups[0];
     }
 
     private async getRank(points: number, groupReference: string, mapId?: number): Promise<number> {
@@ -177,7 +201,7 @@ export default class MysqlService {
         if (mapId != null) {
             this._loggerService.debug(`[Mysql Service] Get rank by mapId ${mapId}`);
             query = "SELECT COUNT(*) as count FROM cs2_rank_stats WHERE points >= ? AND reference = ? AND map = ?";
-            results = await this._mysqlProvider.query<MysqlCountResult[]>(query, [points ?? 10, groupReference, mapId]);
+            results = await this._mysqlProvider.query<MysqlCountResult[]>(query, [points ?? 10, groupReference, mapId.toString()]);
         } else {
             this._loggerService.debug(`[Mysql Service] Get rank`);
             query = `SELECT COUNT(DISTINCT user_id) as count FROM (SELECT user_id, SUM(points) as total_points FROM cs2_rank_stats 
@@ -189,14 +213,13 @@ export default class MysqlService {
         return result.count;
     }
 
-
     private async getPointByAuthId(authid: string, groupReference: string, mapId?: number): Promise<number> {
         let query: string = null;
         let result: IPlayer & { total_points?: number } = null;
 
         if (mapId != null) {
             query = "SELECT cr.points FROM cs2_rank_stats cr JOIN cs2_rank_users cu ON cr.user_id = cu.id WHERE cu.authid = ? AND cr.reference = ? AND cr.map = ?;";
-            result = await this._mysqlProvider.query<IPlayer & { total_points: number }>(query, [authid, groupReference, mapId]);
+            result = await this._mysqlProvider.query<IPlayer & { total_points: number }>(query, [authid, groupReference, mapId.toString()]);
             return result?.points;
         } else {
             query = "SELECT SUM(cr.points) as total_points FROM cs2_rank_stats cr JOIN cs2_rank_users cu ON cr.user_id = cu.id WHERE cu.authid = ? AND cr.reference = ?;";
@@ -212,7 +235,7 @@ export default class MysqlService {
 
         if (mapId != null) {
             query = "SELECT points FROM cs2_rank_stats cr JOIN cs2_rank_users cu ON cr.user_id = cu.id WHERE cu.name LIKE ? AND cr.reference = ? AND cr.map = ?;";
-            players = await this._mysqlProvider.query<IPlayer[]>(query, [`%${name}%`, groupReference, mapId]);
+            players = await this._mysqlProvider.query<IPlayer[]>(query, [`%${name}%`, groupReference, mapId.toString()]);
             key = 'points';
         } else {
             query = "SELECT SUM(cr.points) as total_points FROM cs2_rank_stats cr JOIN cs2_rank_users cu ON cr.user_id = cu.id WHERE cu.name LIKE ? AND cr.reference = ?;";

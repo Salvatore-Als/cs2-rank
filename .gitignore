@@ -1,7 +1,12 @@
 build/
 .vscode/
+
 external/web/node_modules/
 external/discord/node_modules/
 external/discord/.env
+
+external/public-api/node_modules/
+external/public-api/.env 
+
 fiveserver.config.js
 .vs/
