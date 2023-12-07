@@ -192,7 +192,7 @@ FROM \
     GROUP BY \
         user_id) AS subquery \
 WHERE \
-    total_points > %i;"
+    total_points >= %i;"
 
 #define TOP_MAP "\
 SELECT \
@@ -215,7 +215,7 @@ SELECT \
 FROM \
     `cs2_rank_stats` \
 WHERE \
-    `points` > %i AND \
+    `points` >= %i AND \
     `reference` = '%s' AND \
     `map` = %i;"
 
