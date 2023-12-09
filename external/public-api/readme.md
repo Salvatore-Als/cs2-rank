@@ -1,32 +1,9 @@
-# CS2 Rank - Public API
-
-## Overview
-**Developed in partnership with [VeryGames](https://www.verygames.net).**
-
-## How to Run the Bot?
-The bot is written with Nodejs and Typescript.
-- 1. Run `npm install`.
-- 2. Create a .env file at the root path:
-
-```env
-PORT = 3000
-
-MINIMUM_POINTS = 10 // Minimum points to be on the rank
-
-MYSQL_HOST = "localhost"
-MYSQL_PASSWORD = "root"
-MYSQL_DATABASE = "cs2"
-MYSQL_USER = "root"
-MYSQL_PORT = 3306
-```
-
-- 3. Run `npm start`
 
 ## Routes
-* : Mandatory query option
+`*` : Mandatory query option
 
-### `/players/player/${steamid64}`
-### `/players/player/${name}`
+##### `/players/player/${steamid64}`
+##### `/players/player/${name}`
 Returns the statistics of a player
 - `group: string` *Group to fetch the player 
 - `map: string` Map to fetch the player, not used for global statistics
@@ -36,7 +13,7 @@ Returns the statistics of a player
 }
 ```
 
-### `/players/top`
+##### `/players/top`
 Returns the top of a player
 - `group: string` *Group to fetch the top 
 - `map: string` Map to fetch the top, not used for global top
@@ -48,7 +25,7 @@ Returns the top of a player
 ]
 ```
 
-### `/groups`
+##### `/groups`
 Returns the list of groups
 ```
 [
@@ -58,7 +35,7 @@ Returns the list of groups
 ]
 ```
 
-### `/maps`
+##### `/maps`
 Returns the list of maps
 ```
 [
@@ -68,10 +45,9 @@ Returns the list of maps
 ]
 ```
 
-## Structures
-
-### `player`
-```{
+##### `player`
+```
+{
     "user_id": number,
     "points": number,
     "lastconnect": number,
@@ -93,17 +69,22 @@ Returns the list of maps
     "name": string,
     "ignore_annouce": boolean,
     "rank": number
-}```
+}
+````
 
-### `map`
-```{
+##### `map`
+```
+{
     "id": number,
     "name": string,
-}```
+}
+````
 
-### `group`
-```{
+##### `group`
+```
+{
     "id": number,
     "name": string,
     "custom_name": string
-}```
+}
+```

@@ -21,6 +21,7 @@ Be sure to backup your Database before.
 - [X] Move web interface to new database schema
 - [x] b2.0.1 => b2.1.0 migration sql file
 - [ ] Fix mm_mysql from Poggu plugin that not trigger the query callback
+- [x] Providing NodeJS public API 
 
 ## Overview
 CS2 Rank is an open source ranking plugin for Counter-Strike 2, relying on in-game events to award or deduct points. Player statistics are recorded in a MYSQL database.
@@ -62,6 +63,11 @@ https://github.com/Salvatore-Als/cs2-rank/tree/main/external/web
 https://cs2rank.kriax.ovh/#/discord
 
 https://github.com/Salvatore-Als/cs2-rank/tree/main/external/discord
+
+## Discord Bot
+https://cs2rank.kriax.ovh/#/public-api
+
+https://github.com/Salvatore-Als/cs2-rank/tree/main/external/public-api
 
 ---
 ***Thank to CS2Fixe project (Poggy & Xen) for providing many feature.***
