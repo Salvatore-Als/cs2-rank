@@ -8,6 +8,7 @@ import PlayerController from "./controllers/playerController";
 import express from "express";
 import cors from 'cors';
 import bodyParser from "body-parser";
+import { CError } from "./utils/error";
 
 export default class App {
     @Inject
@@ -38,7 +39,7 @@ export default class App {
         try {
             const port: number = Number(process.env.PORT);
             if (!port) {
-                throw new Error("Missing PORT variable on your environment file");
+                throw new CError("Missing PORT variable on your environment file", 500);
             }
 
             this._app = express();

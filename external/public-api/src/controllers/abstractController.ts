@@ -4,6 +4,7 @@ import LoggerService from "../services/loggerService";
 import MysqlService from "../services/mysqlService";
 import express, { Router, Request, Response, NextFunction } from "express";
 import { Inject } from 'typescript-ioc';
+import { CError } from "../utils/error";
 
 export default abstract class AbstractController {
     @Inject
@@ -31,13 +32,9 @@ export default abstract class AbstractController {
 
     protected abstract initRoutes(): void;
 
-    protected parseError(error: any): any {
-        return error.code ? error.code : error
-    }
-
     protected async parsingGroupAndMap(groupName: string, mapName: string): Promise<{ group: IGroup; map: IMap; }> {
         if (!groupName) {
-            throw new Error("Group can not be null");
+            throw new CError("Group can not be null", 401);
         }
 
         let group: IGroup = null;
@@ -45,13 +42,13 @@ export default abstract class AbstractController {
 
         group = await this._mysqlService.getGroupByName(groupName);
         if (!group) {
-            throw new Error("Group not found");
+            throw new CError("Group not found", 404);
         }
 
         if (mapName) {
             map = await this._mysqlService.getMapByName(mapName);
             if (!map) {
-                throw new Error("Map not found");
+                throw new CError("Map not found", 404);
             }
         }
 

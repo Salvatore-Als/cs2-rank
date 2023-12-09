@@ -5,6 +5,7 @@ import { ITopPlayer } from "../interface/ITop";
 import { IGroup } from "../interface/IGroup";
 import MysqlProvider from "../providers/mysqlProvider";
 import { IMap } from "../interface/IMap";
+import { CError } from "../utils/error";
 
 interface MysqlCountResult {
     count: number;
@@ -36,7 +37,7 @@ export default class MysqlService {
 
     async run() {
         if (process.env.MINIMUM_POINTS == null || process.env.MINIMUM_POINTS == undefined) {
-            throw new Error("[Discord Service] Missing MINIMUM_POINTS variable on your environment file");
+            throw new CError("[Discord Service] Missing MINIMUM_POINTS variable on your environment file", 500);
         }
 
         this._loggerService.info("[Mysql Service] Running");
@@ -83,7 +84,7 @@ export default class MysqlService {
                 }
                 break;
             default:
-                throw new Error(`Unsupported getRankBy ${by}`);
+                throw new CError(`Unsupported getRankBy ${by}`, 401);
         }
 
         const players: IPlayer[] = await this._mysqlProvider.query<IPlayer[]>(query, safeValue);

@@ -1,5 +1,6 @@
 import { IPlayer } from "../interface/IPlayer";
 import { ITopPlayer } from "../interface/ITop";
+import { CError } from "../utils/error";
 import AbstractController from "./abstractController";
 import express from 'express';
 
@@ -88,7 +89,7 @@ export default class PlayerController extends AbstractController {
             player = await this._mysqlService.getPlayer(regex.test(userId) ? "authid" : "name", userId, group?.reference, map?.id);
 
             if (!player) {
-                throw new Error("Player not found");
+                throw new CError("Player not found", 404);
             }
 
             response.status(200).json(player);
