@@ -11,9 +11,16 @@
 
 #define DEBUG_PREFIX "CS2 Rank - "
 #define PREFIX " {RED}[CS2 Rank] "
-#define PLUGIN_NAME "CS2 Rank"
-#define PLUGIN_NAME_DEBUG "DEBUG - CS2 Rank"
-#define PLUGIN_DESCRIPTION "Rank system"
+
+#ifdef _DEBUG
+	#define PLUGIN_NAME "DEV CS2 Rank"
+    #define PLUGIN_VERSION "DEV-b2.1.0"
+    #define PLUGIN_DESCRIPTION "DEV Version of Rank system"
+#else
+	#define PLUGIN_NAME "CS2 Rank"
+    #define PLUGIN_VERSION "b2.1.0"
+    #define PLUGIN_DESCRIPTION "Rank system"
+#endif
 
 #define GAMEDATA_PATH "addons/cs2rank/gamedata/cs2rank.games.txt"
 #define POINTS_CONFIG_PATH "addons/cs2rank/configs/points.cfg"

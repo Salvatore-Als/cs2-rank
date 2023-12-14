@@ -386,7 +386,7 @@ void CPlugin::Hook_DispatchConCommand(ConCommandHandle cmdHandle, const CCommand
 	{
 		auto pController = CCSPlayerController::FromSlot(slot);
 		bool bFlooding = pController && pController->GetRankPlayer()->IsFlooding();
-
+	
 		if (*args[1] != '/' && !bFlooding)
 		{
 			SH_CALL(g_pCVar, &ICvar::DispatchConCommand)
@@ -450,7 +450,7 @@ const char *CPlugin::GetLicense()
 
 const char *CPlugin::GetVersion()
 {
-	return "b2.0.1";
+	return PLUGIN_VERSION;
 }
 
 const char *CPlugin::GetDate()
@@ -475,11 +475,7 @@ const char *CPlugin::GetDescription()
 
 const char *CPlugin::GetName()
 {
-#ifdef _DEBUG
-	return PLUGIN_NAME_DEBUG;
-#else
 	return PLUGIN_NAME;
-#endif
 }
 
 const char *CPlugin::GetURL()
@@ -575,7 +571,9 @@ void Command_DebugAdd(const CCommandContext &context, const CCommand &args)
 	pPlayer->m_KillT.Add(10);
 	pPlayer->m_KillCT.Add(10);
 	pPlayer->m_TeamKillT.Add(10);
-	pPlayer->m_TeamKillT.Add(10);
+	pPlayer->m_TeamKillCT.Add(10);
+	pPlayer->m_KillAssistT.Add(10);
+	pPlayer->m_KillAssistCT.Add(10);
 
 	Debug("After SET");
 	pPlayer->PrintDebug(RequestType::Global);
