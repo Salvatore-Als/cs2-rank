@@ -4,6 +4,12 @@
 
 [![Texte alternatif](https://github.com/Salvatore-Als/cs2-rank/assets/58212852/809a130a-1c3a-4b37-aaf5-f72c88fc75e0)](https://www.paypal.com/donate/?hosted_button_id=UA272TAJVBT2U)
 
+## b2.0.1 => b2.1.0
+This version change change the database structure.
+Before installing version `b2.1.0` if you are using an earlier beta version, you must import the sql file in https://github.com/Salvatore-Als/cs2-rank/tree/main/external/sql/migration-b201-b210.sql, it's not mandatory but without this proces you will lose all your rank.
+
+Be sure to backup your Database before.
+
 ## Overview
 CS2 Rank is an open source ranking plugin for Counter-Strike 2, relying on in-game events to award or deduct points. Player statistics are recorded in a MYSQL database.
 
@@ -44,6 +50,11 @@ https://github.com/Salvatore-Als/cs2-rank/tree/main/external/web
 https://cs2rank.kriax.ovh/#/discord
 
 https://github.com/Salvatore-Als/cs2-rank/tree/main/external/discord
+
+## Discord Bot
+https://cs2rank.kriax.ovh/#/public-api
+
+https://github.com/Salvatore-Als/cs2-rank/tree/main/external/public-api
 
 ---
 ***Thank to CS2Fixe project (Poggy & Xen) for providing many feature.***

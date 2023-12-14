@@ -93,7 +93,8 @@ public:
         m_bIgnoringAnnouce = false;
         m_flLastTalkTime = 0;
         m_iFloodTokens = 0;
-
+        m_iDatabaseId = -1;
+    
         m_Points.Set(RequestType::Session, 0);
         m_DeathSuicide.Set(RequestType::Session, 0);
         m_DeathT.Set(RequestType::Session, 0);
@@ -115,6 +116,9 @@ public:
     void Reset(RequestType requestType);
     void InitStats(RequestType requestType, bool setAnnouce);
 
+    int GetDatabaseId() { return this->m_iDatabaseId; }
+    void SetDatabaseId(int value) { this->m_iDatabaseId = value; }
+    
     void PrintDebug(RequestType requestType);
 
     bool IsFlooding();
@@ -168,6 +172,7 @@ private:
     const CSteamID *m_SteamID;
     CPlayerSlot m_slot;
 
+    int m_iDatabaseId;
     bool m_bIgnoringAnnouce;
     bool m_bAuthenticated;
     bool m_bConnected;

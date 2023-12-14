@@ -127,7 +127,7 @@ function getMaps() {
                 return;
             }
 
-            map = maps[0];
+            map = -1;
 
             const newOption = document.createElement("option");
             newOption.text = 'All';
@@ -242,13 +242,10 @@ function generatePlayerRow(player) {
                     <img class="h-full w-full rounded-full object-cover object-center" name="steam-picture" loading="lazy" data-authid="${player.authid}" src="https://avatars.cloudflare.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg" />
                 </div>
 
-                <div class="text-sm flex flex-col">
+                <div class="text-sm flex flex-col self-center">
                     <a href="https://steamcommunity.com/profiles/${player.authid}" class="font-medium dark:text-gray-300 text-gray-700">
                         ${player.name}
                     </a>
-                    <span class="text-gray-400">
-                        ${new Date(player.lastconnect * 1000).toLocaleString()}
-                    </span>
                 </div>
             </div>
         </td>

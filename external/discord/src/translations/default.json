@@ -13,7 +13,7 @@
     "StatsTitle_Assits": "Assists: #VAR#",
     "StatsTitle_Deaths": "Deaths: #VAR#",
     "StatsTitle_Bomb": "Bomb",
-    "Stats_Kills": "• #VAR#% CT \n•• #VAR#% T \n• #VAR#% Headshot \n• #VAR#% Knife",
+    "Stats_Kills": "• #VAR#% CT \n• #VAR#% T \n• #VAR#% Headshot \n• #VAR#% Knife",
     "Stats_Assits": "• #VAR#% CT \n• #VAR#% T",
     "Stats_Deaths": "• #VAR#% CT \n• #VAR#% T \n• #VAR#% Suicide",
     "Stats_Bomb": "• #VAR# Planted \n• #VAR# Exploded \n• #VAR# Defused",
