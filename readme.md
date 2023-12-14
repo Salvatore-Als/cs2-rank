@@ -51,7 +51,7 @@ https://cs2rank.kriax.ovh/#/discord
 
 https://github.com/Salvatore-Als/cs2-rank/tree/main/external/discord
 
-## Discord Bot
+## Discord API
 https://cs2rank.kriax.ovh/#/public-api
 
 https://github.com/Salvatore-Als/cs2-rank/tree/main/external/public-api
