@@ -11,6 +11,8 @@ using namespace std;
 
 void CMysql::Connect()
 {
+	this->g_iMapId = -1;
+
 	if (!g_pMysqlClient)
 		return;
 
@@ -236,7 +238,7 @@ void CMysql::Query_GetUser(IMySQLQuery *cb, CRankPlayer *pPlayer)
 
 void CMysql::GetUserStats(CRankPlayer *pPlayer)
 {
-	if(this->g_iMapId == NULL || this->g_iMapId < 1)
+	if(this->g_iMapId < 1)
 	{
 		Fatal("Invalid Map ID on GetUserStats");
 		return;
@@ -339,7 +341,7 @@ void CMysql::Query_GetUserStatsGlobal(IMySQLQuery *cb, CRankPlayer *pPlayer)
 
 void CMysql::UpdateUser(CRankPlayer *pPlayer)
 {
-	if(this->g_iMapId == NULL || this->g_iMapId < 1)
+	if(this->g_iMapId < 1)
 	{
 		Fatal("Invalid Map ID on UpdateUser");
 		return;
@@ -395,7 +397,7 @@ void CMysql::RemoveFromOtherMap(CRankPlayer *pPlayer)
 	if (!g_pConnection)
 		return;
 
-	if(this->g_iMapId == NULL || this->g_iMapId < 1)
+	if(this->g_iMapId < 1)
 	{
 		Fatal("Invalid Map ID on RemoveFromOtherMap");
 		return;
@@ -420,7 +422,7 @@ void CMysql::GetTopPlayers(bool global, std::function<void(std::map<std::string,
 	if (!g_pConnection)
 		return;
 
-	if((this->g_iMapId == NULL || this->g_iMapId < 1) && !global)
+	if(this->g_iMapId < 1 && !global)
 	{
 		Fatal("Invalid Map ID on nt global GetTopPlayers");
 		return;
@@ -460,7 +462,7 @@ void CMysql::GetRank(bool global, CRankPlayer *pPlayer, std::function<void(int)>
 	if (!g_pConnection)
 		return;
 
-	if(this->g_iMapId == NULL || this->g_iMapId < 1)
+	if(this->g_iMapId < 1)
 	{
 		Fatal("Invalid Map ID on GetRank");
 		return;
