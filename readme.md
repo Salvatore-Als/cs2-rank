@@ -56,5 +56,8 @@ https://cs2rank.kriax.ovh/#/public-api
 
 https://github.com/Salvatore-Als/cs2-rank/tree/main/external/public-api
 
+## FAQ
+https://cs2rank.kriax.ovh/#/faq
+
 ---
 ***Thank to CS2Fixe project (Poggy & Xen) for providing many feature.***
