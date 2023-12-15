@@ -6,7 +6,7 @@
 
 ## b2.0.1 => b2.1.0
 This version change change the database structure.
-Before installing version `b2.1.0` if you are using an earlier beta version, you must import the sql file in https://github.com/Salvatore-Als/cs2-rank/tree/main/external/sql/migration-b201-b210.sql, it's not mandatory but without this proces you will lose all your rank.
+Before installing version `b2.1.0` if you are using an earlier beta version, you must import the sql file in https://github.com/Salvatore-Als/cs2-rank/tree/main/external/sql/migration-b201-b210.sql, without this proces you will lose all your rank and broke your database structure.
 
 Be sure to backup your Database before.
 
