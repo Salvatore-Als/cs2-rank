@@ -23,6 +23,7 @@ CS2 Rank is an open source ranking plugin for Counter-Strike 2, relying on in-ga
 - Translation and Colorization: CS2 Rank introduces a robust translation system and colorization of phrases, providing a personalized and visually appealing experience.
 - Explore a Discord bot written in NodeJS, offering the ability to check specific player ranks, both personal and by map, as well as global and map-specific top rankings through rank referencing.
 - Access a PHP-powered web interface providing top rankings by map and globally. This interface also utilizes rank referencing for seamless integration.
+- Explore an API written in NodeJS, offering the ability to get players statistics per steam64 and name, get the top per map and global, get the available maps and groups.
 
 ## Plugin
 https://cs2rank.kriax.ovh/#/plugin
