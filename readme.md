@@ -1,8 +1,6 @@
 # CS2 Rank
 
-**If you would like to support me in this project**
-
-[![Texte alternatif](https://github.com/Salvatore-Als/cs2-rank/assets/58212852/809a130a-1c3a-4b37-aaf5-f72c88fc75e0)](https://www.paypal.com/donate/?hosted_button_id=UA272TAJVBT2U)
+**This project is functional but no longer maintained. If you need to use it, you must recompile the project.** 
 
 ## b2.0.1 => b2.1.0
 This version change change the database structure.
