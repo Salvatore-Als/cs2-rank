@@ -25,7 +25,7 @@ https://prnt.sc/6nzllbxfRFfb
 
 ## Theme
 The website using **Tailwind**, if you want to make an update and compile a custom css you can use `npm run build:css:dev` and then `npm run build:css` to compile :) 
-Don't forget to type `npm install` before !
+Don't forget to type `npm install` before!
 
 ## Running
 You must upload the content of the `src` folder to your website, I advise you to make a specific site or folder.

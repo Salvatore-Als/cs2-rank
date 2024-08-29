@@ -1,22 +1,22 @@
 <?php
-    include 'config.php';
+include __DIR__ . '/config.php';
 
-    $dbh = new PDO("mysql:host=" . MYSQL_HOST . ";dbname=" . MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD);
-    $cache = null;
+$dbh = getDatabase();
+$cache = null;
 
-    function getMaps() {
-        global $dbh;
+function getMaps() {
+    global $dbh;
 
-        $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $sth = $dbh->prepare('SELECT id, name FROM cs2_rank_maps');
-        $sth->execute();
+    $sth = $dbh->prepare('SELECT id, name FROM cs2_rank_maps');
+    $sth->execute();
 
-        $rows = $sth->fetchAll();
-        return $rows;
-    }
+    return $sth->fetchAll();
+}
 
-    header("Content-Type: application/json");
-    echo json_encode(['results' => getMaps()]);
-    exit();
-?>
+header('Content-Type: application/json');
+echo json_encode([
+    'results' => getMaps(),
+]);
+exit;

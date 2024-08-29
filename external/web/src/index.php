@@ -34,11 +34,11 @@
                     </tr>
                 </thead>
                 <tbody id="players-table" class="flex-1 sm:flex-none">
-                    
+
                 </tbody>
             </table>
         </div>
-        
+
         <div class="flex">
             <button onclick="previousPage()" id="previousPage" class="flex items-center justify-center px-3 h-8 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg rounded-r-none disabled:opacity-50 disabled:pointer-events-none hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                 Prev
@@ -48,14 +48,14 @@
                 Next
             </button>
         </div>
-    </div>
-    
+    </section>
+
     <footer class="pt-5 flex gap-1 justify-center text-gray-400">
         <div class="flex gap-1 items-center">
             <a href="https://github.com/Salvatore-Als/cs2-rank" class="text-gray-400 hover:text-gray-600 transition">
                 <i class="fab fa-github"></i>
             </a>
-            <span>CS2 Rank by</span> 
+            <span>CS2 Rank by</span>
             <a href="https://twitter.com/kriax_" class="text-blue-400 hover:text-blue-600 transition">Kriax</a>
         </div>
         <span>-</span>
